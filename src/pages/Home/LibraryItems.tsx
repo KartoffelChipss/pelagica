@@ -6,6 +6,7 @@ import { useRecentItems } from '@/hooks/api/useRecentItems';
 import { getImageApi } from '@jellyfin/sdk/lib/utils/api/image-api';
 import { Play } from 'lucide-react';
 import { Link } from 'react-router';
+import { useNavigate } from 'react-router';
 
 interface LibraryItemsProps {
     libraryId: string;
@@ -13,6 +14,7 @@ interface LibraryItemsProps {
 }
 
 const LibraryItems = ({ libraryId, libraryName }: LibraryItemsProps) => {
+    const navigate = useNavigate();
     const { data: recentItems } = useRecentItems(libraryId);
 
     function getPosterUrl(itemId: string) {
@@ -50,11 +52,9 @@ const LibraryItems = ({ libraryId, libraryName }: LibraryItemsProps) => {
                                       <Button
                                           variant="secondary"
                                           className="absolute inset-0 m-auto flex items-center justify-center opacity-0 group-hover:opacity-100 transform transition-all group-hover:scale-110 w-10 h-10 rounded-full hover:bg-secondary"
-                                          asChild
+                                          onClick={() => navigate(`/item/${item.Id}/play`)}
                                       >
-                                          <Link to={`/item/${item.Id}/play`}>
-                                              <Play size={16} />
-                                          </Link>
+                                          <Play size={16} />
                                       </Button>
                                       <Skeleton className="absolute bottom-0 left-0 right-0 h-54 -z-1" />
                                   </div>
