@@ -1,13 +1,16 @@
+import AppSidebar from '@/components/AppSidebar';
+import { Separator } from '@/components/ui/separator';
+import { SidebarProvider, SidebarTrigger } from '@/components/ui/sidebar';
 import { type PropsWithChildren, useEffect } from 'react';
 import { useNavigate } from 'react-router';
 
 interface PageProps {
     title?: string;
-    header?: React.ReactNode;
-    footer?: React.ReactNode;
     className?: string;
     containerClassName?: string;
     requiresAuth?: boolean;
+    sidebar?: boolean;
+    breadcrumbs?: React.ReactNode;
 }
 
 const isLoggedIn = () => {
@@ -17,11 +20,11 @@ const isLoggedIn = () => {
 const Page = ({
     children,
     title,
-    header,
-    footer,
     className,
     containerClassName,
     requiresAuth = false,
+    sidebar = true,
+    breadcrumbs,
 }: PropsWithChildren<PageProps>) => {
     const navigate = useNavigate();
 
@@ -40,11 +43,18 @@ const Page = ({
     }
 
     return (
-        <div className={`flex flex-col min-h-full ${containerClassName ?? ''}`}>
-            {header}
-            <main className={`flex-1 px-4 ${className ?? ''}`}>{children}</main>
-            {footer}
-        </div>
+        <SidebarProvider className={`min-h-screen ${containerClassName ?? ''}`} defaultOpen={false}>
+            {sidebar && <AppSidebar />}
+            <div className="flex flex-1 flex-col h-screen overflow-hidden px-4 py-4">
+                {sidebar && (
+                    <div className="flex items-center gap-2">
+                        <SidebarTrigger />
+                        {breadcrumbs}
+                    </div>
+                )}
+                <main className={`flex-1 overflow-auto ${className ?? ''}`}>{children}</main>
+            </div>
+        </SidebarProvider>
     );
 };
 

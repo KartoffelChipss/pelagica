@@ -89,7 +89,11 @@ const LoginPage = () => {
     };
 
     return (
-        <Page title="Login" className="flex items-center justify-center min-h-screen">
+        <Page
+            title="Login"
+            className="flex items-center justify-center min-h-screen w-full"
+            sidebar={false}
+        >
             {step === 'server' && (
                 <Card className="max-w-md w-full mx-auto mt-10">
                     <CardHeader className="flex flex-col items-center">
