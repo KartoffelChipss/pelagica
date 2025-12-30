@@ -1,5 +1,4 @@
 import AppSidebar from '@/components/AppSidebar';
-import { Separator } from '@/components/ui/separator';
 import { SidebarProvider, SidebarTrigger } from '@/components/ui/sidebar';
 import { type PropsWithChildren, useEffect } from 'react';
 import { useNavigate } from 'react-router';

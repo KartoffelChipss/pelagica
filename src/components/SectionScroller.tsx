@@ -47,7 +47,7 @@ export default function SectionScroller({
             el.removeEventListener('scroll', checkScroll);
             window.removeEventListener('resize', checkScroll);
         };
-    }, []);
+    }, [items.length]);
 
     return (
         <div className={className}>
@@ -60,7 +60,6 @@ export default function SectionScroller({
                 <div className="flex gap-2">
                     <Button
                         onClick={() => scroll(-300)}
-                        className="p-2"
                         disabled={!canScrollLeft}
                         size={'icon'}
                         variant={'outline'}
@@ -69,7 +68,6 @@ export default function SectionScroller({
                     </Button>
                     <Button
                         onClick={() => scroll(300)}
-                        className="p-2"
                         disabled={!canScrollRight}
                         size={'icon'}
                         variant={'outline'}

@@ -25,26 +25,24 @@ const HomePage = () => {
                 </Breadcrumb>
             }
         >
-            <div className="flex flex-col items-center gap-4">
-                <div className="w-full">
-                    {userViews && userViews.Items ? (
-                        <>
-                            {userViews.Items.map((view) => (
-                                <>
-                                    {view.Id && view.Name && (
-                                        <LibraryItems
-                                            key={view.Id}
-                                            libraryId={view.Id}
-                                            libraryName={view.Name}
-                                        />
-                                    )}
-                                </>
-                            ))}
-                        </>
-                    ) : (
-                        <p>Loading user views...</p>
-                    )}
-                </div>
+            <div className="flex flex-col gap-4 mt-4">
+                {userViews && userViews.Items ? (
+                    <>
+                        {userViews.Items.map((view) => (
+                            <>
+                                {view.Id && view.Name && (
+                                    <LibraryItems
+                                        key={view.Id}
+                                        libraryId={view.Id}
+                                        libraryName={view.Name}
+                                    />
+                                )}
+                            </>
+                        ))}
+                    </>
+                ) : (
+                    <p>Loading user views...</p>
+                )}
             </div>
         </Page>
     );

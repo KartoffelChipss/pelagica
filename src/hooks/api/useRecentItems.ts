@@ -12,7 +12,7 @@ export function useRecentItems(libraryId?: string | null) {
                 parentId: libraryId!,
                 sortBy: ['DateCreated'],
                 sortOrder: ['Descending'],
-                limit: 10,
+                limit: 15,
                 recursive: true,
                 includeItemTypes: ['Movie', 'Series'],
             });
