@@ -7,6 +7,7 @@ import {
     BreadcrumbList,
     BreadcrumbPage,
 } from '@/components/ui/breadcrumb';
+import MediaBar from './MediaBar';
 
 const HomePage = () => {
     const { data: userViews } = useUserViews();
@@ -25,6 +26,7 @@ const HomePage = () => {
                 </Breadcrumb>
             }
         >
+            <MediaBar className="mt-4" />
             <div className="flex flex-col gap-4 mt-4">
                 {userViews && userViews.Items ? (
                     <>
