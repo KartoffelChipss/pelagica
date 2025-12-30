@@ -25,7 +25,7 @@ const HomePage = () => {
                 <p className="text-center">
                     Edit <code>src/pages/Home/Home.tsx</code> and save to test HMR
                 </p>
-                <div>
+                <div className="max-w-full">
                     <h2 className="text-xl font-semibold mb-2">User Views:</h2>
                     {userViews && userViews.Items ? (
                         <>

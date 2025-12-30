@@ -1,0 +1,91 @@
+import { ChevronLeft, ChevronRight } from 'lucide-react';
+import { useEffect, useRef, useState } from 'react';
+import { Button } from './ui/button';
+
+interface SectionScrollerProps {
+    title: string;
+    items: React.ReactNode[];
+    icon?: React.ReactNode;
+    className?: string;
+    additionalButtons?: React.ReactNode;
+}
+
+export default function SectionScroller({
+    title,
+    items,
+    icon,
+    className,
+    additionalButtons,
+}: SectionScrollerProps) {
+    const scrollRef = useRef<HTMLDivElement>(null);
+    const [canScrollLeft, setCanScrollLeft] = useState(false);
+    const [canScrollRight, setCanScrollRight] = useState(true);
+
+    const checkScroll = () => {
+        const el = scrollRef.current;
+        if (!el) return;
+        setCanScrollLeft(el.scrollLeft > 0);
+        setCanScrollRight(el.scrollLeft + el.clientWidth < el.scrollWidth);
+    };
+
+    const scroll = (offset: number) => {
+        if (scrollRef.current) {
+            scrollRef.current.scrollBy({ left: offset, behavior: 'smooth' });
+        }
+    };
+
+    useEffect(() => {
+        const el = scrollRef.current;
+        if (!el) return;
+
+        checkScroll();
+
+        el.addEventListener('scroll', checkScroll);
+        window.addEventListener('resize', checkScroll);
+
+        return () => {
+            el.removeEventListener('scroll', checkScroll);
+            window.removeEventListener('resize', checkScroll);
+        };
+    }, []);
+
+    return (
+        <div className={className}>
+            <div className="flex items-center justify-between mb-3">
+                <h2 className="text-2xl font-bold flex items-center gap-2">
+                    {icon}
+                    {title}
+                </h2>
+
+                <div className="flex gap-2">
+                    <Button
+                        onClick={() => scroll(-300)}
+                        className="p-2"
+                        disabled={!canScrollLeft}
+                        size={'icon'}
+                        variant={'outline'}
+                    >
+                        <ChevronLeft />
+                    </Button>
+                    <Button
+                        onClick={() => scroll(300)}
+                        className="p-2"
+                        disabled={!canScrollRight}
+                        size={'icon'}
+                        variant={'outline'}
+                    >
+                        <ChevronRight />
+                    </Button>
+                    {additionalButtons}
+                </div>
+            </div>
+
+            <div
+                ref={scrollRef}
+                className="flex gap-4 overflow-x-auto scroll-smooth scrollbar-hide pb-2 custom-scrollbar scrollbar-hide"
+            >
+                {items}
+            </div>
+        </div>
+    );
+}
