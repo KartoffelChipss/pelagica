@@ -80,7 +80,7 @@ export default function SectionScroller({
 
             <div
                 ref={scrollRef}
-                className="flex gap-4 overflow-x-auto scroll-smooth scrollbar-hide pb-2 custom-scrollbar scrollbar-hide"
+                className="flex gap-4 overflow-x-auto scroll-smooth scrollbar-hide custom-scrollbar scrollbar-hide"
             >
                 {items}
             </div>

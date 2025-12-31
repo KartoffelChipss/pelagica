@@ -1,0 +1,14 @@
+{
+    "homeScreenSections": [
+        {
+            "type": "mediaBar",
+            "enabled": true,
+            "label": "Featured"
+        },
+        {
+            "type": "recentlyAdded",
+            "enabled": true,
+            "label": "Recently Added"
+        }
+    ]
+}

@@ -10,6 +10,7 @@ interface PageProps {
     requiresAuth?: boolean;
     sidebar?: boolean;
     breadcrumbs?: React.ReactNode;
+    bgItem?: React.ReactNode;
 }
 
 const isLoggedIn = () => {
@@ -24,6 +25,7 @@ const Page = ({
     requiresAuth = false,
     sidebar = true,
     breadcrumbs,
+    bgItem,
 }: PropsWithChildren<PageProps>) => {
     const navigate = useNavigate();
 
@@ -42,9 +44,13 @@ const Page = ({
     }
 
     return (
-        <SidebarProvider className={`min-h-screen ${containerClassName ?? ''}`} defaultOpen={false}>
+        <SidebarProvider
+            className={`relative min-h-screen ${containerClassName ?? ''}`}
+            defaultOpen={false}
+        >
+            {bgItem}
             {sidebar && <AppSidebar />}
-            <div className="flex flex-1 flex-col h-screen overflow-hidden px-4 py-4">
+            <div className="flex flex-1 flex-col h-screen overflow-hidden px-4 py-4 z-5">
                 {sidebar && (
                     <div className="flex items-center gap-2">
                         <SidebarTrigger />

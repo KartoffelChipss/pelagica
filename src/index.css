@@ -15,6 +15,38 @@ body {
     width: 100%;
 }
 
+.custom-scrollbar::-webkit-scrollbar,
+.cm-scroller::-webkit-scrollbar {
+    width: 6px;
+    height: 6px;
+}
+
+.custom-scrollbar::-webkit-scrollbar-track,
+.cm-scroller::-webkit-scrollbar-track {
+    background: transparent;
+}
+
+.custom-scrollbar::-webkit-scrollbar-thumb,
+.cm-scroller::-webkit-scrollbar-thumb {
+    background-color: rgba(100, 116, 139, 0.5);
+    border-radius: 4px;
+}
+
+.custom-scrollbar,
+.cm-scroller {
+    scrollbar-width: auto;
+    scrollbar-color: rgba(100, 116, 139, 0.5) transparent;
+}
+
+.scrollbar-hide {
+    -ms-overflow-style: none;
+    scrollbar-width: none;
+}
+
+.scrollbar-hide::-webkit-scrollbar {
+    display: none;
+}
+
 @custom-variant dark (&:is(.dark *));
 
 @theme inline {

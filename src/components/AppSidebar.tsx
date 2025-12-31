@@ -16,7 +16,7 @@ import { Avatar, AvatarFallback } from './ui/avatar';
 
 const AppSidebar = () => {
     return (
-        <Sidebar variant="floating" collapsible="icon">
+        <Sidebar variant="floating" collapsible="icon" className="z-5">
             <SidebarHeader>
                 <SidebarMenu>
                     <SidebarMenuButton size="lg" className="cursor-default">

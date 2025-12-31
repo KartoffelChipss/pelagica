@@ -52,6 +52,8 @@ interface MediaBarProps {
 const MediaBar = ({ className }: MediaBarProps) => {
     const { data: mediabarItems, isLoading, isError } = useMediaBarItems();
 
+    console.log('MediaBar Items:', mediabarItems);
+
     return (
         <Carousel
             className={className}
@@ -66,7 +68,7 @@ const MediaBar = ({ className }: MediaBarProps) => {
                     mediabarItems.map((item) => (
                         <CarouselItem key={item.Id}>
                             <div
-                                className="rounded-md bg-cover bg-center h-130 flex items-end p-16"
+                                className="rounded-md bg-cover bg-center flex items-end p-16"
                                 style={{
                                     backgroundImage: `url('${getBackdropUrl(item.Id!)}')`,
                                 }}
@@ -76,6 +78,18 @@ const MediaBar = ({ className }: MediaBarProps) => {
                                     alt={item.Name || 'Item Logo'}
                                     className="max-h-20 object-contain"
                                 />
+                                {item.Genres && item.Genres.length > 0 && (
+                                    <div className="absolute top-4 left-4 flex flex-wrap gap-2">
+                                        {item.Genres.map((genre) => (
+                                            <span
+                                                key={genre}
+                                                className="bg-black bg-opacity-50 text-white text-sm px-2 py-1 rounded"
+                                            >
+                                                {genre}
+                                            </span>
+                                        ))}
+                                    </div>
+                                )}
                             </div>
                         </CarouselItem>
                     ))}
