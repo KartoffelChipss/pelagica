@@ -8,6 +8,7 @@ import {
     CarouselPrevious,
 } from '@/components/ui/carousel';
 import { Skeleton } from '@/components/ui/skeleton';
+import type { SectionItemsConfig } from '@/hooks/api/useConfig';
 import { useMediaBarItems } from '@/hooks/api/useMediaBarItems';
 import { getBackdropUrl, getLogoUrl } from '@/utils/images';
 import { Play, Star } from 'lucide-react';
@@ -35,11 +36,13 @@ function getEndsAt(durationTicks: number): Date {
 
 interface MediaBarProps {
     className?: string;
+    title?: string;
     size?: 'small' | 'medium' | 'large';
+    itemsConfig?: SectionItemsConfig;
 }
 
-const MediaBar = ({ className, size = 'medium' }: MediaBarProps) => {
-    const { data: mediabarItems, isLoading, isError } = useMediaBarItems();
+const MediaBar = ({ className, size = 'medium', itemsConfig, title }: MediaBarProps) => {
+    const { data: mediabarItems, isLoading, isError } = useMediaBarItems(itemsConfig);
     const [logoErrors, setLogoErrors] = useState<Record<string, boolean>>({});
 
     const handleLogoError = (itemId: string) => {
@@ -63,131 +66,138 @@ const MediaBar = ({ className, size = 'medium' }: MediaBarProps) => {
               : 'max-h-30 sm:max-h-50';
 
     return (
-        <Carousel
-            className={className}
-            opts={{
-                loop: true,
-            }}
-        >
-            <CarouselContent>
-                {isLoading && (
-                    <>
-                        <CarouselItem>
-                            <div
-                                className={`rounded-md bg-cover bg-center flex flex-col items-start justify-end gap-4 overflow-hidden relative min-h-130 ${outerSize}`}
-                            >
-                                <div className="absolute inset-0 bg-gradient-to-r from-black/70 via-black/70 to-transparent pointer-events-none max-w-5xl" />
-                                <div className="flex flex-col items-start gap-4 max-w-2xl px-6 sm:px-16 py-6 rounded relative z-10 w-full">
-                                    <Skeleton className={`${logoSize} w-full`} />
-                                    <div className="flex flex-wrap gap-2 w-full">
-                                        <Skeleton className="h-6 w-20" />
-                                        <Skeleton className="h-6 w-24" />
-                                    </div>
-                                    <div className="flex flex-wrap gap-4 text-sm w-full">
-                                        <Skeleton className="h-4 w-12" />
-                                        <Skeleton className="h-4 w-32" />
-                                    </div>
-                                    <Skeleton className="h-10 w-32 rounded-md" />
-                                </div>
-                            </div>
-                        </CarouselItem>
-                    </>
-                )}
-                {isError && (
-                    <div className="p-4 text-destructive">Failed to load media bar items.</div>
-                )}
-                {mediabarItems &&
-                    mediabarItems.map((item) => (
-                        <CarouselItem key={item.Id}>
-                            <div
-                                className={`rounded-md bg-cover bg-center flex flex-col items-start justify-end gap-4 overflow-hidden relative min-h-130 ${outerSize}`}
-                                style={{
-                                    backgroundImage: `url('${getBackdropUrl(item.Id!)}')`,
-                                }}
-                            >
-                                <div className="absolute inset-0 bg-gradient-to-r from-black/70 via-black/70 to-transparent pointer-events-none max-w-5xl" />
-                                <div className="flex flex-col items-start gap-4 max-w-2xl px-6 sm:px-16 py-6 rounded relative z-10">
-                                    {getLogoUrl(item.Id!) && !logoErrors[item.Id!] ? (
-                                        <img
-                                            src={getLogoUrl(item.Id!)}
-                                            alt={item.Name || 'Item Logo'}
-                                            className={`${logoSize} h-full object-contain`}
-                                            onError={() => handleLogoError(item.Id!)}
-                                        />
-                                    ) : (
-                                        <h2 className="text-2xl sm:text-4xl font-bold">
-                                            {item.Name}
-                                        </h2>
-                                    )}
-                                    {item.GenreItems && item.GenreItems.length > 0 && (
-                                        <div className="flex flex-wrap gap-2">
-                                            {item.GenreItems.map((genre) => (
-                                                <Badge variant={'outline'} key={genre.Id}>
-                                                    {genre.Name}
-                                                </Badge>
-                                            ))}
+        <div className={className}>
+            {title && <h2 className="text-2xl font-bold mb-3">{title}</h2>}
+            <Carousel
+                opts={{
+                    loop: true,
+                }}
+            >
+                <CarouselContent>
+                    {isLoading && (
+                        <>
+                            <CarouselItem>
+                                <div
+                                    className={`rounded-md bg-cover bg-center flex flex-col items-start justify-end gap-4 overflow-hidden relative min-h-130 ${outerSize}`}
+                                >
+                                    <div className="absolute inset-0 bg-gradient-to-r from-black/70 via-black/70 to-transparent pointer-events-none max-w-5xl" />
+                                    <div className="flex flex-col items-start gap-4 max-w-2xl px-6 sm:px-16 py-6 rounded relative z-10 w-full">
+                                        <Skeleton className={`${logoSize} w-full`} />
+                                        <div className="flex flex-wrap gap-2 w-full">
+                                            <Skeleton className="h-6 w-20" />
+                                            <Skeleton className="h-6 w-24" />
                                         </div>
-                                    )}
-                                    <div className="flex flex-wrap items-center gap-4 text-sm text-muted-foreground">
-                                        {item.PremiereDate && (
-                                            <span>{new Date(item.PremiereDate).getFullYear()}</span>
+                                        <div className="flex flex-wrap gap-4 text-sm w-full">
+                                            <Skeleton className="h-4 w-12" />
+                                            <Skeleton className="h-4 w-32" />
+                                        </div>
+                                        <Skeleton className="h-10 w-32 rounded-md" />
+                                    </div>
+                                </div>
+                            </CarouselItem>
+                        </>
+                    )}
+                    {mediabarItems &&
+                        mediabarItems.map((item) => (
+                            <CarouselItem key={item.Id}>
+                                <div
+                                    className={`rounded-md bg-cover bg-center flex flex-col items-start justify-end gap-4 overflow-hidden relative min-h-130 ${outerSize}`}
+                                    style={{
+                                        backgroundImage: `url('${getBackdropUrl(item.Id!)}')`,
+                                    }}
+                                >
+                                    <div className="absolute inset-0 bg-gradient-to-r from-black/70 via-black/70 to-transparent pointer-events-none max-w-5xl" />
+                                    <div className="flex flex-col items-start gap-4 max-w-2xl px-6 sm:px-16 py-6 rounded relative z-10">
+                                        {getLogoUrl(item.Id!) && !logoErrors[item.Id!] ? (
+                                            <img
+                                                src={getLogoUrl(item.Id!)}
+                                                alt={item.Name || 'Item Logo'}
+                                                className={`${logoSize} h-full object-contain`}
+                                                onError={() => handleLogoError(item.Id!)}
+                                            />
+                                        ) : (
+                                            <h2 className="text-2xl sm:text-4xl font-bold">
+                                                {item.Name}
+                                            </h2>
                                         )}
-                                        {item.Type === 'Series' && item.ChildCount && (
-                                            <span>
-                                                {item.ChildCount} season
-                                                {item.ChildCount !== 1 ? 's' : ''}
-                                            </span>
-                                        )}
-                                        {item.Type === 'Series' && item.RecursiveItemCount && (
-                                            <span>
-                                                {item.RecursiveItemCount} episode
-                                                {item.RecursiveItemCount !== 1 ? 's' : ''}
-                                            </span>
-                                        )}
-                                        {item.RunTimeTicks && item.RunTimeTicks > 0 && (
-                                            <>
-                                                <span>
-                                                    {ticksToReadableTime(item.RunTimeTicks)}
-                                                </span>
-                                                <span>
-                                                    Ends at{' '}
-                                                    {getEndsAt(
-                                                        item.RunTimeTicks!
-                                                    ).toLocaleTimeString([], {
-                                                        hour: '2-digit',
-                                                        minute: '2-digit',
-                                                    })}
-                                                </span>
-                                            </>
-                                        )}
-                                        {item.CommunityRating && (
-                                            <div className="flex items-center gap-1">
-                                                <Star size={14} />
-                                                <span>{item.CommunityRating.toFixed(1)}</span>
+                                        {item.GenreItems && item.GenreItems.length > 0 && (
+                                            <div className="flex flex-wrap gap-2">
+                                                {item.GenreItems.map((genre) => (
+                                                    <Badge
+                                                        variant={'outline'}
+                                                        key={genre.Id}
+                                                        data-id={genre.Id}
+                                                    >
+                                                        {genre.Name}
+                                                    </Badge>
+                                                ))}
                                             </div>
                                         )}
-                                    </div>
-                                    <p className="text-sm line-clamp-2 text-muted-foreground">
-                                        {item.Overview}
-                                    </p>
-                                    <div className="flex items-center gap-4">
-                                        <Button variant="default" size="lg">
-                                            <Play />
-                                            Watch Now
-                                        </Button>
+                                        <div className="flex flex-wrap items-center gap-4 text-sm text-muted-foreground">
+                                            {item.PremiereDate && (
+                                                <span>
+                                                    {new Date(item.PremiereDate).getFullYear()}
+                                                </span>
+                                            )}
+                                            {item.Type === 'Series' && item.ChildCount && (
+                                                <span>
+                                                    {item.ChildCount} season
+                                                    {item.ChildCount !== 1 ? 's' : ''}
+                                                </span>
+                                            )}
+                                            {item.Type === 'Series' && item.RecursiveItemCount && (
+                                                <span>
+                                                    {item.RecursiveItemCount} episode
+                                                    {item.RecursiveItemCount !== 1 ? 's' : ''}
+                                                </span>
+                                            )}
+                                            {item.Type !== 'Series' &&
+                                                item.RunTimeTicks &&
+                                                item.RunTimeTicks > 0 && (
+                                                    <>
+                                                        <span>
+                                                            {ticksToReadableTime(item.RunTimeTicks)}
+                                                        </span>
+                                                        <span>
+                                                            Ends at{' '}
+                                                            {getEndsAt(
+                                                                item.RunTimeTicks!
+                                                            ).toLocaleTimeString([], {
+                                                                hour: '2-digit',
+                                                                minute: '2-digit',
+                                                            })}
+                                                        </span>
+                                                    </>
+                                                )}
+                                            {item.CommunityRating && (
+                                                <div className="flex items-center gap-1">
+                                                    <Star size={14} />
+                                                    <span>{item.CommunityRating.toFixed(1)}</span>
+                                                </div>
+                                            )}
+                                        </div>
+                                        <p className="text-sm line-clamp-2 text-muted-foreground">
+                                            {item.Overview}
+                                        </p>
+                                        <div className="flex items-center gap-4">
+                                            <Button variant="default" size="lg">
+                                                <Play />
+                                                Watch Now
+                                            </Button>
+                                        </div>
                                     </div>
                                 </div>
-                            </div>
-                        </CarouselItem>
-                    ))}
-            </CarouselContent>
-            {!isError && (
-                <>
-                    <CarouselPrevious className="absolute left-2 top-1/2 -translate-y-1/2 z-10 hidden sm:flex" />
-                    <CarouselNext className="absolute right-2 top-1/2 -translate-y-1/2 z-10 hidden sm:flex" />
-                </>
-            )}
-        </Carousel>
+                            </CarouselItem>
+                        ))}
+                </CarouselContent>
+                {!isError && (
+                    <>
+                        <CarouselPrevious className="absolute left-2 top-1/2 -translate-y-1/2 z-10 hidden sm:flex" />
+                        <CarouselNext className="absolute right-2 top-1/2 -translate-y-1/2 z-10 hidden sm:flex" />
+                    </>
+                )}
+            </Carousel>
+        </div>
     );
 };
 

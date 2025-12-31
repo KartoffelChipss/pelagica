@@ -1,0 +1,248 @@
+{
+  "$ref": "#/definitions/AppConfig",
+  "$schema": "http://json-schema.org/draft-07/schema#",
+  "definitions": {
+    "AppConfig": {
+      "properties": {
+        "homeScreenSections": {
+          "items": {
+            "$ref": "#/definitions/HomeScreenSection"
+          },
+          "type": "array"
+        }
+      },
+      "type": "object"
+    },
+    "HomeScreenSection": {
+      "anyOf": [
+        {
+          "$ref": "#/definitions/MediaBarSection"
+        },
+        {
+          "$ref": "#/definitions/RecentlyAddedSection"
+        }
+      ]
+    },
+    "ItemSortBy": {
+      "anyOf": [
+        {
+          "const": "Default",
+          "type": "string"
+        },
+        {
+          "const": "AiredEpisodeOrder",
+          "type": "string"
+        },
+        {
+          "const": "Album",
+          "type": "string"
+        },
+        {
+          "const": "AlbumArtist",
+          "type": "string"
+        },
+        {
+          "const": "Artist",
+          "type": "string"
+        },
+        {
+          "const": "DateCreated",
+          "type": "string"
+        },
+        {
+          "const": "OfficialRating",
+          "type": "string"
+        },
+        {
+          "const": "DatePlayed",
+          "type": "string"
+        },
+        {
+          "const": "PremiereDate",
+          "type": "string"
+        },
+        {
+          "const": "StartDate",
+          "type": "string"
+        },
+        {
+          "const": "SortName",
+          "type": "string"
+        },
+        {
+          "const": "Name",
+          "type": "string"
+        },
+        {
+          "const": "Random",
+          "type": "string"
+        },
+        {
+          "const": "Runtime",
+          "type": "string"
+        },
+        {
+          "const": "CommunityRating",
+          "type": "string"
+        },
+        {
+          "const": "ProductionYear",
+          "type": "string"
+        },
+        {
+          "const": "PlayCount",
+          "type": "string"
+        },
+        {
+          "const": "CriticRating",
+          "type": "string"
+        },
+        {
+          "const": "IsFolder",
+          "type": "string"
+        },
+        {
+          "const": "IsUnplayed",
+          "type": "string"
+        },
+        {
+          "const": "IsPlayed",
+          "type": "string"
+        },
+        {
+          "const": "SeriesSortName",
+          "type": "string"
+        },
+        {
+          "const": "VideoBitRate",
+          "type": "string"
+        },
+        {
+          "const": "AirTime",
+          "type": "string"
+        },
+        {
+          "const": "Studio",
+          "type": "string"
+        },
+        {
+          "const": "IsFavoriteOrLiked",
+          "type": "string"
+        },
+        {
+          "const": "DateLastContentAdded",
+          "type": "string"
+        },
+        {
+          "const": "SeriesDatePlayed",
+          "type": "string"
+        },
+        {
+          "const": "ParentIndexNumber",
+          "type": "string"
+        },
+        {
+          "const": "IndexNumber",
+          "type": "string"
+        },
+        {}
+      ],
+      "description": "These represent sort orders."
+    },
+    "MediaBarSection": {
+      "properties": {
+        "enabled": {
+          "type": "boolean"
+        },
+        "items": {
+          "$ref": "#/definitions/SectionItemsConfig"
+        },
+        "size": {
+          "enum": [
+            "small",
+            "medium",
+            "large"
+          ],
+          "type": "string"
+        },
+        "title": {
+          "type": "string"
+        },
+        "type": {
+          "const": "mediaBar",
+          "type": "string"
+        }
+      },
+      "required": [
+        "enabled",
+        "type"
+      ],
+      "type": "object"
+    },
+    "RecentlyAddedSection": {
+      "properties": {
+        "enabled": {
+          "type": "boolean"
+        },
+        "title": {
+          "type": "string"
+        },
+        "type": {
+          "const": "recentlyAdded",
+          "type": "string"
+        }
+      },
+      "required": [
+        "enabled",
+        "type"
+      ],
+      "type": "object"
+    },
+    "SectionItemsConfig": {
+      "properties": {
+        "genres": {
+          "items": {
+            "type": "string"
+          },
+          "type": "array"
+        },
+        "libraryId": {
+          "type": "string"
+        },
+        "limit": {
+          "type": "number"
+        },
+        "sortBy": {
+          "items": {
+            "$ref": "#/definitions/ItemSortBy"
+          },
+          "type": "array"
+        },
+        "sortOrder": {
+          "enum": [
+            "Ascending",
+            "Descending"
+          ],
+          "type": "string"
+        },
+        "tags": {
+          "items": {
+            "type": "string"
+          },
+          "type": "array"
+        },
+        "types": {
+          "items": {
+            "enum": [
+              "Movie",
+              "Series"
+            ],
+            "type": "string"
+          },
+          "type": "array"
+        }
+      },
+      "type": "object"
+    }
+  }
+}

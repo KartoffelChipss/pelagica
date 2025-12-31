@@ -1,13 +1,25 @@
+import type { ItemSortBy } from '@jellyfin/sdk/lib/generated-client/models';
 import { useEffect, useState } from 'react';
 
 interface BaseHomeScreenSection {
     enabled: boolean;
-    label?: string;
+    title?: string;
+}
+
+export interface SectionItemsConfig {
+    sortBy?: ItemSortBy[];
+    libraryId?: string;
+    types?: ('Movie' | 'Series')[];
+    genres?: string[];
+    tags?: string[];
+    sortOrder?: 'Ascending' | 'Descending';
+    limit?: number;
 }
 
 export interface MediaBarSection extends BaseHomeScreenSection {
     type: 'mediaBar';
     size?: 'small' | 'medium' | 'large';
+    items?: SectionItemsConfig;
 }
 
 export interface RecentlyAddedSection extends BaseHomeScreenSection {
@@ -22,8 +34,8 @@ export interface AppConfig {
 
 const DEFAULT_CONFIG: AppConfig = {
     homeScreenSections: [
-        { type: 'mediaBar', enabled: true, label: 'Featured', size: 'medium' },
-        { type: 'recentlyAdded', enabled: true, label: 'Recently Added' },
+        { type: 'mediaBar', enabled: true, title: 'Featured', size: 'medium' },
+        { type: 'recentlyAdded', enabled: true, title: 'Recently Added' },
     ],
 };
 

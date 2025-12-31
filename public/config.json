@@ -1,15 +1,19 @@
 {
+    "$schema": "./config.schema.json",
     "homeScreenSections": [
         {
             "type": "mediaBar",
             "enabled": true,
-            "label": "Featured",
-            "size": "medium"
+            "size": "medium",
+            "items": {
+                "sortBy": ["DateCreated"],
+                "sortOrder": "Descending",
+                "limit": 10
+            }
         },
         {
             "type": "recentlyAdded",
-            "enabled": true,
-            "label": "Recently Added"
+            "enabled": true
         }
     ]
 }
