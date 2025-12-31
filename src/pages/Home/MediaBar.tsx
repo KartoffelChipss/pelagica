@@ -43,10 +43,10 @@ interface MediaBarProps {
 
 const MediaBar = ({ className, size = 'medium', itemsConfig, title }: MediaBarProps) => {
     const { data: mediabarItems, isLoading, isError } = useMediaBarItems(itemsConfig);
-    const [logoErrors, setLogoErrors] = useState<Record<string, boolean>>({});
+    const [logoErrors, setLogoErrors] = useState<Set<string>>(new Set());
 
     const handleLogoError = (itemId: string) => {
-        setLogoErrors((prev) => ({ ...prev, [itemId]: true }));
+        setLogoErrors((prev) => new Set([...prev, itemId]));
     };
 
     console.log('MediaBar items:', mediabarItems);
@@ -103,12 +103,12 @@ const MediaBar = ({ className, size = 'medium', itemsConfig, title }: MediaBarPr
                                 <div
                                     className={`rounded-md bg-cover bg-center flex flex-col items-start justify-end gap-4 overflow-hidden relative min-h-130 ${outerSize}`}
                                     style={{
-                                        backgroundImage: `url('${getBackdropUrl(item.Id!)}')`,
+                                        backgroundImage: `url('${getBackdropUrl(item.Id!)}?maxWidth=1920&quality=75')`,
                                     }}
                                 >
                                     <div className="absolute inset-0 bg-gradient-to-r from-black/70 via-black/70 to-transparent pointer-events-none max-w-5xl" />
                                     <div className="flex flex-col items-start gap-4 max-w-2xl px-6 sm:px-16 py-6 rounded relative z-10">
-                                        {getLogoUrl(item.Id!) && !logoErrors[item.Id!] ? (
+                                        {getLogoUrl(item.Id!) && !logoErrors.has(item.Id!) ? (
                                             <img
                                                 src={getLogoUrl(item.Id!)}
                                                 alt={item.Name || 'Item Logo'}

@@ -27,15 +27,6 @@ const HomePage = () => {
                     </BreadcrumbList>
                 </Breadcrumb>
             }
-            bgItem={
-                <div
-                    className="absolute top-0 left-0 w-full h-full bg-cover bg-center opacity-10 -z-10 blur-lg"
-                    style={{
-                        backgroundImage:
-                            'url(https://jellyfin.jan.run/Items/d209bd1d97e0caec59ec50fa1a9de910/Images/Backdrop/0?tag=v1&quality=90&token=7429c2ff85c64d5f8698df883847baab)',
-                    }}
-                />
-            }
         >
             <div className="flex flex-col gap-4 mt-4">
                 {config.homeScreenSections?.map((section) => {
