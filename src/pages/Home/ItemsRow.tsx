@@ -68,10 +68,10 @@ const ItemsRow = ({ title, allLink, items }: ItemsRowProps) => {
                               </Link>
                           ))
                         : Array.from({ length: 5 }).map((_, index) => (
-                              <div key={index} className="w-36">
-                                  <Skeleton className="w-36 h-54 rounded-md mb-2" />
-                                  <Skeleton className="w-32 h-4 mb-1" />
-                                  <Skeleton className="w-20 h-3" />
+                              <div key={index} className="w-36 lg:w-44 2xl:w-52">
+                                  <Skeleton className="w-36 h-54 lg:w-44 lg:h-64 2xl:w-52 2xl:h-80 rounded-md mb-2" />
+                                  <Skeleton className="w-32 lg:w-40 2xl:w-48 h-4 mb-1" />
+                                  <Skeleton className="w-20 lg:w-24 2xl:w-28 h-3" />
                               </div>
                           ))
                 }
