@@ -1,4 +1,5 @@
 import { Badge } from '@/components/ui/badge';
+import { Button } from '@/components/ui/button';
 import {
     Carousel,
     CarouselContent,
@@ -6,45 +7,11 @@ import {
     CarouselNext,
     CarouselPrevious,
 } from '@/components/ui/carousel';
+import { Skeleton } from '@/components/ui/skeleton';
 import { useMediaBarItems } from '@/hooks/api/useMediaBarItems';
-
-function getBackdropUrl(itemId: string) {
-    try {
-        const server = localStorage.getItem('jf_server');
-        const token = localStorage.getItem('jf_token');
-
-        if (!server || !token) return '/default-backdrop.jpg';
-
-        const url = new URL(server);
-        url.pathname = `/Items/${itemId}/Images/Backdrop/0`;
-        url.searchParams.append('tag', 'v1');
-        url.searchParams.append('quality', '90');
-        url.searchParams.append('token', token);
-
-        return url.toString();
-    } catch {
-        return '/default-backdrop.jpg';
-    }
-}
-
-function getLogoUrl(itemId: string) {
-    try {
-        const server = localStorage.getItem('jf_server');
-        const token = localStorage.getItem('jf_token');
-
-        if (!server || !token) return '';
-
-        const url = new URL(server);
-        url.pathname = `/Items/${itemId}/Images/Logo`;
-        url.searchParams.append('tag', 'v1');
-        url.searchParams.append('quality', '90');
-        url.searchParams.append('token', token);
-
-        return url.toString();
-    } catch {
-        return '';
-    }
-}
+import { getBackdropUrl, getLogoUrl } from '@/utils/images';
+import { Play, Star } from 'lucide-react';
+import { useState } from 'react';
 
 function ticksToReadableTime(ticks: number): string {
     const totalSeconds = Math.floor(ticks / 10000000);
@@ -73,8 +40,13 @@ interface MediaBarProps {
 
 const MediaBar = ({ className, size = 'medium' }: MediaBarProps) => {
     const { data: mediabarItems, isLoading, isError } = useMediaBarItems();
+    const [logoErrors, setLogoErrors] = useState<Record<string, boolean>>({});
 
-    console.log('MediaBar Items:', mediabarItems);
+    const handleLogoError = (itemId: string) => {
+        setLogoErrors((prev) => ({ ...prev, [itemId]: true }));
+    };
+
+    console.log('MediaBar items:', mediabarItems);
 
     const outerSize =
         size === 'small'
@@ -98,8 +70,32 @@ const MediaBar = ({ className, size = 'medium' }: MediaBarProps) => {
             }}
         >
             <CarouselContent>
-                {isLoading && <p>Loading media bar...</p>}
-                {isError && <p>Error loading media bar.</p>}
+                {isLoading && (
+                    <>
+                        <CarouselItem>
+                            <div
+                                className={`rounded-md bg-cover bg-center flex flex-col items-start justify-end gap-4 overflow-hidden relative min-h-130 ${outerSize}`}
+                            >
+                                <div className="absolute inset-0 bg-gradient-to-r from-black/70 via-black/70 to-transparent pointer-events-none max-w-5xl" />
+                                <div className="flex flex-col items-start gap-4 max-w-2xl px-6 sm:px-16 py-6 rounded relative z-10 w-full">
+                                    <Skeleton className={`${logoSize} w-full`} />
+                                    <div className="flex flex-wrap gap-2 w-full">
+                                        <Skeleton className="h-6 w-20" />
+                                        <Skeleton className="h-6 w-24" />
+                                    </div>
+                                    <div className="flex flex-wrap gap-4 text-sm w-full">
+                                        <Skeleton className="h-4 w-12" />
+                                        <Skeleton className="h-4 w-32" />
+                                    </div>
+                                    <Skeleton className="h-10 w-32 rounded-md" />
+                                </div>
+                            </div>
+                        </CarouselItem>
+                    </>
+                )}
+                {isError && (
+                    <div className="p-4 text-destructive">Failed to load media bar items.</div>
+                )}
                 {mediabarItems &&
                     mediabarItems.map((item) => (
                         <CarouselItem key={item.Id}>
@@ -111,11 +107,12 @@ const MediaBar = ({ className, size = 'medium' }: MediaBarProps) => {
                             >
                                 <div className="absolute inset-0 bg-gradient-to-r from-black/70 via-black/70 to-transparent pointer-events-none max-w-5xl" />
                                 <div className="flex flex-col items-start gap-4 max-w-2xl px-6 sm:px-16 py-6 rounded relative z-10">
-                                    {getLogoUrl(item.Id!) ? (
+                                    {getLogoUrl(item.Id!) && !logoErrors[item.Id!] ? (
                                         <img
                                             src={getLogoUrl(item.Id!)}
                                             alt={item.Name || 'Item Logo'}
                                             className={`${logoSize} h-full object-contain`}
+                                            onError={() => handleLogoError(item.Id!)}
                                         />
                                     ) : (
                                         <h2 className="text-2xl sm:text-4xl font-bold">
@@ -163,17 +160,33 @@ const MediaBar = ({ className, size = 'medium' }: MediaBarProps) => {
                                                 </span>
                                             </>
                                         )}
+                                        {item.CommunityRating && (
+                                            <div className="flex items-center gap-1">
+                                                <Star size={14} />
+                                                <span>{item.CommunityRating.toFixed(1)}</span>
+                                            </div>
+                                        )}
                                     </div>
                                     <p className="text-sm line-clamp-2 text-muted-foreground">
                                         {item.Overview}
                                     </p>
+                                    <div className="flex items-center gap-4">
+                                        <Button variant="default" size="lg">
+                                            <Play />
+                                            Watch Now
+                                        </Button>
+                                    </div>
                                 </div>
                             </div>
                         </CarouselItem>
                     ))}
             </CarouselContent>
-            <CarouselPrevious className="absolute left-2 top-1/2 -translate-y-1/2 z-10 hidden sm:flex" />
-            <CarouselNext className="absolute right-2 top-1/2 -translate-y-1/2 z-10 hidden sm:flex" />
+            {!isError && (
+                <>
+                    <CarouselPrevious className="absolute left-2 top-1/2 -translate-y-1/2 z-10 hidden sm:flex" />
+                    <CarouselNext className="absolute right-2 top-1/2 -translate-y-1/2 z-10 hidden sm:flex" />
+                </>
+            )}
         </Carousel>
     );
 };

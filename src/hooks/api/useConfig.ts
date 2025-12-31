@@ -1,10 +1,20 @@
 import { useEffect, useState } from 'react';
 
-export interface HomeScreenSection {
-    type: 'mediaBar' | 'recentlyAdded';
+interface BaseHomeScreenSection {
     enabled: boolean;
     label?: string;
 }
+
+export interface MediaBarSection extends BaseHomeScreenSection {
+    type: 'mediaBar';
+    size?: 'small' | 'medium' | 'large';
+}
+
+export interface RecentlyAddedSection extends BaseHomeScreenSection {
+    type: 'recentlyAdded';
+}
+
+export type HomeScreenSection = MediaBarSection | RecentlyAddedSection;
 
 export interface AppConfig {
     homeScreenSections?: HomeScreenSection[];
@@ -12,7 +22,7 @@ export interface AppConfig {
 
 const DEFAULT_CONFIG: AppConfig = {
     homeScreenSections: [
-        { type: 'mediaBar', enabled: true, label: 'Featured' },
+        { type: 'mediaBar', enabled: true, label: 'Featured', size: 'medium' },
         { type: 'recentlyAdded', enabled: true, label: 'Recently Added' },
     ],
 };

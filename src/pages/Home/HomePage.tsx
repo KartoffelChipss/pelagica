@@ -43,7 +43,7 @@ const HomePage = () => {
 
                     switch (section.type) {
                         case 'mediaBar':
-                            return <MediaBar key="mediaBar" size="medium" />;
+                            return <MediaBar key="mediaBar" size={section.size} />;
 
                         case 'recentlyAdded':
                             return (

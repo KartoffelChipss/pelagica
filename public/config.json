@@ -3,7 +3,8 @@
         {
             "type": "mediaBar",
             "enabled": true,
-            "label": "Featured"
+            "label": "Featured",
+            "size": "medium"
         },
         {
             "type": "recentlyAdded",
