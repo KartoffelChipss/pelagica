@@ -4,12 +4,7 @@
         {
             "type": "mediaBar",
             "enabled": true,
-            "size": "medium",
-            "items": {
-                "sortBy": ["DateCreated"],
-                "sortOrder": "Descending",
-                "limit": 10
-            }
+            "size": "medium"
         },
         {
             "type": "recentlyAdded",

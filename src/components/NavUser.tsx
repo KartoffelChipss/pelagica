@@ -1,12 +1,8 @@
-'use client';
-
-import { BadgeCheck, Bell, ChevronsUpDown, CreditCard, LogOut, Sparkles } from 'lucide-react';
-
+import { ChevronsUpDown, Laptop, LogOut, Moon, Sun } from 'lucide-react';
 import { Avatar, AvatarFallback, AvatarImage } from '@/components/ui/avatar';
 import {
     DropdownMenu,
     DropdownMenuContent,
-    DropdownMenuGroup,
     DropdownMenuItem,
     DropdownMenuLabel,
     DropdownMenuSeparator,
@@ -23,10 +19,12 @@ import { getUserProfileImage } from '@/api/getUserProfileImage';
 import { useNavigate } from 'react-router';
 import { logout } from '@/api/logout';
 import { getApi } from '@/api/getApi';
+import { useTheme } from './theme-provider';
 
 export function NavUser() {
     const navigate = useNavigate();
     const { isMobile } = useSidebar();
+    const { theme, setTheme } = useTheme();
     const { data: user } = useCurrentUser();
 
     if (!user?.Id) return null;
@@ -83,28 +81,39 @@ export function NavUser() {
                             </div>
                         </DropdownMenuLabel>
                         <DropdownMenuSeparator />
-                        <DropdownMenuGroup>
-                            <DropdownMenuItem>
-                                <Sparkles />
-                                Item1
-                            </DropdownMenuItem>
-                        </DropdownMenuGroup>
-                        <DropdownMenuSeparator />
-                        <DropdownMenuGroup>
-                            <DropdownMenuItem>
-                                <BadgeCheck />
-                                Item2
-                            </DropdownMenuItem>
-                            <DropdownMenuItem>
-                                <CreditCard />
-                                Item3
-                            </DropdownMenuItem>
-                            <DropdownMenuItem>
-                                <Bell />
-                                Item4
-                            </DropdownMenuItem>
-                        </DropdownMenuGroup>
-                        <DropdownMenuSeparator />
+                        <DropdownMenu>
+                            <DropdownMenuTrigger asChild>
+                                <SidebarMenuButton className="data-[state=open]:bg-sidebar-accent data-[state=open]:text-sidebar-accent-foreground">
+                                    {theme === 'light' ? (
+                                        <Sun className="text-muted-foreground" />
+                                    ) : theme === 'dark' ? (
+                                        <Moon className="text-muted-foreground" />
+                                    ) : (
+                                        <Laptop className="text-muted-foreground" />
+                                    )}
+                                    Switch Theme
+                                </SidebarMenuButton>
+                            </DropdownMenuTrigger>
+                            <DropdownMenuContent
+                                className="w-(--radix-dropdown-menu-trigger-width) min-w-56 rounded-lg"
+                                side={isMobile ? 'bottom' : 'right'}
+                                align="start"
+                                sideOffset={4}
+                            >
+                                <DropdownMenuItem onClick={() => setTheme('light')}>
+                                    <Sun className="text-muted-foreground" />
+                                    Light
+                                </DropdownMenuItem>
+                                <DropdownMenuItem onClick={() => setTheme('dark')}>
+                                    <Moon className="text-muted-foreground" />
+                                    Dark
+                                </DropdownMenuItem>
+                                <DropdownMenuItem onClick={() => setTheme('system')}>
+                                    <Laptop className="text-muted-foreground" />
+                                    System
+                                </DropdownMenuItem>
+                            </DropdownMenuContent>
+                        </DropdownMenu>
                         <DropdownMenuItem
                             onClick={() => {
                                 logout(getApi());
