@@ -2,19 +2,57 @@ import { getApi } from '@/api/getApi';
 import SectionScroller from '@/components/SectionScroller';
 import { Button } from '@/components/ui/button';
 import { Skeleton } from '@/components/ui/skeleton';
-import type { SectionItemsConfig } from '@/hooks/api/useConfig';
+import type { DetailField, SectionItemsConfig } from '@/hooks/api/useConfig';
 import { useRowItems } from '@/hooks/api/useRowItems';
 import { getImageApi } from '@jellyfin/sdk/lib/utils/api/image-api';
 import { Link } from 'react-router';
-import { useMemo } from 'react';
+import { useMemo, type ReactNode } from 'react';
+import type { BaseItemDto } from '@jellyfin/sdk/lib/generated-client/models';
+import { getEndsAt, ticksToReadableTime } from '@/utils/timeConversion';
+import { Star } from 'lucide-react';
 
 interface ItemsRowProps {
     title?: string;
     allLink?: string;
     items?: SectionItemsConfig;
+    detailFields?: DetailField[];
 }
 
-const ItemsRow = ({ title, allLink, items }: ItemsRowProps) => {
+function getDetailFieldsStringForItem(detailField: DetailField, item: BaseItemDto): ReactNode {
+    switch (detailField) {
+        case 'PublishYear':
+            return item.PremiereDate
+                ? new Date(item.PremiereDate).getFullYear().toString()
+                : 'Unknown Year';
+        case 'CommunityRating':
+            return item.CommunityRating ? (
+                <div className="flex items-center gap-1">
+                    <Star size={14} />
+                    {item.CommunityRating.toFixed(1)}
+                </div>
+            ) : (
+                'No Rating'
+            );
+        case 'PlayDuration':
+            return item.RunTimeTicks ? ticksToReadableTime(item.RunTimeTicks) : 'Unknown Duration';
+        case 'PlayEnd':
+            return item.RunTimeTicks
+                ? getEndsAt(item.RunTimeTicks).toLocaleTimeString()
+                : 'Unknown End';
+        case 'SeasonCount':
+            return item.ChildCount !== undefined && item.ChildCount !== null
+                ? item.ChildCount.toString() + ' Seasons'
+                : 'N/A';
+        case 'EpisodeCount':
+            return item.RecursiveItemCount !== undefined && item.RecursiveItemCount !== null
+                ? item.RecursiveItemCount.toString() + ' Episodes'
+                : 'N/A';
+        default:
+            return '';
+    }
+}
+
+const ItemsRow = ({ title, allLink, items, detailFields }: ItemsRowProps) => {
     const { data: recentItems } = useRowItems(items);
 
     const posterUrls = useMemo(() => {
@@ -60,11 +98,18 @@ const ItemsRow = ({ title, allLink, items }: ItemsRowProps) => {
                                   <p className="mt-2 text-sm line-clamp-1 text-ellipsis break-all max-w-36 lg:max-w-44 2xl:max-w-52">
                                       {item.Name}
                                   </p>
-                                  <p className="text-xs text-muted-foreground">
-                                      {item.PremiereDate
-                                          ? new Date(item.PremiereDate).getFullYear()
-                                          : 'Unknown Year'}
-                                  </p>
+                                  <div className="flex flex-wrap items-center mt-1">
+                                      {detailFields && detailFields.length > 0
+                                          ? detailFields.map((field) => (
+                                                <span
+                                                    key={field}
+                                                    className="text-xs text-muted-foreground mr-3"
+                                                >
+                                                    {getDetailFieldsStringForItem(field, item)}
+                                                </span>
+                                            ))
+                                          : null}
+                                  </div>
                               </Link>
                           ))
                         : Array.from({ length: 5 }).map((_, index) => (

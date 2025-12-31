@@ -3,7 +3,6 @@
   "$schema": "http://json-schema.org/draft-07/schema#",
   "definitions": {
     "AppConfig": {
-      "description": "Root configuration for the Pelagica application",
       "properties": {
         "homeScreenSections": {
           "description": "Sections to display on the home screen, in order",
@@ -14,6 +13,17 @@
         }
       },
       "type": "object"
+    },
+    "DetailField": {
+      "enum": [
+        "PublishYear",
+        "CommunityRating",
+        "PlayDuration",
+        "PlayEnd",
+        "SeasonCount",
+        "EpisodeCount"
+      ],
+      "type": "string"
     },
     "HomeScreenSection": {
       "anyOf": [
@@ -161,6 +171,13 @@
           "description": "Link to show all items in this category",
           "type": "string"
         },
+        "detailFields": {
+          "description": "Additional detail fields to include for each item",
+          "items": {
+            "$ref": "#/definitions/DetailField"
+          },
+          "type": "array"
+        },
         "enabled": {
           "description": "Whether the section is enabled. Mostly intended for testing purposes",
           "type": "boolean"
@@ -225,6 +242,10 @@
         "enabled": {
           "description": "Whether the section is enabled. Mostly intended for testing purposes",
           "type": "boolean"
+        },
+        "limit": {
+          "description": "Maximum number of items to display",
+          "type": "number"
         },
         "title": {
           "description": "The title of the section",

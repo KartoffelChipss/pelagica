@@ -11,28 +11,9 @@ import { Skeleton } from '@/components/ui/skeleton';
 import type { SectionItemsConfig } from '@/hooks/api/useConfig';
 import { useMediaBarItems } from '@/hooks/api/useMediaBarItems';
 import { getBackdropUrl, getLogoUrl } from '@/utils/images';
+import { getEndsAt, ticksToReadableTime } from '@/utils/timeConversion';
 import { Play, Star } from 'lucide-react';
 import { useState } from 'react';
-
-function ticksToReadableTime(ticks: number): string {
-    const totalSeconds = Math.floor(ticks / 10000000);
-    const hours = Math.floor(totalSeconds / 3600);
-    const minutes = Math.floor((totalSeconds % 3600) / 60);
-
-    if (hours > 0) {
-        if (minutes === 0) {
-            return `${hours}h`;
-        }
-        return `${hours}h ${minutes}m`;
-    } else {
-        return `${minutes}m`;
-    }
-}
-
-function getEndsAt(durationTicks: number): Date {
-    const durationMs = durationTicks / 10000;
-    return new Date(new Date().getTime() + durationMs);
-}
 
 interface MediaBarProps {
     className?: string;

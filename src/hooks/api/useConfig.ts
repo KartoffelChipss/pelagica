@@ -42,6 +42,14 @@ export interface RecentlyAddedSection extends BaseHomeScreenSection {
     limit?: number;
 }
 
+export type DetailField =
+    | 'PublishYear'
+    | 'CommunityRating'
+    | 'PlayDuration'
+    | 'PlayEnd'
+    | 'SeasonCount'
+    | 'EpisodeCount';
+
 /** A generic section displaying a grid of items */
 export interface ItemsSection extends BaseHomeScreenSection {
     type: 'items';
@@ -49,6 +57,8 @@ export interface ItemsSection extends BaseHomeScreenSection {
     allLink?: string;
     /** Configuration for which items to display */
     items?: SectionItemsConfig;
+    /** Additional detail fields to include for each item */
+    detailFields?: DetailField[];
 }
 
 export type HomeScreenSection = MediaBarSection | RecentlyAddedSection | ItemsSection;

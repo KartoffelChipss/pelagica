@@ -39,6 +39,7 @@ const HomePage = () => {
                                                         sortOrder: 'Descending',
                                                         limit: section.limit || 10,
                                                     }}
+                                                    detailFields={['PublishYear']}
                                                 />
                                             )}
                                         </div>
@@ -55,6 +56,11 @@ const HomePage = () => {
                                     title={section.title}
                                     allLink={section.allLink}
                                     items={section.items}
+                                    detailFields={
+                                        section.detailFields && section.detailFields.length > 0
+                                            ? section.detailFields
+                                            : ['PublishYear']
+                                    }
                                 />
                             );
 

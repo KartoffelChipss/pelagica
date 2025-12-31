@@ -7,6 +7,29 @@
             "size": "medium"
         },
         {
+            "type": "items",
+            "enabled": true,
+            "title": "Some Custom Row with old Movies",
+            "items": {
+                "sortBy": ["PremiereDate"],
+                "sortOrder": "Ascending",
+                "limit": 10,
+                "types": ["Movie"]
+            }
+        },
+        {
+            "type": "items",
+            "enabled": true,
+            "title": "Top Rated Anime",
+            "items": {
+                "sortBy": ["CommunityRating"],
+                "sortOrder": "Descending",
+                "limit": 10,
+                "libraryId": "0c41907140d802bb58430fed7e2cd79e"
+            },
+            "detailFields": ["CommunityRating"]
+        },
+        {
             "type": "recentlyAdded",
             "enabled": true
         },
