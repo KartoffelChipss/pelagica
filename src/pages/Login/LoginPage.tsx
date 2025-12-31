@@ -113,6 +113,9 @@ const LoginPage = () => {
                                 type="text"
                                 placeholder="jellyfin.example.com"
                                 className="w-full"
+                                autoCapitalize="none"
+                                autoCorrect="off"
+                                inputMode="url"
                             />
                             <p className="mt-2 text-xs text-muted-foreground">
                                 You don't need to include "http://" or "https://".
