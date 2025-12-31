@@ -127,13 +127,14 @@ const MediaBar = ({ className, size = 'medium', itemsConfig, title }: MediaBarPr
                                                         variant={'outline'}
                                                         key={genre.Id}
                                                         data-id={genre.Id}
+                                                        className="text-white"
                                                     >
                                                         {genre.Name}
                                                     </Badge>
                                                 ))}
                                             </div>
                                         )}
-                                        <div className="flex flex-wrap items-center gap-4 text-sm text-muted-foreground">
+                                        <div className="flex flex-wrap items-center gap-4 text-sm text-gray-300">
                                             {item.PremiereDate && (
                                                 <span>
                                                     {new Date(item.PremiereDate).getFullYear()}
@@ -176,7 +177,7 @@ const MediaBar = ({ className, size = 'medium', itemsConfig, title }: MediaBarPr
                                                 </div>
                                             )}
                                         </div>
-                                        <p className="text-sm line-clamp-2 text-muted-foreground">
+                                        <p className="text-sm line-clamp-2 text-gray-300">
                                             {item.Overview}
                                         </p>
                                         <div className="flex items-center gap-4">
