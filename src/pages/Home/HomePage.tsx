@@ -1,12 +1,6 @@
 import Page from '../Page';
 import { useUserViews } from '@/hooks/api/useMediaFolders';
 import { useConfig } from '@/hooks/api/useConfig';
-import {
-    Breadcrumb,
-    BreadcrumbItem,
-    BreadcrumbList,
-    BreadcrumbPage,
-} from '@/components/ui/breadcrumb';
 import MediaBar from './MediaBar';
 import ItemsRow from './ItemsRow';
 
@@ -15,20 +9,8 @@ const HomePage = () => {
     const { config } = useConfig();
 
     return (
-        <Page
-            title="Home Page"
-            requiresAuth={true}
-            breadcrumbs={
-                <Breadcrumb>
-                    <BreadcrumbList>
-                        <BreadcrumbItem>
-                            <BreadcrumbPage>Home</BreadcrumbPage>
-                        </BreadcrumbItem>
-                    </BreadcrumbList>
-                </Breadcrumb>
-            }
-        >
-            <div className="flex flex-col gap-4 mt-4">
+        <Page title="Home Page" requiresAuth={true}>
+            <div className="flex flex-col gap-4">
                 {config.homeScreenSections?.map((section) => {
                     if (!section.enabled) return null;
 

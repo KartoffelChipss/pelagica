@@ -1,4 +1,5 @@
 import AppSidebar from '@/components/AppSidebar';
+import { Button } from '@/components/ui/button';
 import { SidebarProvider, SidebarTrigger } from '@/components/ui/sidebar';
 import { type PropsWithChildren, useEffect } from 'react';
 import { useNavigate } from 'react-router';
@@ -50,12 +51,16 @@ const Page = ({
         >
             {bgItem}
             {sidebar && <AppSidebar />}
-            <div className="flex flex-1 flex-col h-screen overflow-hidden px-4 py-4 z-5">
-                {sidebar && (
-                    <div className="flex items-center gap-2">
+            <div className="relative flex flex-1 flex-col h-screen overflow-hidden px-4 py-4 z-5">
+                {sidebar && breadcrumbs ? (
+                    <div className="flex items-center gap-2 mb-4">
                         <SidebarTrigger />
                         {breadcrumbs}
                     </div>
+                ) : (
+                    <Button className="mb-4 md:hidden" asChild size={'icon'} variant={'ghost'}>
+                        <SidebarTrigger />
+                    </Button>
                 )}
                 <main className={`flex-1 overflow-auto ${className ?? ''}`}>{children}</main>
             </div>
