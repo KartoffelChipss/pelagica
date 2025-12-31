@@ -14,6 +14,30 @@
         {
             "type": "recentlyAdded",
             "enabled": true
+        },
+        {
+            "type": "items",
+            "enabled": true,
+            "title": "Recently Added Animes",
+            "allLink": "/library/0c41907140d802bb58430fed7e2cd79e",
+            "items": {
+                "sortBy": ["DateCreated"],
+                "sortOrder": "Descending",
+                "limit": 10,
+                "libraryId": "0c41907140d802bb58430fed7e2cd79e"
+            }
+        },
+        {
+            "type": "items",
+            "enabled": true,
+            "title": "Recently Added Movies",
+            "allLink": "/library/f137a2dd21bbc1b99aa5c0f6bf02a805",
+            "items": {
+                "sortBy": ["DateCreated"],
+                "sortOrder": "Descending",
+                "limit": 10,
+                "libraryId": "f137a2dd21bbc1b99aa5c0f6bf02a805"
+            }
         }
     ]
 }

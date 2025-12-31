@@ -2,20 +2,22 @@ import { getApi } from '@/api/getApi';
 import SectionScroller from '@/components/SectionScroller';
 import { Button } from '@/components/ui/button';
 import { Skeleton } from '@/components/ui/skeleton';
-import { useRecentItems } from '@/hooks/api/useRecentItems';
+import type { SectionItemsConfig } from '@/hooks/api/useConfig';
+import { useRowItems } from '@/hooks/api/useRowItems';
 import { getImageApi } from '@jellyfin/sdk/lib/utils/api/image-api';
 import { Play } from 'lucide-react';
 import { Link } from 'react-router';
 import { useNavigate } from 'react-router';
 
-interface LibraryItemsProps {
-    libraryId: string;
-    libraryName: string;
+interface ItemsRowProps {
+    title?: string;
+    allLink?: string;
+    items?: SectionItemsConfig;
 }
 
-const LibraryItems = ({ libraryId, libraryName }: LibraryItemsProps) => {
+const ItemsRow = ({ title, allLink, items }: ItemsRowProps) => {
     const navigate = useNavigate();
-    const { data: recentItems } = useRecentItems(libraryId);
+    const { data: recentItems } = useRowItems(items);
 
     function getPosterUrl(itemId: string) {
         const imageApi = getImageApi(getApi());
@@ -29,12 +31,14 @@ const LibraryItems = ({ libraryId, libraryName }: LibraryItemsProps) => {
         <div>
             <SectionScroller
                 className="max-w-full"
-                title={'Recently Added in ' + libraryName}
+                title={title}
                 additionalButtons={
                     <>
-                        <Button variant={'outline'} asChild>
-                            <Link to={`/library/${libraryId}`}>View All</Link>
-                        </Button>
+                        {allLink && (
+                            <Button variant={'outline'} asChild>
+                                <Link to={allLink}>View All</Link>
+                            </Button>
+                        )}
                     </>
                 }
                 items={
@@ -58,7 +62,7 @@ const LibraryItems = ({ libraryId, libraryName }: LibraryItemsProps) => {
                                       </Button>
                                       <Skeleton className="absolute bottom-0 left-0 right-0 h-54 -z-1" />
                                   </div>
-                                  <p className="mt-2 text-sm line-clamp-1 text-ellipsis break-all">
+                                  <p className="mt-2 text-sm line-clamp-1 text-ellipsis break-all max-w-36">
                                       {item.Name}
                                   </p>
                                   <p className="text-xs text-muted-foreground">
@@ -81,4 +85,4 @@ const LibraryItems = ({ libraryId, libraryName }: LibraryItemsProps) => {
     );
 };
 
-export default LibraryItems;
+export default ItemsRow;

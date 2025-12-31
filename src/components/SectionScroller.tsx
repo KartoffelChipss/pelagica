@@ -3,7 +3,7 @@ import { useEffect, useRef, useState } from 'react';
 import { Button } from './ui/button';
 
 interface SectionScrollerProps {
-    title: string;
+    title?: string;
     items: React.ReactNode[];
     icon?: React.ReactNode;
     className?: string;
@@ -52,10 +52,14 @@ export default function SectionScroller({
     return (
         <div className={className}>
             <div className="flex items-center justify-between mb-3">
-                <h2 className="text-2xl font-bold flex items-center gap-2">
-                    {icon}
-                    {title}
-                </h2>
+                {title ? (
+                    <h2 className="text-2xl font-bold flex items-center gap-2">
+                        {icon}
+                        {title}
+                    </h2>
+                ) : (
+                    <div />
+                )}
 
                 <div className="flex gap-2">
                     <Button

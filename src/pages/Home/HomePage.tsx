@@ -1,7 +1,6 @@
 import Page from '../Page';
 import { useUserViews } from '@/hooks/api/useMediaFolders';
 import { useConfig } from '@/hooks/api/useConfig';
-import LibraryItems from './LibraryItems';
 import {
     Breadcrumb,
     BreadcrumbItem,
@@ -9,6 +8,7 @@ import {
     BreadcrumbPage,
 } from '@/components/ui/breadcrumb';
 import MediaBar from './MediaBar';
+import ItemsRow from './ItemsRow';
 
 const HomePage = () => {
     const { data: userViews } = useUserViews();
@@ -53,25 +53,36 @@ const HomePage = () => {
                             );
 
                         case 'recentlyAdded':
+                            return userViews && userViews.Items ? (
+                                <>
+                                    {userViews.Items.map((view) => (
+                                        <div key={view.Id}>
+                                            {view.Id && view.Name && (
+                                                <ItemsRow
+                                                    title={'Recently Added in ' + view.Name}
+                                                    items={{
+                                                        libraryId: view.Id,
+                                                        sortBy: ['DateCreated'],
+                                                        sortOrder: 'Descending',
+                                                        limit: section.limit || 10,
+                                                    }}
+                                                />
+                                            )}
+                                        </div>
+                                    ))}
+                                </>
+                            ) : (
+                                <p>Loading user views...</p>
+                            );
+
+                        case 'items':
                             return (
-                                <div key="recentlyAdded" className="flex flex-col gap-4">
-                                    {userViews && userViews.Items ? (
-                                        <>
-                                            {userViews.Items.map((view) => (
-                                                <div key={view.Id}>
-                                                    {view.Id && view.Name && (
-                                                        <LibraryItems
-                                                            libraryId={view.Id}
-                                                            libraryName={view.Name}
-                                                        />
-                                                    )}
-                                                </div>
-                                            ))}
-                                        </>
-                                    ) : (
-                                        <p>Loading user views...</p>
-                                    )}
-                                </div>
+                                <ItemsRow
+                                    key={section.title || 'itemsSection'}
+                                    title={section.title}
+                                    allLink={section.allLink}
+                                    items={section.items}
+                                />
                             );
 
                         default:

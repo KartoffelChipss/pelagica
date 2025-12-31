@@ -3,8 +3,10 @@
   "$schema": "http://json-schema.org/draft-07/schema#",
   "definitions": {
     "AppConfig": {
+      "description": "Root configuration for the Pelagica application",
       "properties": {
         "homeScreenSections": {
+          "description": "Sections to display on the home screen, in order",
           "items": {
             "$ref": "#/definitions/HomeScreenSection"
           },
@@ -20,6 +22,9 @@
         },
         {
           "$ref": "#/definitions/RecentlyAddedSection"
+        },
+        {
+          "$ref": "#/definitions/ItemsSection"
         }
       ]
     },
@@ -149,15 +154,49 @@
       ],
       "description": "These represent sort orders."
     },
-    "MediaBarSection": {
+    "ItemsSection": {
+      "description": "A generic section displaying a grid of items",
       "properties": {
+        "allLink": {
+          "description": "Link to show all items in this category",
+          "type": "string"
+        },
         "enabled": {
+          "description": "Whether the section is enabled. Mostly intended for testing purposes",
           "type": "boolean"
         },
         "items": {
-          "$ref": "#/definitions/SectionItemsConfig"
+          "$ref": "#/definitions/SectionItemsConfig",
+          "description": "Configuration for which items to display"
+        },
+        "title": {
+          "description": "The title of the section",
+          "type": "string"
+        },
+        "type": {
+          "const": "items",
+          "type": "string"
+        }
+      },
+      "required": [
+        "enabled",
+        "type"
+      ],
+      "type": "object"
+    },
+    "MediaBarSection": {
+      "description": "A large carousel banner showcasing featured media with backdrop images",
+      "properties": {
+        "enabled": {
+          "description": "Whether the section is enabled. Mostly intended for testing purposes",
+          "type": "boolean"
+        },
+        "items": {
+          "$ref": "#/definitions/SectionItemsConfig",
+          "description": "Configuration for which items to display in the carousel"
         },
         "size": {
+          "description": "Size of the media bar carousel",
           "enum": [
             "small",
             "medium",
@@ -166,6 +205,7 @@
           "type": "string"
         },
         "title": {
+          "description": "The title of the section",
           "type": "string"
         },
         "type": {
@@ -180,11 +220,14 @@
       "type": "object"
     },
     "RecentlyAddedSection": {
+      "description": "A section showing recently added items",
       "properties": {
         "enabled": {
+          "description": "Whether the section is enabled. Mostly intended for testing purposes",
           "type": "boolean"
         },
         "title": {
+          "description": "The title of the section",
           "type": "string"
         },
         "type": {
@@ -199,26 +242,32 @@
       "type": "object"
     },
     "SectionItemsConfig": {
+      "description": "Configuration for filtering and sorting items in a section",
       "properties": {
         "genres": {
+          "description": "Filter by genre names",
           "items": {
             "type": "string"
           },
           "type": "array"
         },
         "libraryId": {
+          "description": "Filter items from a specific library by its ID",
           "type": "string"
         },
         "limit": {
+          "description": "Maximum number of items to display",
           "type": "number"
         },
         "sortBy": {
+          "description": "How to sort the items (e.g. \"DateCreated\", \"Random\", \"CommunityRating\")",
           "items": {
             "$ref": "#/definitions/ItemSortBy"
           },
           "type": "array"
         },
         "sortOrder": {
+          "description": "Sort order direction",
           "enum": [
             "Ascending",
             "Descending"
@@ -226,12 +275,14 @@
           "type": "string"
         },
         "tags": {
+          "description": "Filter by tag names",
           "items": {
             "type": "string"
           },
           "type": "array"
         },
         "types": {
+          "description": "Filter by media types",
           "items": {
             "enum": [
               "Movie",

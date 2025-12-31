@@ -2,33 +2,59 @@ import type { ItemSortBy } from '@jellyfin/sdk/lib/generated-client/models';
 import { useEffect, useState } from 'react';
 
 interface BaseHomeScreenSection {
+    /** Whether the section is enabled. Mostly intended for testing purposes */
     enabled: boolean;
+    /** The title of the section */
     title?: string;
 }
 
+/** Configuration for filtering and sorting items in a section */
 export interface SectionItemsConfig {
+    /** How to sort the items (e.g. "DateCreated", "Random", "CommunityRating") */
     sortBy?: ItemSortBy[];
+    /** Filter items from a specific library by its ID */
     libraryId?: string;
+    /** Filter by media types */
     types?: ('Movie' | 'Series')[];
+    /** Filter by genre names */
     genres?: string[];
+    /** Filter by tag names */
     tags?: string[];
+    /** Sort order direction */
     sortOrder?: 'Ascending' | 'Descending';
+    /** Maximum number of items to display */
     limit?: number;
 }
 
+/** A large carousel banner showcasing featured media with backdrop images */
 export interface MediaBarSection extends BaseHomeScreenSection {
     type: 'mediaBar';
+    /** Size of the media bar carousel */
     size?: 'small' | 'medium' | 'large';
+    /** Configuration for which items to display in the carousel */
     items?: SectionItemsConfig;
 }
 
+/** A section showing recently added items */
 export interface RecentlyAddedSection extends BaseHomeScreenSection {
     type: 'recentlyAdded';
+    /** Maximum number of items to display */
+    limit?: number;
 }
 
-export type HomeScreenSection = MediaBarSection | RecentlyAddedSection;
+/** A generic section displaying a grid of items */
+export interface ItemsSection extends BaseHomeScreenSection {
+    type: 'items';
+    /** Link to show all items in this category */
+    allLink?: string;
+    /** Configuration for which items to display */
+    items?: SectionItemsConfig;
+}
+
+export type HomeScreenSection = MediaBarSection | RecentlyAddedSection | ItemsSection;
 
 export interface AppConfig {
+    /** Sections to display on the home screen, in order */
     homeScreenSections?: HomeScreenSection[];
 }
 
