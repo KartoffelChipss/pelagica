@@ -14,6 +14,7 @@ export function useMediaBarItems(libraryId?: string | null) {
                 limit: 10,
                 recursive: true,
                 includeItemTypes: ['Movie', 'Series'],
+                fields: ['Genres', 'Overview', 'ChildCount', 'RecursiveItemCount'],
             });
             return response.data.Items;
         },
