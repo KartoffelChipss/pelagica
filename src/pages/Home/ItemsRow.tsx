@@ -6,7 +6,7 @@ import type { DetailField, SectionItemsConfig } from '@/hooks/api/useConfig';
 import { useRowItems } from '@/hooks/api/useRowItems';
 import { getImageApi } from '@jellyfin/sdk/lib/utils/api/image-api';
 import { Link } from 'react-router';
-import { useMemo, type ReactNode } from 'react';
+import { useEffect, useMemo, type ReactNode } from 'react';
 import type { BaseItemDto } from '@jellyfin/sdk/lib/generated-client/models';
 import { getEndsAt, ticksToReadableTime } from '@/utils/timeConversion';
 import { Star } from 'lucide-react';
@@ -68,7 +68,7 @@ function getDetailFieldsStringForItem(detailField: DetailField, item: BaseItemDt
 }
 
 const ItemsRow = ({ title, allLink, items, detailFields }: ItemsRowProps) => {
-    const { data: recentItems } = useRowItems(items);
+    const { data: recentItems, isLoading } = useRowItems(items);
 
     const posterUrls = useMemo(() => {
         if (!recentItems) return {};
@@ -82,8 +82,14 @@ const ItemsRow = ({ title, allLink, items, detailFields }: ItemsRowProps) => {
         );
     }, [recentItems]);
 
+    useEffect(() => {
+        if (recentItems && recentItems.length === 0) {
+            console.warn(`ItemsRow: No items found for section "${title}"`);
+        }
+    }, [recentItems, title]);
+
     return (
-        <div>
+        ((recentItems && recentItems.length > 0) || isLoading) && (
             <SectionScroller
                 className="max-w-full"
                 title={title}
@@ -136,7 +142,7 @@ const ItemsRow = ({ title, allLink, items, detailFields }: ItemsRowProps) => {
                           ))
                 }
             />
-        </div>
+        )
     );
 };
 
