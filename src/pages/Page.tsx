@@ -3,6 +3,7 @@ import { Button } from '@/components/ui/button';
 import { SidebarProvider, SidebarTrigger } from '@/components/ui/sidebar';
 import { type PropsWithChildren, useEffect } from 'react';
 import { useNavigate } from 'react-router';
+import { useCurrentUser } from '@/hooks/api/useCurrentUser';
 
 interface PageProps {
     title?: string;
@@ -29,6 +30,7 @@ const Page = ({
     bgItem,
 }: PropsWithChildren<PageProps>) => {
     const navigate = useNavigate();
+    const { isLoading, isError } = useCurrentUser();
 
     useEffect(() => {
         if (title) document.title = title;
@@ -40,9 +42,13 @@ const Page = ({
         }
     }, [requiresAuth, navigate]);
 
-    if (requiresAuth && !isLoggedIn()) {
-        return null;
-    }
+    // show loading while checking auth on protected pages
+    if (requiresAuth && isLoading) return null;
+
+    // if auth check failed and we're on a protected page, don't render
+    if (requiresAuth && isError) return null;
+
+    if (requiresAuth && !isLoggedIn()) return null;
 
     return (
         <SidebarProvider

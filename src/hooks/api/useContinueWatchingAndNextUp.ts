@@ -3,6 +3,7 @@ import { useQuery } from '@tanstack/react-query';
 import { getItemsApi } from '@jellyfin/sdk/lib/utils/api/items-api';
 import { getTvShowsApi } from '@jellyfin/sdk/lib/utils/api/tv-shows-api';
 import type { BaseItemDto } from '@jellyfin/sdk/lib/generated-client/models';
+import { getRetryConfig } from '@/utils/authErrorHandler';
 
 interface ContinueWatchingAndNextUpResult {
     items: BaseItemDto[];
@@ -65,5 +66,6 @@ export function useContinueWatchingAndNextUp(userId: string | null | undefined) 
             };
         },
         enabled: !!userId,
+        ...getRetryConfig(),
     });
 }

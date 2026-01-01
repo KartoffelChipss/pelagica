@@ -1,6 +1,7 @@
 import { getApi } from '@/api/getApi';
 import { useQuery } from '@tanstack/react-query';
 import { getUserViewsApi } from '@jellyfin/sdk/lib/utils/api/user-views-api';
+import { getRetryConfig } from '@/utils/authErrorHandler';
 
 export function useUserViews() {
     return useQuery({
@@ -11,5 +12,6 @@ export function useUserViews() {
             const response = await userViewsApi.getUserViews();
             return response.data;
         },
+        ...getRetryConfig(),
     });
 }

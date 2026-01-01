@@ -1,6 +1,7 @@
 import { getApi } from '@/api/getApi';
 import { useQuery } from '@tanstack/react-query';
 import { getItemsApi } from '@jellyfin/sdk/lib/utils/api/items-api';
+import { getRetryConfig } from '@/utils/authErrorHandler';
 
 export function useRecentItems(libraryId?: string | null) {
     return useQuery({
@@ -19,5 +20,6 @@ export function useRecentItems(libraryId?: string | null) {
             return response.data.Items;
         },
         enabled: !!libraryId,
+        ...getRetryConfig(),
     });
 }

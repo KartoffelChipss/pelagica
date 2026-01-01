@@ -3,6 +3,7 @@ import { useQuery } from '@tanstack/react-query';
 import { getItemsApi } from '@jellyfin/sdk/lib/utils/api/items-api';
 import type { SectionItemsConfig } from './useConfig';
 import type { BaseItemKind } from '@jellyfin/sdk/lib/generated-client/models';
+import { getRetryConfig } from '@/utils/authErrorHandler';
 
 export function useMediaBarItems(items?: SectionItemsConfig) {
     const sectionTypes = items?.types?.length
@@ -27,5 +28,6 @@ export function useMediaBarItems(items?: SectionItemsConfig) {
             });
             return response.data.Items;
         },
+        ...getRetryConfig(),
     });
 }
