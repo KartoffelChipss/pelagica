@@ -61,7 +61,26 @@ export interface ItemsSection extends BaseHomeScreenSection {
     detailFields?: DetailField[];
 }
 
-export type HomeScreenSection = MediaBarSection | RecentlyAddedSection | ItemsSection;
+export type ContinueWatchingTitleLine = 'ItemTitle' | 'ParentTitle' | 'ItemTitleWithEpisodeInfo';
+export type ContinueWatchingDetailLine =
+    | 'ProgressPercentage'
+    | 'TimeRemaining'
+    | 'EpisodeInfo'
+    | 'EndsAt'
+    | 'ParentTitle'
+    | 'None';
+
+export interface ContinueWatchingSection extends BaseHomeScreenSection {
+    type: 'continueWatching';
+    titleLine?: ContinueWatchingTitleLine;
+    detailLine?: ContinueWatchingDetailLine[];
+}
+
+export type HomeScreenSection =
+    | MediaBarSection
+    | RecentlyAddedSection
+    | ItemsSection
+    | ContinueWatchingSection;
 
 export interface AppConfig {
     /** Sections to display on the home screen, in order */
@@ -71,6 +90,7 @@ export interface AppConfig {
 const DEFAULT_CONFIG: AppConfig = {
     homeScreenSections: [
         { type: 'mediaBar', enabled: true, title: 'Featured', size: 'medium' },
+        { type: 'continueWatching', enabled: true },
         { type: 'recentlyAdded', enabled: true, title: 'Recently Added' },
     ],
 };

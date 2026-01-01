@@ -14,6 +14,55 @@
       },
       "type": "object"
     },
+    "ContinueWatchingDetailLine": {
+      "enum": [
+        "ProgressPercentage",
+        "TimeRemaining",
+        "EpisodeInfo",
+        "EndsAt",
+        "ParentTitle",
+        "None"
+      ],
+      "type": "string"
+    },
+    "ContinueWatchingSection": {
+      "properties": {
+        "detailLine": {
+          "items": {
+            "$ref": "#/definitions/ContinueWatchingDetailLine"
+          },
+          "type": "array"
+        },
+        "enabled": {
+          "description": "Whether the section is enabled. Mostly intended for testing purposes",
+          "type": "boolean"
+        },
+        "title": {
+          "description": "The title of the section",
+          "type": "string"
+        },
+        "titleLine": {
+          "$ref": "#/definitions/ContinueWatchingTitleLine"
+        },
+        "type": {
+          "const": "continueWatching",
+          "type": "string"
+        }
+      },
+      "required": [
+        "enabled",
+        "type"
+      ],
+      "type": "object"
+    },
+    "ContinueWatchingTitleLine": {
+      "enum": [
+        "ItemTitle",
+        "ParentTitle",
+        "ItemTitleWithEpisodeInfo"
+      ],
+      "type": "string"
+    },
     "DetailField": {
       "enum": [
         "PublishYear",
@@ -35,6 +84,9 @@
         },
         {
           "$ref": "#/definitions/ItemsSection"
+        },
+        {
+          "$ref": "#/definitions/ContinueWatchingSection"
         }
       ]
     },

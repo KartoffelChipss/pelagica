@@ -7,15 +7,11 @@
             "size": "medium"
         },
         {
-            "type": "items",
+            "type": "continueWatching",
             "enabled": true,
-            "title": "Some Custom Row with old Movies",
-            "items": {
-                "sortBy": ["PremiereDate"],
-                "sortOrder": "Ascending",
-                "limit": 10,
-                "types": ["Movie"]
-            }
+            "title": "Continue Watching",
+            "titleLine": "ItemTitleWithEpisodeInfo",
+            "detailLine": ["TimeRemaining"]
         },
         {
             "type": "items",
@@ -25,37 +21,35 @@
                 "sortBy": ["CommunityRating"],
                 "sortOrder": "Descending",
                 "limit": 10,
-                "libraryId": "0c41907140d802bb58430fed7e2cd79e"
+                "tags": ["Anime", "anime"]
             },
             "detailFields": ["CommunityRating"]
         },
         {
+            "type": "items",
+            "enabled": true,
+            "title": "Recently Released Anime",
+            "items": {
+                "sortBy": ["PremiereDate"],
+                "sortOrder": "Descending",
+                "limit": 10,
+                "tags": ["Anime", "anime"]
+            }
+        },
+        {
+            "type": "items",
+            "enabled": true,
+            "title": "Recently Released Movies",
+            "items": {
+                "sortBy": ["PremiereDate"],
+                "sortOrder": "Descending",
+                "limit": 10,
+                "types": ["Movie"]
+            }
+        },
+        {
             "type": "recentlyAdded",
             "enabled": true
-        },
-        {
-            "type": "items",
-            "enabled": true,
-            "title": "Recently Added Animes",
-            "allLink": "/library/0c41907140d802bb58430fed7e2cd79e",
-            "items": {
-                "sortBy": ["DateCreated"],
-                "sortOrder": "Descending",
-                "limit": 10,
-                "libraryId": "0c41907140d802bb58430fed7e2cd79e"
-            }
-        },
-        {
-            "type": "items",
-            "enabled": true,
-            "title": "Recently Added Movies",
-            "allLink": "/library/f137a2dd21bbc1b99aa5c0f6bf02a805",
-            "items": {
-                "sortBy": ["DateCreated"],
-                "sortOrder": "Descending",
-                "limit": 10,
-                "libraryId": "f137a2dd21bbc1b99aa5c0f6bf02a805"
-            }
         }
     ]
 }

@@ -35,3 +35,41 @@ export function getLogoUrl(itemId: string) {
         return '';
     }
 }
+
+export function getThumbUrl(itemId: string) {
+    try {
+        const server = localStorage.getItem('jf_server');
+        const token = localStorage.getItem('jf_token');
+
+        if (!server || !token) return '/default-thumb.jpg';
+
+        const url = new URL(server);
+        url.pathname = `/Items/${itemId}/Images/Thumb`;
+        url.searchParams.append('tag', 'v1');
+        url.searchParams.append('quality', '90');
+        url.searchParams.append('token', token);
+
+        return url.toString();
+    } catch {
+        return '/default-thumb.jpg';
+    }
+}
+
+export function getPrimaryImageUrl(itemId: string) {
+    try {
+        const server = localStorage.getItem('jf_server');
+        const token = localStorage.getItem('jf_token');
+
+        if (!server || !token) return '/default-thumb.jpg';
+
+        const url = new URL(server);
+        url.pathname = `/Items/${itemId}/Images/Primary/0`;
+        url.searchParams.append('tag', 'v1');
+        url.searchParams.append('quality', '90');
+        url.searchParams.append('token', token);
+
+        return url.toString();
+    } catch {
+        return '/default-thumb.jpg';
+    }
+}
