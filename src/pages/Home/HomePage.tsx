@@ -55,7 +55,7 @@ const HomePage = () => {
                             return userViews && userViews.Items ? (
                                 <>
                                     {userViews.Items.map((view) => (
-                                        <div key={view.Id}>
+                                        <div key={view.Id} data-library-id={view.Id}>
                                             {view.Id && view.Name && (
                                                 <ItemsRow
                                                     title={t('recently_added', {

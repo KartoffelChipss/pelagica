@@ -7,6 +7,7 @@ import LoginPage from './pages/Login/LoginPage.tsx';
 
 import './index.css';
 import './i18n.ts';
+import LibraryPage from './pages/Library/LibraryPage.tsx';
 
 const queryClient = new QueryClient();
 
@@ -16,6 +17,7 @@ createRoot(document.getElementById('root')!).render(
             <BrowserRouter>
                 <Routes>
                     <Route path="/" element={<HomePage />} />
+                    <Route path="/library" element={<LibraryPage />} />
                     <Route path="/login" element={<LoginPage />} />
                 </Routes>
             </BrowserRouter>

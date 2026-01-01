@@ -84,6 +84,11 @@ export type HomeScreenSection =
     | ItemsSection
     | ContinueWatchingSection;
 
+export interface LibrarySettings {
+    /** Number of rows per page in the library view */
+    rowsPerPage?: number;
+}
+
 export interface AppConfig {
     /** Sections to display on the home screen, in order */
     homeScreenSections?: HomeScreenSection[];

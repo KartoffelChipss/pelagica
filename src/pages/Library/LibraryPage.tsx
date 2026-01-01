@@ -1,0 +1,256 @@
+import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
+import Page from '../Page';
+import { useUserViews } from '@/hooks/api/useMediaFolders';
+import { useMemo, useState, useEffect, useRef } from 'react';
+import { useLibraryItems } from '@/hooks/api/useLibraryItems';
+import { Link } from 'react-router';
+import { getImageApi } from '@jellyfin/sdk/lib/utils/api/image-api';
+import { getApi } from '@/api/getApi';
+import { useTranslation } from 'react-i18next';
+import { Skeleton } from '@/components/ui/skeleton';
+import {
+    Pagination,
+    PaginationContent,
+    PaginationItem,
+    PaginationLink,
+    PaginationNext,
+    PaginationPrevious,
+    PaginationEllipsis,
+} from '@/components/ui/pagination';
+import {
+    Empty,
+    EmptyDescription,
+    EmptyHeader,
+    EmptyMedia,
+    EmptyTitle,
+} from '@/components/ui/empty';
+import type { CollectionType } from '@jellyfin/sdk/lib/generated-client/models';
+import { Clapperboard, Folder, FolderOpen, MonitorPlay } from 'lucide-react';
+
+const ITEM_ROWS = 5;
+
+function getColumnCount(width: number): number {
+    if (width >= 1280) return 7; // xl
+    if (width >= 1024) return 5; // lg
+    if (width >= 768) return 4; // md
+    if (width >= 640) return 3; // sm
+    return 2;
+}
+
+const LibraryContent = ({
+    libraryId,
+    pageRef,
+}: {
+    libraryId: string;
+    pageRef: React.RefObject<HTMLDivElement | null>;
+}) => {
+    const { t } = useTranslation('library');
+    const [page, setPage] = useState(0);
+    const [pageSize, setPageSize] = useState(
+        () => getColumnCount(typeof window !== 'undefined' ? window.innerWidth : 640) * ITEM_ROWS
+    );
+
+    useEffect(() => {
+        const handleResize = () => {
+            const newPageSize = getColumnCount(window.innerWidth) * ITEM_ROWS;
+            setPageSize(newPageSize);
+            setPage(0);
+        };
+
+        window.addEventListener('resize', handleResize);
+        return () => window.removeEventListener('resize', handleResize);
+    }, []);
+
+    const { data: libraryData, isLoading } = useLibraryItems(libraryId, {
+        limit: pageSize,
+        startIndex: page * pageSize,
+        includeItemTypes: ['Series', 'Movie'],
+    });
+
+    useEffect(() => {
+        if (pageRef.current && !isLoading && libraryData?.items?.length) {
+            pageRef.current.scrollIntoView({ block: 'start' });
+        }
+    }, [libraryData?.items, isLoading, pageRef]);
+
+    const posterUrls = useMemo(() => {
+        if (!libraryData) return {};
+        const imageApi = getImageApi(getApi());
+        return libraryData.items.reduce(
+            (acc, item) => {
+                acc[item.Id!] = imageApi.getItemImageUrl({ Id: item.Id }) || '';
+                return acc;
+            },
+            {} as Record<string, string>
+        );
+    }, [libraryData]);
+
+    const totalPages = libraryData?.totalCount ? Math.ceil(libraryData.totalCount / pageSize) : 0;
+
+    return (
+        <div>
+            {isLoading && (
+                <div className="w-full grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 lg:grid-cols-5 xl:grid-cols-7 gap-4 mt-2">
+                    {Array.from({ length: pageSize }).map((_, i) => (
+                        <div key={i} className="p-0 m-0">
+                            <div className="relative w-full aspect-2/3 overflow-hidden rounded-md">
+                                <Skeleton className="w-full h-full" />
+                            </div>
+                            <Skeleton className="mt-2 h-4 w-3/4" />
+                            <Skeleton className="mt-1 h-3 w-1/4" />
+                        </div>
+                    ))}
+                </div>
+            )}
+            {!isLoading && libraryData && !libraryData.items?.length && (
+                <Empty>
+                    <EmptyHeader>
+                        <EmptyMedia variant="icon">
+                            <FolderOpen />
+                        </EmptyMedia>
+                        <EmptyTitle>{t('no_items_title')}</EmptyTitle>
+                        <EmptyDescription>{t('no_items_description')}</EmptyDescription>
+                    </EmptyHeader>
+                </Empty>
+            )}
+            {!isLoading && libraryData && libraryData.items && libraryData.items.length > 0 && (
+                <>
+                    <div className="w-full grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 lg:grid-cols-5 xl:grid-cols-7 gap-4 mt-2">
+                        {libraryData.items.map((item) => (
+                            <Link to={`/item/${item.Id}`} key={item.Id} className="p-0 m-0">
+                                <div className="relative w-full aspect-2/3 overflow-hidden rounded-md group">
+                                    <img
+                                        key={item.Id}
+                                        src={`${posterUrls[item.Id!]}?maxWidth=416&maxHeight=640&quality=85`}
+                                        alt={item.Name || t('no_title')}
+                                        className="w-full h-full object-cover rounded-md group-hover:opacity-75 transition-all group-hover:scale-105 z-10"
+                                        loading="lazy"
+                                    />
+                                    <Skeleton className="absolute bottom-0 left-0 right-0 top-0 -z-1" />
+                                </div>
+                                <p className="mt-2 text-sm line-clamp-1 text-ellipsis break-all">
+                                    {item.Name || t('no_title')}
+                                </p>
+                                <div className="flex flex-wrap items-center mt-1">
+                                    {item.PremiereDate && (
+                                        <span className="text-xs text-muted-foreground mr-3">
+                                            {new Date(item.PremiereDate).getFullYear()}
+                                        </span>
+                                    )}
+                                </div>
+                            </Link>
+                        ))}
+                    </div>
+                    <div className="mt-8">
+                        <Pagination>
+                            <PaginationContent>
+                                <PaginationItem>
+                                    <PaginationPrevious
+                                        onClick={() => setPage((p) => Math.max(0, p - 1))}
+                                        className={
+                                            page === 0
+                                                ? 'pointer-events-none opacity-50'
+                                                : 'cursor-pointer'
+                                        }
+                                    />
+                                </PaginationItem>
+                                {Array.from({ length: totalPages }, (_, i) => {
+                                    if (
+                                        i === 0 ||
+                                        i === totalPages - 1 ||
+                                        (i >= page - 1 && i <= page + 1)
+                                    ) {
+                                        return (
+                                            <PaginationItem key={i}>
+                                                <PaginationLink
+                                                    onClick={() => setPage(i)}
+                                                    isActive={i === page}
+                                                    className="cursor-pointer"
+                                                >
+                                                    {i + 1}
+                                                </PaginationLink>
+                                            </PaginationItem>
+                                        );
+                                    } else if (
+                                        (i === 1 && page > 2) ||
+                                        (i === totalPages - 2 && page < totalPages - 3)
+                                    ) {
+                                        return (
+                                            <PaginationItem key={i}>
+                                                <PaginationEllipsis />
+                                            </PaginationItem>
+                                        );
+                                    }
+                                    return null;
+                                })}
+                                <PaginationItem>
+                                    <PaginationNext
+                                        onClick={() =>
+                                            setPage((p) => Math.min(totalPages - 1, p + 1))
+                                        }
+                                        className={
+                                            page >= totalPages - 1
+                                                ? 'pointer-events-none opacity-50'
+                                                : 'cursor-pointer'
+                                        }
+                                    />
+                                </PaginationItem>
+                            </PaginationContent>
+                        </Pagination>
+                    </div>
+                </>
+            )}
+        </div>
+    );
+};
+
+function getLibraryTypeIcon(libraryType: CollectionType | undefined) {
+    switch (libraryType) {
+        case 'movies':
+            return <Clapperboard />;
+        case 'tvshows':
+            return <MonitorPlay />;
+        default:
+            return <Folder />;
+    }
+}
+
+const LibraryPage = () => {
+    const pageRef = useRef<HTMLDivElement>(null);
+    const { t } = useTranslation('library');
+    const { data: libraries } = useUserViews();
+    const [selectedLibraryId, setSelectedLibraryId] = useState<string>('');
+
+    const firstLibraryId = libraries?.Items?.[0]?.Id ?? '';
+    const activeLibraryId =
+        selectedLibraryId && libraries?.Items?.some((library) => library.Id === selectedLibraryId)
+            ? selectedLibraryId
+            : firstLibraryId;
+
+    return (
+        <Page title={t('title')} requiresAuth>
+            <Tabs
+                value={activeLibraryId}
+                onValueChange={setSelectedLibraryId}
+                className="w-full"
+                ref={pageRef}
+            >
+                <TabsList>
+                    {libraries?.Items?.map((library) => (
+                        <TabsTrigger key={library.Id} value={library.Id ?? ''}>
+                            {getLibraryTypeIcon(library.CollectionType)}
+                            {library.Name}
+                        </TabsTrigger>
+                    ))}
+                </TabsList>
+                {libraries?.Items?.map((library) => (
+                    <TabsContent key={library.Id} value={library.Id ?? ''}>
+                        {library.Id && <LibraryContent libraryId={library.Id} pageRef={pageRef} />}
+                    </TabsContent>
+                ))}
+            </Tabs>
+        </Page>
+    );
+};
+
+export default LibraryPage;

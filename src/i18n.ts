@@ -10,16 +10,30 @@ import enLogin from './locales/en/login.json';
 import deLogin from './locales/de/login.json';
 import enHome from './locales/en/home.json';
 import deHome from './locales/de/home.json';
+import enLibrary from './locales/en/library.json';
+import deLibrary from './locales/de/library.json';
 
 i18n.use(LanguageDetector)
     .use(initReactI18next)
     .init({
         resources: {
-            en: { common: enCommon, sidebar: enSidebar, login: enLogin, home: enHome },
-            de: { common: deCommon, sidebar: deSidebar, login: deLogin, home: deHome },
+            en: {
+                common: enCommon,
+                sidebar: enSidebar,
+                login: enLogin,
+                home: enHome,
+                library: enLibrary,
+            },
+            de: {
+                common: deCommon,
+                sidebar: deSidebar,
+                login: deLogin,
+                home: deHome,
+                library: deLibrary,
+            },
         },
         fallbackLng: 'en',
-        ns: ['common', 'sidebar', 'login', 'home'],
+        ns: ['common', 'sidebar', 'login', 'home', 'library'],
         defaultNS: 'common',
         interpolation: { escapeValue: false, formatSeparator: ',' },
         react: {
