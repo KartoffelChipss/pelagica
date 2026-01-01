@@ -62,8 +62,8 @@ const LoginPage = () => {
         const username = usernameInput?.value?.trim();
         const password = passwordInput?.value?.trim();
 
-        if (!username || !password) {
-            setLoginError('Please enter both username and password.');
+        if (!username) {
+            setLoginError('Please enter at least a username.');
             setLoggingIn(false);
             return;
         }
