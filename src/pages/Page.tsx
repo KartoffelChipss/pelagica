@@ -57,7 +57,7 @@ const Page = ({
         >
             {bgItem}
             {sidebar && <AppSidebar />}
-            <div className="relative flex flex-col overflow-x-hidden overflow-y-auto h-[calc(100vh-2rem)] px-4 my-4 z-5 [&::-webkit-scrollbar]:w-2 [&::-webkit-scrollbar-track]:bg-transparent [&::-webkit-scrollbar-thumb]:bg-muted-foreground [&::-webkit-scrollbar-thumb]:rounded-full">
+            <div className="relative w-full flex flex-col overflow-x-hidden overflow-y-auto h-[calc(100vh-2rem)] px-4 my-4 z-5 [&::-webkit-scrollbar]:w-2 [&::-webkit-scrollbar-track]:bg-transparent [&::-webkit-scrollbar-thumb]:bg-muted-foreground [&::-webkit-scrollbar-thumb]:rounded-full">
                 {sidebar && breadcrumbs ? (
                     <div className="flex items-center gap-2 mb-4">
                         <SidebarTrigger />
