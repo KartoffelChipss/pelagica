@@ -1,4 +1,5 @@
 import SectionScroller from '@/components/SectionScroller';
+import { Skeleton } from '@/components/ui/skeleton';
 import type { ContinueWatchingDetailLine, ContinueWatchingTitleLine } from '@/hooks/api/useConfig';
 import { useContinueWatchingAndNextUp } from '@/hooks/api/useContinueWatchingAndNextUp';
 import { getThumbUrl, getPrimaryImageUrl } from '@/utils/images';
@@ -92,7 +93,16 @@ const ContinueWatchingRow = ({ title, titleLine, detailLine }: ContinueWatchingR
                     title={title || 'Continue Watching'}
                     items={
                         isLoading || !continueWatchingData
-                            ? []
+                            ? Array.from({ length: 5 }).map((_, index) => (
+                                  <div
+                                      key={index}
+                                      className="group min-w-48 lg:min-w-64 2xl:min-w-80"
+                                  >
+                                      <Skeleton className="w-full aspect-video rounded-md mb-2" />
+                                      <Skeleton className="w-32 lg:w-40 2xl:w-48 h-4 mb-2" />
+                                      <Skeleton className="w-40 lg:w-52 2xl:w-64 h-3" />
+                                  </div>
+                              ))
                             : continueWatchingData.items.map((item) => {
                                   const watched = item.UserData?.PlaybackPositionTicks ?? 0;
                                   const runtime = item.RunTimeTicks ?? 0;
