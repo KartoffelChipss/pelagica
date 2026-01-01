@@ -9,7 +9,6 @@
         {
             "type": "continueWatching",
             "enabled": true,
-            "title": "Continue Watching",
             "titleLine": "ItemTitleWithEpisodeInfo",
             "detailLine": ["TimeRemaining"]
         },

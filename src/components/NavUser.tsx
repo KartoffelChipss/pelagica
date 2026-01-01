@@ -1,4 +1,4 @@
-import { ChevronsUpDown, Laptop, LogOut, Moon, Sun } from 'lucide-react';
+import { ChevronsUpDown, Globe, Laptop, LogOut, Moon, Sun } from 'lucide-react';
 import { Avatar, AvatarFallback, AvatarImage } from '@/components/ui/avatar';
 import {
     DropdownMenu,
@@ -20,8 +20,11 @@ import { useNavigate } from 'react-router';
 import { logout } from '@/api/logout';
 import { getApi } from '@/api/getApi';
 import { useTheme } from './theme-provider';
+import i18n from 'i18next';
+import { useTranslation } from 'react-i18next';
 
 export function NavUser() {
+    const { t } = useTranslation('sidebar');
     const navigate = useNavigate();
     const { isMobile } = useSidebar();
     const { theme, setTheme } = useTheme();
@@ -30,7 +33,7 @@ export function NavUser() {
     if (!user?.Id) return null;
 
     const profileImageUrl = getUserProfileImage(user.Id);
-    const userName = user?.Name || 'Unknown User';
+    const userName = user?.Name || t('unknown_user');
 
     return (
         <SidebarMenu>
@@ -97,7 +100,7 @@ export function NavUser() {
                                     ) : (
                                         <Laptop className="text-muted-foreground" />
                                     )}
-                                    Switch Theme
+                                    {t('theme')}
                                 </SidebarMenuButton>
                             </DropdownMenuTrigger>
                             <DropdownMenuContent
@@ -108,15 +111,36 @@ export function NavUser() {
                             >
                                 <DropdownMenuItem onClick={() => setTheme('light')}>
                                     <Sun className="text-muted-foreground" />
-                                    Light
+                                    {t('light')}
                                 </DropdownMenuItem>
                                 <DropdownMenuItem onClick={() => setTheme('dark')}>
                                     <Moon className="text-muted-foreground" />
-                                    Dark
+                                    {t('dark')}
                                 </DropdownMenuItem>
                                 <DropdownMenuItem onClick={() => setTheme('system')}>
                                     <Laptop className="text-muted-foreground" />
-                                    System
+                                    {t('system')}
+                                </DropdownMenuItem>
+                            </DropdownMenuContent>
+                        </DropdownMenu>
+                        <DropdownMenu>
+                            <DropdownMenuTrigger asChild>
+                                <SidebarMenuButton className="data-[state=open]:bg-sidebar-accent data-[state=open]:text-sidebar-accent-foreground">
+                                    <Globe className="text-muted-foreground" />
+                                    {t('language')}
+                                </SidebarMenuButton>
+                            </DropdownMenuTrigger>
+                            <DropdownMenuContent
+                                className="w-(--radix-dropdown-menu-trigger-width) min-w-56 rounded-lg"
+                                side={isMobile ? 'bottom' : 'right'}
+                                align="start"
+                                sideOffset={4}
+                            >
+                                <DropdownMenuItem onClick={() => i18n.changeLanguage('en')}>
+                                    English
+                                </DropdownMenuItem>
+                                <DropdownMenuItem onClick={() => i18n.changeLanguage('de')}>
+                                    Deutsch
                                 </DropdownMenuItem>
                             </DropdownMenuContent>
                         </DropdownMenu>
@@ -127,7 +151,7 @@ export function NavUser() {
                             }}
                         >
                             <LogOut />
-                            Log out
+                            {t('logout')}
                         </DropdownMenuItem>
                     </DropdownMenuContent>
                 </DropdownMenu>

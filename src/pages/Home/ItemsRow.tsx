@@ -10,6 +10,8 @@ import { useEffect, useMemo, type ReactNode } from 'react';
 import type { BaseItemDto } from '@jellyfin/sdk/lib/generated-client/models';
 import { getEndsAt, ticksToReadableTime } from '@/utils/timeConversion';
 import { Star } from 'lucide-react';
+import { useTranslation } from 'react-i18next';
+import type { TFunction } from 'i18next';
 
 interface ItemsRowProps {
     title?: string;
@@ -18,19 +20,23 @@ interface ItemsRowProps {
     detailFields?: DetailField[];
 }
 
-function getDetailFieldsStringForItem(detailField: DetailField, item: BaseItemDto): ReactNode {
+function getDetailFieldsStringForItem(
+    detailField: DetailField,
+    item: BaseItemDto,
+    t: TFunction
+): ReactNode {
     switch (detailField) {
         case 'ReleaseYear':
             return item.PremiereDate
                 ? new Date(item.PremiereDate).getFullYear().toString()
-                : 'Unknown Year';
+                : t('release_year_unknown');
         case 'ReleaseYearAndMonth':
             return item.PremiereDate
                 ? new Date(item.PremiereDate).toLocaleDateString(undefined, {
                       year: 'numeric',
                       month: 'long',
                   })
-                : 'Unknown Date';
+                : t('release_date_unknown');
         case 'ReleaseDate':
             return item.PremiereDate
                 ? new Date(item.PremiereDate).toLocaleDateString(undefined, {
@@ -38,7 +44,7 @@ function getDetailFieldsStringForItem(detailField: DetailField, item: BaseItemDt
                       month: 'long',
                       day: 'numeric',
                   })
-                : 'Unknown Date';
+                : t('release_date_unknown');
         case 'CommunityRating':
             return item.CommunityRating ? (
                 <div className="flex items-center gap-1">
@@ -46,28 +52,40 @@ function getDetailFieldsStringForItem(detailField: DetailField, item: BaseItemDt
                     {item.CommunityRating.toFixed(1)}
                 </div>
             ) : (
-                'No Rating'
+                t('rating_unavailable')
             );
         case 'PlayDuration':
-            return item.RunTimeTicks ? ticksToReadableTime(item.RunTimeTicks) : 'Unknown Duration';
+            return item.RunTimeTicks
+                ? ticksToReadableTime(item.RunTimeTicks)
+                : t('duration_unknown');
         case 'PlayEnd':
             return item.RunTimeTicks
-                ? getEndsAt(item.RunTimeTicks).toLocaleTimeString()
-                : 'Unknown End';
+                ? t('ends_at', {
+                      date: getEndsAt(item.RunTimeTicks).toLocaleTimeString([], {
+                          hour: '2-digit',
+                          minute: '2-digit',
+                      }),
+                  })
+                : t('ends_at_unknown');
         case 'SeasonCount':
             return item.ChildCount !== undefined && item.ChildCount !== null
-                ? item.ChildCount.toString() + ' Seasons'
-                : 'N/A';
+                ? item.ChildCount === 1
+                    ? t('season_count', { count: item.ChildCount })
+                    : t('season_count_plural', { count: item.ChildCount })
+                : t('not_available');
         case 'EpisodeCount':
             return item.RecursiveItemCount !== undefined && item.RecursiveItemCount !== null
-                ? item.RecursiveItemCount.toString() + ' Episodes'
-                : 'N/A';
+                ? item.RecursiveItemCount === 1
+                    ? t('episode_count', { count: item.RecursiveItemCount })
+                    : t('episode_count_plural', { count: item.RecursiveItemCount })
+                : t('not_available');
         default:
             return '';
     }
 }
 
 const ItemsRow = ({ title, allLink, items, detailFields }: ItemsRowProps) => {
+    const { t } = useTranslation('home');
     const { data: recentItems, isLoading } = useRowItems(items);
 
     const posterUrls = useMemo(() => {
@@ -97,7 +115,7 @@ const ItemsRow = ({ title, allLink, items, detailFields }: ItemsRowProps) => {
                     <>
                         {allLink && (
                             <Button variant={'outline'} asChild>
-                                <Link to={allLink}>View All</Link>
+                                <Link to={allLink}>{t('view_all')}</Link>
                             </Button>
                         )}
                     </>
@@ -110,14 +128,14 @@ const ItemsRow = ({ title, allLink, items, detailFields }: ItemsRowProps) => {
                                       <img
                                           key={item.Id}
                                           src={`${posterUrls[item.Id!]}?maxWidth=416&maxHeight=640&quality=85`}
-                                          alt={item.Name || 'No Title'}
+                                          alt={item.Name || t('no_title')}
                                           className="min-w-36 lg:min-w-44 2xl:min-w-52 w-36 lg:w-44 2xl:w-52 min-h-54 lg:min-h-64 2xl:min-h-80 h-54 lg:h-64 2xl:h-80 object-cover rounded-md group-hover:opacity-75 transition-all group-hover:scale-105 z-10"
                                           loading="lazy"
                                       />
                                       <Skeleton className="absolute bottom-0 left-0 right-0 h-54 lg:h-64 2xl:h-80 -z-1" />
                                   </div>
                                   <p className="mt-2 text-sm line-clamp-1 text-ellipsis break-all max-w-36 lg:max-w-44 2xl:max-w-52">
-                                      {item.Name}
+                                      {item.Name || t('no_title')}
                                   </p>
                                   <div className="flex flex-wrap items-center mt-1">
                                       {detailFields && detailFields.length > 0
@@ -126,7 +144,7 @@ const ItemsRow = ({ title, allLink, items, detailFields }: ItemsRowProps) => {
                                                     key={field}
                                                     className="text-xs text-muted-foreground mr-3"
                                                 >
-                                                    {getDetailFieldsStringForItem(field, item)}
+                                                    {getDetailFieldsStringForItem(field, item, t)}
                                                 </span>
                                             ))
                                           : null}

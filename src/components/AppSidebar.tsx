@@ -13,8 +13,11 @@ import { Home, Library, Search } from 'lucide-react';
 import { Link } from 'react-router';
 import { NavUser } from './NavUser';
 import { Avatar, AvatarFallback } from './ui/avatar';
+import { useTranslation } from 'react-i18next';
 
 const AppSidebar = () => {
+    const { t } = useTranslation('sidebar');
+
     return (
         <Sidebar variant="floating" collapsible="icon">
             <SidebarHeader>
@@ -35,7 +38,7 @@ const AppSidebar = () => {
                                 <SidebarMenuButton asChild>
                                     <Link to={'/'}>
                                         <Home />
-                                        Home
+                                        {t('home')}
                                     </Link>
                                 </SidebarMenuButton>
                             </SidebarMenuItem>
@@ -43,7 +46,7 @@ const AppSidebar = () => {
                                 <SidebarMenuButton asChild>
                                     <Link to={'/library'}>
                                         <Library />
-                                        Library
+                                        {t('library')}
                                     </Link>
                                 </SidebarMenuButton>
                             </SidebarMenuItem>
@@ -51,7 +54,7 @@ const AppSidebar = () => {
                                 <SidebarMenuButton asChild>
                                     <Link to={'/search'}>
                                         <Search />
-                                        Search
+                                        {t('search')}
                                     </Link>
                                 </SidebarMenuButton>
                             </SidebarMenuItem>

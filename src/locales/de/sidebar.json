@@ -1,0 +1,12 @@
+{
+    "home": "Startseite",
+    "library": "Bibliothek",
+    "search": "Suche",
+    "language": "Sprache",
+    "theme": "Schema",
+    "light": "Hell",
+    "dark": "Dunkel",
+    "system": "System",
+    "logout": "Abmelden",
+    "unknown_user": "Unbekannter Benutzer"
+}

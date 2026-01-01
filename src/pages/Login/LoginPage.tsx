@@ -9,9 +9,11 @@ import { jellyfin } from '@/api/jellyfinClient';
 import { useLogin } from '@/hooks/api/useLogin';
 import { Spinner } from '@/components/ui/spinner';
 import { useNavigate } from 'react-router';
+import { useTranslation } from 'react-i18next';
 
 const LoginPage = () => {
     const navigate = useNavigate();
+    const { t } = useTranslation('login');
     const [step, setStep] = useState<'server' | 'login'>('server');
 
     const [checkingServer, setCheckingServer] = useState(false);
@@ -30,7 +32,7 @@ const LoginPage = () => {
         const serverAddress = serverInput?.value?.trim();
 
         if (!serverAddress) {
-            setServerCheckError('Please enter a server address.');
+            setServerCheckError(t('please_enter_server_address'));
             setCheckingServer(false);
             return;
         }
@@ -39,7 +41,7 @@ const LoginPage = () => {
         const best = jellyfin.discovery.findBestServer(servers);
 
         if (!best) {
-            setServerCheckError('Could not find a Jellyfin server at that address.');
+            setServerCheckError(t('could_not_find_server'));
             setCheckingServer(false);
             return;
         }
@@ -63,7 +65,7 @@ const LoginPage = () => {
         const password = passwordInput?.value?.trim();
 
         if (!username) {
-            setLoginError('Please enter at least a username.');
+            setLoginError(t('enter_at_least_username'));
             setLoggingIn(false);
             return;
         }
@@ -80,7 +82,7 @@ const LoginPage = () => {
             console.log('Login successful');
             navigate('/', { replace: true });
         } catch (error) {
-            setLoginError('Login failed. Please check your credentials and try again.');
+            setLoginError(t('login_failed'));
             setLoggingIn(false);
             console.error('Login error:', error);
         } finally {
@@ -90,7 +92,7 @@ const LoginPage = () => {
 
     return (
         <Page
-            title="Login"
+            title={t('title')}
             className="flex items-center justify-center h-full w-full"
             sidebar={false}
         >
@@ -100,13 +102,15 @@ const LoginPage = () => {
                         <div className="mb-1 h-12 w-12 bg-gray-200 rounded-full flex items-center justify-center">
                             <Server size={24} className="text-gray-600" />
                         </div>
-                        <CardTitle className="text-2xl font-bold">Connect to Jellyfin</CardTitle>
-                        <CardDescription>Please enter the address of your server.</CardDescription>
+                        <CardTitle className="text-2xl font-bold">
+                            {t('connect_to_jellyfin')}
+                        </CardTitle>
+                        <CardDescription>{t('enter_server_address')}</CardDescription>
                     </CardHeader>
                     <CardContent>
                         <form onSubmit={onSubmitServer}>
                             <Label htmlFor="server-address" className="mb-2 block font-medium">
-                                Server Address
+                                {t('server_address')}
                             </Label>
                             <Input
                                 id="server-address"
@@ -117,9 +121,7 @@ const LoginPage = () => {
                                 autoCorrect="off"
                                 inputMode="url"
                             />
-                            <p className="mt-2 text-xs text-muted-foreground">
-                                You don't need to include "http://" or "https://".
-                            </p>
+                            <p className="mt-2 text-xs text-muted-foreground">{t('no_http')}</p>
                             {serverCheckError && (
                                 <p className="mt-2 text-sm text-destructive flex items-center gap-2">
                                     <TriangleAlert size={16} />
@@ -130,10 +132,10 @@ const LoginPage = () => {
                                 {checkingServer ? (
                                     <>
                                         <Spinner />
-                                        Connecting...
+                                        {t('connecting')}
                                     </>
                                 ) : (
-                                    'Connect to Server'
+                                    t('connect')
                                 )}
                             </Button>
                         </form>
@@ -146,27 +148,29 @@ const LoginPage = () => {
                         <div className="mb-1 h-12 w-12 bg-gray-200 rounded-full flex items-center justify-center">
                             <User size={24} className="text-gray-600" />
                         </div>
-                        <CardTitle className="text-2xl font-bold">Login to Jellyfin</CardTitle>
-                        <CardDescription>Please enter your credentials.</CardDescription>
+                        <CardTitle className="text-2xl font-bold">
+                            {t('login_to_jellyfin')}
+                        </CardTitle>
+                        <CardDescription>{t('enter_credentials')}</CardDescription>
                     </CardHeader>
                     <CardContent>
                         <form onSubmit={onSubmitLogin}>
                             <Label htmlFor="username" className="mb-2 block font-medium">
-                                Username
+                                {t('username')}
                             </Label>
                             <Input
                                 id="username"
                                 type="text"
-                                placeholder="Username"
+                                placeholder={t('username')}
                                 className="mb-4 w-full"
                             />
                             <Label htmlFor="password" className="mb-2 block font-medium">
-                                Password
+                                {t('password')}
                             </Label>
                             <Input
                                 id="password"
                                 type="password"
-                                placeholder="Password"
+                                placeholder={t('password')}
                                 className="w-full"
                             />
                             {loginError && (
@@ -179,10 +183,10 @@ const LoginPage = () => {
                                 {loggingIn ? (
                                     <>
                                         <Spinner />
-                                        Logging in...
+                                        {t('logging_in')}
                                     </>
                                 ) : (
-                                    'Login'
+                                    t('login')
                                 )}
                             </Button>
                             <Button
@@ -190,7 +194,7 @@ const LoginPage = () => {
                                 className="w-full mt-2"
                                 onClick={() => setStep('server')}
                             >
-                                Back to Server Address
+                                {t('back_to_server')}
                             </Button>
                         </form>
                     </CardContent>

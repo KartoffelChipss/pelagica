@@ -4,6 +4,7 @@ import { useConfig } from '@/hooks/api/useConfig';
 import MediaBar from './MediaBar';
 import ItemsRow from './ItemsRow';
 import ContinueWatchingRow from './ContinueWatchingRow';
+import { useTranslation } from 'react-i18next';
 
 function sectionTitleToIdWithRandomSuffix(title: string): string {
     const sanitizedTitle = title
@@ -15,11 +16,12 @@ function sectionTitleToIdWithRandomSuffix(title: string): string {
 }
 
 const HomePage = () => {
+    const { t } = useTranslation('home');
     const { data: userViews } = useUserViews();
     const { config } = useConfig();
 
     return (
-        <Page title="Home Page" requiresAuth={true}>
+        <Page title={t('title')} requiresAuth={true}>
             <div className="flex flex-col gap-4">
                 {config.homeScreenSections?.map((section) => {
                     if (!section.enabled) return null;
@@ -31,7 +33,7 @@ const HomePage = () => {
                                     key={sectionTitleToIdWithRandomSuffix(
                                         section.title || 'continueWatching'
                                     )}
-                                    title={section.title || 'Continue Watching'}
+                                    title={section.title || t('continue_watching')}
                                     titleLine={section.titleLine}
                                     detailLine={section.detailLine}
                                 />
@@ -56,7 +58,9 @@ const HomePage = () => {
                                         <div key={view.Id}>
                                             {view.Id && view.Name && (
                                                 <ItemsRow
-                                                    title={'Recently Added in ' + view.Name}
+                                                    title={t('recently_added', {
+                                                        category: view.Name,
+                                                    })}
                                                     items={{
                                                         libraryId: view.Id,
                                                         sortBy: ['DateCreated'],

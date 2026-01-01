@@ -8,6 +8,8 @@ import type { BaseItemDto } from '@jellyfin/sdk/lib/generated-client/models';
 import { Dot, ImageOff } from 'lucide-react';
 import { Link } from 'react-router';
 import { useState } from 'react';
+import { useTranslation } from 'react-i18next';
+import type { TFunction } from 'i18next';
 
 interface ContinueWatchingRowProps {
     title: string;
@@ -17,15 +19,16 @@ interface ContinueWatchingRowProps {
 
 function getTitleLineText(
     item: BaseItemDto,
-    titleLine: ContinueWatchingTitleLine | undefined
+    titleLine: ContinueWatchingTitleLine | undefined,
+    t: TFunction
 ): string {
-    const itemNameWithFallback = item.Name || item.SeriesName || 'No Title';
+    const itemNameWithFallback = item.Name || item.SeriesName || t('no_title');
 
     switch (titleLine) {
         case 'ItemTitle':
-            return item.Name || 'No Title';
+            return item.Name || t('no_title');
         case 'ParentTitle':
-            return item.SeriesName || item.Name || 'No Title';
+            return item.SeriesName || item.Name || t('no_title');
         default: // 'ItemTitleWithEpisodeInfo'
             if (item.SeriesId && item.ParentIndexNumber && item.IndexNumber) {
                 return `S${item.ParentIndexNumber}:E${item.IndexNumber} - ${itemNameWithFallback}`;
@@ -37,7 +40,8 @@ function getTitleLineText(
 
 function getDetailLineText(
     item: BaseItemDto,
-    detailLine: ContinueWatchingDetailLine | undefined
+    detailLine: ContinueWatchingDetailLine | undefined,
+    t: TFunction
 ): string | null {
     const watched = item.UserData?.PlaybackPositionTicks ?? 0;
     const runtime = item.RunTimeTicks ?? 0;
@@ -46,25 +50,24 @@ function getDetailLineText(
         case 'ProgressPercentage':
             if (runtime > 0) {
                 const progress = (watched / runtime) * 100;
-                return `${progress.toFixed(1)}% watched`;
+                return t('progress_watched', { percent: Math.floor(progress) });
             }
-            return 'Progress unknown';
+            return t('progress_unknown');
         case 'TimeRemaining':
             if (runtime > 0) {
                 const remainingTicks = Math.max(runtime - watched, 0);
-                return `${ticksToReadableTime(remainingTicks)} left`;
+                return t('time_remaining', { time: ticksToReadableTime(remainingTicks) });
             }
-            return 'Time remaining unknown';
+            return t('time_remaining_unknown');
         case 'EndsAt':
             if (runtime > 0) {
                 const remainingTicks = Math.max(runtime - watched, 0);
                 const endsAt = new Date(Date.now() + remainingTicks / 10000); // ticks to ms
-                return `Ends at ${endsAt.toLocaleTimeString(undefined, {
-                    hour: '2-digit',
-                    minute: '2-digit',
-                })}`;
+                return t('ends_at', {
+                    date: endsAt.toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' }),
+                });
             }
-            return 'End time unknown';
+            return t('ends_at_unknown');
         case 'EpisodeInfo':
             if (item.SeriesId && item.ParentIndexNumber && item.IndexNumber) {
                 return `S${item.ParentIndexNumber}:E${item.IndexNumber}`;
@@ -80,6 +83,7 @@ function getDetailLineText(
 }
 
 const ContinueWatchingRow = ({ title, titleLine, detailLine }: ContinueWatchingRowProps) => {
+    const { t } = useTranslation('home');
     const {
         data: continueWatchingData,
         isLoading,
@@ -97,7 +101,7 @@ const ContinueWatchingRow = ({ title, titleLine, detailLine }: ContinueWatchingR
             {error && <p>Error loading continue watching items: {String(error)}</p>}
             {((continueWatchingData && continueWatchingData.items.length > 0) || isLoading) && (
                 <SectionScroller
-                    title={title || 'Continue Watching'}
+                    title={title || t('continue_watching')}
                     items={
                         isLoading || !continueWatchingData
                             ? Array.from({ length: 5 }).map((_, index) => (
@@ -133,7 +137,7 @@ const ContinueWatchingRow = ({ title, titleLine, detailLine }: ContinueWatchingR
                                                               ? getPrimaryImageUrl(item.Id!)
                                                               : getThumbUrl(item.Id!)
                                                       }
-                                                      alt={item.Name || 'No Title'}
+                                                      alt={item.Name || t('no_title')}
                                                       className="w-full h-full object-cover rounded-md group-hover:opacity-75 transition-all group-hover:scale-105"
                                                       onError={() => handleImageError(item.Id!)}
                                                   />
@@ -148,14 +152,15 @@ const ContinueWatchingRow = ({ title, titleLine, detailLine }: ContinueWatchingR
                                               )}
                                           </div>
                                           <p className="mt-2 text-sm line-clamp-1 text-ellipsis break-all">
-                                              {getTitleLineText(item, titleLine)}
+                                              {getTitleLineText(item, titleLine, t)}
                                           </p>
                                           <div className="flex items-center space-x-0 text-xs text-muted-foreground overflow-hidden">
                                               {detailLine && detailLine.length > 0
                                                   ? detailLine.map((line, idx) => {
                                                         const detailText = getDetailLineText(
                                                             item,
-                                                            line
+                                                            line,
+                                                            t
                                                         );
                                                         if (!detailText) return null;
 

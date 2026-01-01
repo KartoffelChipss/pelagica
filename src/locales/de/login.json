@@ -1,0 +1,20 @@
+{
+    "title": "Anmelden",
+    "connect_to_jellyfin": "Mit Jellyfin verbinden",
+    "enter_server_address": "Bitte gib die Adresse deines Servers ein.",
+    "server_address": "Serveradresse",
+    "no_http": "Die Adresse muss kein \"http://\" oder \"https://\" enthalten.",
+    "connect": "Mit Server verbinden",
+    "connecting": "Verbindung wird hergestellt...",
+    "login_to_jellyfin": "Bei Jellyfin anmelden",
+    "enter_credentials": "Bitte gib deinen Benutzernamen und dein Passwort ein.",
+    "username": "Benutzername",
+    "password": "Passwort",
+    "login": "Anmelden",
+    "logging_in": "Anmeldung läuft...",
+    "back_to_server": "Zurück zur Serveradresse",
+    "please_enter_server_address": "Bitte gib eine Serveradresse ein.",
+    "could_not_find_server": "Es konnte kein Jellyfin-Server unter dieser Adresse gefunden werden.",
+    "enter_at_least_username": "Bitte gib mindestens deinen Benutzernamen ein.",
+    "login_failed": "Anmeldung fehlgeschlagen. Bitte überprüfe deine Anmeldedaten und versuche es erneut."
+}

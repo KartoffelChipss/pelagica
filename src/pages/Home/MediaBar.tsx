@@ -14,6 +14,7 @@ import { getBackdropUrl, getLogoUrl } from '@/utils/images';
 import { getEndsAt, ticksToReadableTime } from '@/utils/timeConversion';
 import { Play, Star } from 'lucide-react';
 import { useState } from 'react';
+import { useTranslation } from 'react-i18next';
 
 interface MediaBarProps {
     className?: string;
@@ -23,6 +24,7 @@ interface MediaBarProps {
 }
 
 const MediaBar = ({ className, size = 'medium', itemsConfig, title }: MediaBarProps) => {
+    const { t } = useTranslation('home');
     const { data: mediabarItems, isLoading, isError } = useMediaBarItems(itemsConfig);
     const [logoErrors, setLogoErrors] = useState<Set<string>>(new Set());
 
@@ -123,14 +125,24 @@ const MediaBar = ({ className, size = 'medium', itemsConfig, title }: MediaBarPr
                                             )}
                                             {item.Type === 'Series' && item.ChildCount && (
                                                 <span>
-                                                    {item.ChildCount} season
-                                                    {item.ChildCount !== 1 ? 's' : ''}
+                                                    {item.ChildCount === 1
+                                                        ? t('season_count', {
+                                                              count: item.ChildCount,
+                                                          })
+                                                        : t('season_count_plural', {
+                                                              count: item.ChildCount,
+                                                          })}
                                                 </span>
                                             )}
                                             {item.Type === 'Series' && item.RecursiveItemCount && (
                                                 <span>
-                                                    {item.RecursiveItemCount} episode
-                                                    {item.RecursiveItemCount !== 1 ? 's' : ''}
+                                                    {item.RecursiveItemCount === 1
+                                                        ? t('episode_count', {
+                                                              count: item.RecursiveItemCount,
+                                                          })
+                                                        : t('episode_count_plural', {
+                                                              count: item.RecursiveItemCount,
+                                                          })}
                                                 </span>
                                             )}
                                             {item.Type !== 'Series' &&
@@ -141,12 +153,13 @@ const MediaBar = ({ className, size = 'medium', itemsConfig, title }: MediaBarPr
                                                             {ticksToReadableTime(item.RunTimeTicks)}
                                                         </span>
                                                         <span>
-                                                            Ends at{' '}
-                                                            {getEndsAt(
-                                                                item.RunTimeTicks!
-                                                            ).toLocaleTimeString([], {
-                                                                hour: '2-digit',
-                                                                minute: '2-digit',
+                                                            {t('ends_at', {
+                                                                date: getEndsAt(
+                                                                    item.RunTimeTicks!
+                                                                ).toLocaleTimeString([], {
+                                                                    hour: '2-digit',
+                                                                    minute: '2-digit',
+                                                                }),
                                                             })}
                                                         </span>
                                                     </>
@@ -164,7 +177,7 @@ const MediaBar = ({ className, size = 'medium', itemsConfig, title }: MediaBarPr
                                         <div className="flex items-center gap-4">
                                             <Button variant="default" size="lg">
                                                 <Play />
-                                                Watch Now
+                                                {t('play')}
                                             </Button>
                                         </div>
                                     </div>

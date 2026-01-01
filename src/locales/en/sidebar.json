@@ -1,0 +1,12 @@
+{
+    "home": "Home",
+    "library": "Library",
+    "search": "Search",
+    "language": "Language",
+    "theme": "Theme",
+    "light": "Light",
+    "dark": "Dark",
+    "system": "System",
+    "logout": "Logout",
+    "unknown_user": "Unknown User"
+}

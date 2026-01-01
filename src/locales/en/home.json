@@ -1,0 +1,23 @@
+{
+    "title": "Home",
+    "continue_watching": "Continue Watching",
+    "recently_added": "Recently Added in {{category}}",
+    "no_title": "No Title",
+    "progress_watched": "{{percent}}% watched",
+    "progress_unknown": "Progress unknown",
+    "time_remaining": "{{time}} left",
+    "time_remaining_unknown": "Time remaining unknown",
+    "ends_at": "Ends at {{date}}",
+    "ends_at_unknown": "End time unknown",
+    "season_count": "{{count}} Season",
+    "season_count_plural": "{{count}} Seasons",
+    "episode_count": "{{count}} Episode",
+    "episode_count_plural": "{{count}} Episodes",
+    "play": "Watch Now",
+    "view_all": "View All",
+    "release_year_unknown": "Unknown year",
+    "release_date_unknown": "Unknown date",
+    "rating_unavailable": "No rating",
+    "duration_unknown": "Unknown duration",
+    "not_available": "N/A"
+}
