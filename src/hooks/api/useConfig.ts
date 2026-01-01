@@ -43,7 +43,9 @@ export interface RecentlyAddedSection extends BaseHomeScreenSection {
 }
 
 export type DetailField =
-    | 'PublishYear'
+    | 'ReleaseYear'
+    | 'ReleaseYearAndMonth'
+    | 'ReleaseDate'
     | 'CommunityRating'
     | 'PlayDuration'
     | 'PlayEnd'

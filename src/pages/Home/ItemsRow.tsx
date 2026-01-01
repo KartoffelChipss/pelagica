@@ -20,10 +20,25 @@ interface ItemsRowProps {
 
 function getDetailFieldsStringForItem(detailField: DetailField, item: BaseItemDto): ReactNode {
     switch (detailField) {
-        case 'PublishYear':
+        case 'ReleaseYear':
             return item.PremiereDate
                 ? new Date(item.PremiereDate).getFullYear().toString()
                 : 'Unknown Year';
+        case 'ReleaseYearAndMonth':
+            return item.PremiereDate
+                ? new Date(item.PremiereDate).toLocaleDateString(undefined, {
+                      year: 'numeric',
+                      month: 'long',
+                  })
+                : 'Unknown Date';
+        case 'ReleaseDate':
+            return item.PremiereDate
+                ? new Date(item.PremiereDate).toLocaleDateString(undefined, {
+                      year: 'numeric',
+                      month: 'long',
+                      day: 'numeric',
+                  })
+                : 'Unknown Date';
         case 'CommunityRating':
             return item.CommunityRating ? (
                 <div className="flex items-center gap-1">

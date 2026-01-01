@@ -63,7 +63,7 @@ const HomePage = () => {
                                                         sortOrder: 'Descending',
                                                         limit: section.limit || 10,
                                                     }}
-                                                    detailFields={['PublishYear']}
+                                                    detailFields={['ReleaseYear']}
                                                 />
                                             )}
                                         </div>
@@ -83,7 +83,7 @@ const HomePage = () => {
                                     detailFields={
                                         section.detailFields && section.detailFields.length > 0
                                             ? section.detailFields
-                                            : ['PublishYear']
+                                            : ['ReleaseYear']
                                     }
                                 />
                             );

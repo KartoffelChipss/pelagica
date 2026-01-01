@@ -34,7 +34,8 @@
                 "sortOrder": "Descending",
                 "limit": 10,
                 "tags": ["Anime", "anime"]
-            }
+            },
+            "detailFields": ["ReleaseYearAndMonth"]
         },
         {
             "type": "items",
@@ -45,7 +46,8 @@
                 "sortOrder": "Descending",
                 "limit": 10,
                 "types": ["Movie"]
-            }
+            },
+            "detailFields": ["ReleaseYearAndMonth"]
         },
         {
             "type": "recentlyAdded",

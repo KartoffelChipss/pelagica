@@ -65,7 +65,9 @@
     },
     "DetailField": {
       "enum": [
-        "PublishYear",
+        "ReleaseYear",
+        "ReleaseYearAndMonth",
+        "ReleaseDate",
         "CommunityRating",
         "PlayDuration",
         "PlayEnd",
