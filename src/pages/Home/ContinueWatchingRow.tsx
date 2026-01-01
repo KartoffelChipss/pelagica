@@ -5,8 +5,9 @@ import { useContinueWatchingAndNextUp } from '@/hooks/api/useContinueWatchingAnd
 import { getThumbUrl, getPrimaryImageUrl } from '@/utils/images';
 import { ticksToReadableTime } from '@/utils/timeConversion';
 import type { BaseItemDto } from '@jellyfin/sdk/lib/generated-client/models';
-import { Dot } from 'lucide-react';
+import { Dot, ImageOff } from 'lucide-react';
 import { Link } from 'react-router';
+import { useState } from 'react';
 
 interface ContinueWatchingRowProps {
     title: string;
@@ -85,6 +86,12 @@ const ContinueWatchingRow = ({ title, titleLine, detailLine }: ContinueWatchingR
         error,
     } = useContinueWatchingAndNextUp(localStorage.getItem('jf_user'));
 
+    const [imageErrors, setImageErrors] = useState<Record<string, boolean>>({});
+
+    const handleImageError = (itemId: string) => {
+        setImageErrors((prev) => ({ ...prev, [itemId]: true }));
+    };
+
     return (
         <>
             {error && <p>Error loading continue watching items: {String(error)}</p>}
@@ -115,15 +122,22 @@ const ContinueWatchingRow = ({ title, titleLine, detailLine }: ContinueWatchingR
                                           className="group min-w-48 lg:min-w-64 2xl:min-w-80"
                                       >
                                           <div className="relative w-full aspect-video rounded-md overflow-hidden">
-                                              <img
-                                                  src={
-                                                      item.SeriesId
-                                                          ? getPrimaryImageUrl(item.Id!)
-                                                          : getThumbUrl(item.Id!)
-                                                  }
-                                                  alt={item.Name || 'No Title'}
-                                                  className="w-full h-full object-cover rounded-md group-hover:opacity-75 transition-all group-hover:scale-105"
-                                              />
+                                              {imageErrors[item.Id!] ? (
+                                                  <div className="w-full h-full bg-muted flex items-center justify-center rounded-md">
+                                                      <ImageOff className="w-12 h-12 text-muted-foreground" />
+                                                  </div>
+                                              ) : (
+                                                  <img
+                                                      src={
+                                                          item.SeriesId
+                                                              ? getPrimaryImageUrl(item.Id!)
+                                                              : getThumbUrl(item.Id!)
+                                                      }
+                                                      alt={item.Name || 'No Title'}
+                                                      className="w-full h-full object-cover rounded-md group-hover:opacity-75 transition-all group-hover:scale-105"
+                                                      onError={() => handleImageError(item.Id!)}
+                                                  />
+                                              )}
                                               {progress > 0 && (
                                                   <div className="absolute bottom-0 left-0 right-0 h-1 bg-gray-700">
                                                       <div
