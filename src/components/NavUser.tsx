@@ -73,7 +73,13 @@ export function NavUser() {
                                         src={profileImageUrl}
                                         alt={userName + ' profile image'}
                                     />
-                                    <AvatarFallback className="rounded-lg">CN</AvatarFallback>
+                                    <AvatarFallback className="rounded-lg">
+                                        {userName
+                                            .split(' ')
+                                            .map((n) => n[0])
+                                            .join('')
+                                            .toUpperCase()}
+                                    </AvatarFallback>
                                 </Avatar>
                                 <div className="grid flex-1 text-left text-md leading-tight">
                                     <span className="truncate font-medium">{userName}</span>
