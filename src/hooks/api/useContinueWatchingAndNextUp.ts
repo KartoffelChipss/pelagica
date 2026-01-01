@@ -34,9 +34,6 @@ export function useContinueWatchingAndNextUp(userId: string | null | undefined) 
                 }),
             ]);
 
-            console.log('Continue Watching Response:', continueWatchingResponse);
-            console.log('Next Up Response:', nextUpResponse);
-
             const allItems = [
                 ...(continueWatchingResponse.data.Items || []),
                 ...(nextUpResponse.data.Items || []),
