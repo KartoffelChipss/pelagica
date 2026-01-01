@@ -23,6 +23,13 @@ import { useTheme } from './theme-provider';
 import i18n from 'i18next';
 import { useTranslation } from 'react-i18next';
 
+const FlagIcon = ({ countryCode }: { countryCode: string }) => {
+    const flagUrl = `https://flagcdn.com/${countryCode.toLowerCase()}.svg`;
+    return (
+        <img src={flagUrl} className="inline h-4 w-6 object-cover" alt={`${countryCode} Flag`} />
+    );
+};
+
 export function NavUser() {
     const { t } = useTranslation('sidebar');
     const navigate = useNavigate();
@@ -137,9 +144,11 @@ export function NavUser() {
                                 sideOffset={4}
                             >
                                 <DropdownMenuItem onClick={() => i18n.changeLanguage('en')}>
+                                    <FlagIcon countryCode="us" />
                                     English
                                 </DropdownMenuItem>
                                 <DropdownMenuItem onClick={() => i18n.changeLanguage('de')}>
+                                    <FlagIcon countryCode="de" />
                                     Deutsch
                                 </DropdownMenuItem>
                             </DropdownMenuContent>

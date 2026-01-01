@@ -96,7 +96,7 @@ export interface AppConfig {
 
 const DEFAULT_CONFIG: AppConfig = {
     homeScreenSections: [
-        { type: 'mediaBar', enabled: true, title: 'Featured', size: 'medium' },
+        { type: 'mediaBar', enabled: true, size: 'medium' },
         { type: 'continueWatching', enabled: true },
         { type: 'recentlyAdded', enabled: true, title: 'Recently Added' },
     ],
