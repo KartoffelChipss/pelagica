@@ -6,15 +6,6 @@ import ItemsRow from './ItemsRow';
 import ContinueWatchingRow from './ContinueWatchingRow';
 import { useTranslation } from 'react-i18next';
 
-function sectionTitleToIdWithRandomSuffix(title: string): string {
-    const sanitizedTitle = title
-        .toLowerCase()
-        .replace(/[^a-z0-9]+/g, '-')
-        .replace(/^-+|-+$/g, '');
-    const randomSuffix = Math.random().toString(36).substring(2, 8);
-    return `${sanitizedTitle}-${randomSuffix}`;
-}
-
 const HomePage = () => {
     const { t } = useTranslation('home');
     const { data: userViews } = useUserViews();
@@ -23,16 +14,14 @@ const HomePage = () => {
     return (
         <Page title={t('title')} requiresAuth={true}>
             <div className="flex flex-col gap-4">
-                {config.homeScreenSections?.map((section) => {
+                {config.homeScreenSections?.map((section, index) => {
                     if (!section.enabled) return null;
 
                     switch (section.type) {
                         case 'continueWatching':
                             return (
                                 <ContinueWatchingRow
-                                    key={sectionTitleToIdWithRandomSuffix(
-                                        section.title || 'continueWatching'
-                                    )}
+                                    key={index}
                                     title={section.title || t('continue_watching')}
                                     titleLine={section.titleLine}
                                     detailLine={section.detailLine}
@@ -42,9 +31,7 @@ const HomePage = () => {
                         case 'mediaBar':
                             return (
                                 <MediaBar
-                                    key={sectionTitleToIdWithRandomSuffix(
-                                        section.title || 'mediaBar'
-                                    )}
+                                    key={index}
                                     size={section.size}
                                     itemsConfig={section.items}
                                     title={section.title}
@@ -52,35 +39,39 @@ const HomePage = () => {
                             );
 
                         case 'recentlyAdded':
-                            return userViews && userViews.Items ? (
-                                <>
-                                    {userViews.Items.map((view) => (
-                                        <div key={view.Id} data-library-id={view.Id}>
-                                            {view.Id && view.Name && (
-                                                <ItemsRow
-                                                    title={t('recently_added', {
-                                                        category: view.Name,
-                                                    })}
-                                                    items={{
-                                                        libraryId: view.Id,
-                                                        sortBy: ['DateCreated'],
-                                                        sortOrder: 'Descending',
-                                                        limit: section.limit || 10,
-                                                    }}
-                                                    detailFields={['ReleaseYear']}
-                                                />
-                                            )}
-                                        </div>
-                                    ))}
-                                </>
-                            ) : (
-                                <p>Loading user views...</p>
+                            return (
+                                <div key={index} className="flex flex-col gap-4">
+                                    {userViews && userViews.Items ? (
+                                        <>
+                                            {userViews.Items.map((view) => (
+                                                <div key={view.Id} data-library-id={view.Id}>
+                                                    {view.Id && view.Name && (
+                                                        <ItemsRow
+                                                            title={t('recently_added', {
+                                                                category: view.Name,
+                                                            })}
+                                                            items={{
+                                                                libraryId: view.Id,
+                                                                sortBy: ['DateCreated'],
+                                                                sortOrder: 'Descending',
+                                                                limit: section.limit || 10,
+                                                            }}
+                                                            detailFields={['ReleaseYear']}
+                                                        />
+                                                    )}
+                                                </div>
+                                            ))}
+                                        </>
+                                    ) : (
+                                        <p>Loading user views...</p>
+                                    )}
+                                </div>
                             );
 
                         case 'items':
                             return (
                                 <ItemsRow
-                                    key={sectionTitleToIdWithRandomSuffix(section.title || 'items')}
+                                    key={index}
                                     title={section.title}
                                     allLink={section.allLink}
                                     items={section.items}
