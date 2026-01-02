@@ -2,7 +2,7 @@ import { Badge } from '@/components/ui/badge';
 import { Button } from '@/components/ui/button';
 import { useSeasons } from '@/hooks/api/useSeasons';
 import { getBackdropUrl, getLogoUrl, getPrimaryImageUrl, getThumbUrl } from '@/utils/images';
-import type { BaseItemDto } from '@jellyfin/sdk/lib/generated-client/models';
+import type { BaseItemDto, BaseItemPerson } from '@jellyfin/sdk/lib/generated-client/models';
 import { ImageOff, Play, Star } from 'lucide-react';
 import { useState } from 'react';
 import { Link, useNavigate } from 'react-router';
@@ -162,6 +162,87 @@ const EpisodesRow = ({
     );
 };
 
+const PeopleRow = ({
+    title,
+    people,
+    loading,
+}: {
+    title?: React.ReactNode;
+    people: BaseItemPerson[] | undefined;
+    loading?: boolean;
+}) => {
+    const [profilePictureErrors, setProfilePictureErrors] = useState<Record<string, boolean>>({});
+
+    const handleProfilePictureError = (itemId: string) => {
+        setProfilePictureErrors((prev) => ({ ...prev, [itemId]: true }));
+    };
+
+    if (loading) {
+        return (
+            <SectionScroller
+                title={title}
+                items={Array.from({ length: 10 }, (_, i) => (
+                    <div key={i} className="group min-w-30 w-30">
+                        <div className="aspect-square w-full rounded-full overflow-hidden">
+                            <Skeleton className="h-full w-full" />
+                        </div>
+                        <Skeleton className="mt-2 h-4 w-3/4 rounded-md mx-auto" />
+                        <Skeleton className="mt-1 h-3 w-1/2 rounded-md mx-auto" />
+                    </div>
+                ))}
+            />
+        );
+    }
+
+    return (
+        <SectionScroller
+            title={title}
+            items={
+                people?.map((person) => (
+                    <Link to={`/item/${person.Id}`} key={person.Id} className="group min-w-30 w-30">
+                        <div className="aspect-square w-full rounded-full overflow-hidden">
+                            {profilePictureErrors[person.Id!] ? (
+                                <div className="bg-muted w-full h-full flex items-center justify-center rounded-full text-2xl">
+                                    {person.Name ? (
+                                        person.Name.split(' ')
+                                            .map((n) => n[0])
+                                            .join('')
+                                            .toUpperCase()
+                                    ) : (
+                                        <ImageOff className="w-12 h-12 text-muted-foreground" />
+                                    )}
+                                </div>
+                            ) : (
+                                <img
+                                    src={getPrimaryImageUrl(person.Id!, {
+                                        width: 120,
+                                    })}
+                                    alt={person.Name || 'No Name'}
+                                    className="h-full w-full object-cover group-hover:opacity-75 transition-all group-hover:scale-105"
+                                    onError={() => handleProfilePictureError(person.Id!)}
+                                />
+                            )}
+                        </div>
+                        <p className="mt-2 text-md line-clamp-1 text-ellipsis break-all text-center">
+                            {person.Name || 'No Name'}
+                        </p>
+                        {person.Role && (
+                            <p className="mt-1 text-sm line-clamp-2 text-ellipsis text-muted-foreground text-center">
+                                {person.Role}
+                            </p>
+                        )}
+                        {person.Type && (
+                            <p className="mt-1 text-sm line-clamp-2 text-ellipsis text-muted-foreground text-center">
+                                {person.Type}
+                            </p>
+                        )}
+                    </Link>
+                )) || []
+            }
+        />
+    );
+};
+
 const DescriptionItem = ({
     label,
     items,
@@ -240,7 +321,7 @@ const SeriesPage = ({ item }: SeriesPageProps) => {
                 <img
                     src={getLogoUrl(item.Id || '')}
                     alt={item.Name + ' Logo'}
-                    className="relative mx-auto h-32 object-contain"
+                    className="relative mx-auto px-4 h-32 object-contain"
                 />
             </div>
             <div className="relative z-10 p-2 sm:p-4">
@@ -339,6 +420,13 @@ const SeriesPage = ({ item }: SeriesPageProps) => {
                             seasonId={effectiveSelectedSeason}
                         />
                         {error && <p>Error loading seasons: {(error as Error).message}</p>}
+                    </div>
+                    <div>
+                        <PeopleRow
+                            title={<h3 className="text-3xl font-bold">Cast & Crew</h3>}
+                            people={item.People || []}
+                            loading={isLoading}
+                        />
                     </div>
                 </div>
             </div>
