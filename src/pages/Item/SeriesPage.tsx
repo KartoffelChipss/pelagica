@@ -4,7 +4,7 @@ import { useSeasons } from '@/hooks/api/useSeasons';
 import { getBackdropUrl, getLogoUrl, getPrimaryImageUrl, getThumbUrl } from '@/utils/images';
 import type { BaseItemDto } from '@jellyfin/sdk/lib/generated-client/models';
 import { ImageOff, Play, Star } from 'lucide-react';
-import { useEffect, useState } from 'react';
+import { useEffect, useState, useCallback, memo } from 'react';
 import { Link, useNavigate } from 'react-router';
 import {
     Select,
@@ -21,148 +21,158 @@ import { ticksToReadableTime } from '@/utils/timeConversion';
 import { usePageBackground } from '@/hooks/usePageBackground';
 import PeopleRow from './PeopleRow';
 
-const EpisodesRow = ({
-    seasonId,
-    title,
-    seasonsLoading,
-}: {
-    seasonId: string;
-    title?: React.ReactNode;
-    seasonsLoading?: boolean;
-}) => {
-    const navigate = useNavigate();
-    const { t } = useTranslation('item');
-    const { data: episodes, isLoading, error } = useEpisodes(seasonId);
-    const [imageErrors, setImageErrors] = useState<Record<string, boolean>>({});
+const EpisodesRow = memo(
+    ({
+        seasonId,
+        title,
+        seasonsLoading,
+    }: {
+        seasonId: string;
+        title?: React.ReactNode;
+        seasonsLoading?: boolean;
+    }) => {
+        const navigate = useNavigate();
+        const { t } = useTranslation('item');
+        const { data: episodes, isLoading, error } = useEpisodes(seasonId);
+        const [imageErrors, setImageErrors] = useState<Record<string, boolean>>({});
 
-    console.log('EpisodesRow render', { seasonId, episodes });
+        const handleImageError = useCallback((itemId: string) => {
+            setImageErrors((prev) => ({ ...prev, [itemId]: true }));
+        }, []);
 
-    const handleImageError = (itemId: string) => {
-        setImageErrors((prev) => ({ ...prev, [itemId]: true }));
-    };
+        if (isLoading || seasonsLoading) {
+            return (
+                <SectionScroller
+                    title={title}
+                    items={Array.from({ length: 10 }, (_, i) => (
+                        <div
+                            key={i}
+                            className="group min-w-48 lg:min-w-64 2xl:min-w-80 animate-pulse"
+                        >
+                            <Skeleton className="w-full aspect-video rounded-md" />
+                            <Skeleton className="mt-2 h-4 w-3/4 rounded-md" />
+                        </div>
+                    ))}
+                />
+            );
+        }
 
-    if (isLoading || seasonsLoading) {
+        if (error) {
+            return <p>Error loading episodes: {(error as Error).message}</p>;
+        }
+
         return (
             <SectionScroller
                 title={title}
-                items={Array.from({ length: 10 }, (_, i) => (
-                    <div key={i} className="group min-w-48 lg:min-w-64 2xl:min-w-80 animate-pulse">
-                        <Skeleton className="w-full aspect-video rounded-md" />
-                        <Skeleton className="mt-2 h-4 w-3/4 rounded-md" />
-                    </div>
-                ))}
+                items={
+                    episodes?.map((item) => {
+                        const watched = item.UserData?.PlaybackPositionTicks ?? 0;
+                        const runtime = item.RunTimeTicks ?? 0;
+                        const progress =
+                            item.UserData?.PlayCount &&
+                            item.UserData?.PlayCount >= 1 &&
+                            watched <= 0
+                                ? 100
+                                : runtime > 0
+                                  ? (watched / runtime) * 100
+                                  : 0;
+
+                        return (
+                            <Link
+                                to={`/item/${item.Id}`}
+                                key={item.Id}
+                                className="group min-w-48 lg:min-w-64 2xl:min-w-80"
+                            >
+                                <div className="relative w-full aspect-video rounded-md overflow-hidden">
+                                    {imageErrors[item.Id!] ? (
+                                        <div className="w-full h-full bg-muted flex items-center justify-center rounded-md">
+                                            <ImageOff className="w-12 h-12 text-muted-foreground" />
+                                        </div>
+                                    ) : (
+                                        <div className="relative">
+                                            <img
+                                                src={
+                                                    item.SeriesId
+                                                        ? getPrimaryImageUrl(item.Id!, {
+                                                              width: 416,
+                                                          })
+                                                        : getThumbUrl(item.Id!, {
+                                                              width: 416,
+                                                          })
+                                                }
+                                                alt={item.Name || t('no_title')}
+                                                className="w-full h-full object-cover rounded-md group-hover:opacity-75 group-hover:scale-105 transition-opacity transition-transform duration-300 ease-out will-change-transform"
+                                                onError={() => handleImageError(item.Id!)}
+                                            />
+                                            <div className="absolute inset-0 flex items-center justify-center opacity-0 group-hover:opacity-100 transition-opacity">
+                                                <div
+                                                    className="bg-black/60 rounded-full p-4 cursor-pointer hover:bg-black/75"
+                                                    role="button"
+                                                    onClick={(e) => {
+                                                        e.preventDefault();
+                                                        navigate(`/play/${item.Id}`);
+                                                    }}
+                                                >
+                                                    <Play className="w-6 h-6 text-white fill-white" />
+                                                </div>
+                                            </div>
+                                            {item.RunTimeTicks && (
+                                                <Badge className="absolute top-2 right-2 bg-black/70 text-white">
+                                                    {ticksToReadableTime(item.RunTimeTicks)}
+                                                </Badge>
+                                            )}
+                                        </div>
+                                    )}
+                                    {progress > 0 && (
+                                        <div className="absolute bottom-0 left-0 right-0 h-1 bg-gray-700">
+                                            <div
+                                                style={{ width: `${progress}%` }}
+                                                className="h-full bg-blue-500 transition-all"
+                                            />
+                                        </div>
+                                    )}
+                                </div>
+                                <p className="mt-2 text-md line-clamp-1 text-ellipsis break-all">
+                                    {item.Name || 'No Title'}
+                                </p>
+                                <p className="mt-1 text-sm line-clamp-2 text-ellipsis break-all text-muted-foreground">
+                                    {item.Overview}
+                                </p>
+                                <div className="flex flex-wrap items-center gap-2 mt-2">
+                                    {item.IndexNumber !== undefined && (
+                                        <Badge variant={'outline'}>
+                                            S{item.ParentIndexNumber} E{item.IndexNumber}
+                                        </Badge>
+                                    )}
+                                    {item.CommunityRating !== undefined && (
+                                        <Badge variant={'outline'}>
+                                            <Star size={14} />
+                                            {item.CommunityRating?.toFixed(1)}
+                                        </Badge>
+                                    )}
+                                    {item.PremiereDate && (
+                                        <Badge variant={'outline'}>
+                                            {new Date(item.PremiereDate).toLocaleDateString(
+                                                undefined,
+                                                {
+                                                    year: 'numeric',
+                                                    month: 'long',
+                                                    day: 'numeric',
+                                                }
+                                            )}
+                                        </Badge>
+                                    )}
+                                </div>
+                            </Link>
+                        );
+                    }) || []
+                }
             />
         );
     }
+);
 
-    if (error) {
-        return <p>Error loading episodes: {(error as Error).message}</p>;
-    }
-
-    return (
-        <SectionScroller
-            title={title}
-            items={
-                episodes?.map((item) => {
-                    const watched = item.UserData?.PlaybackPositionTicks ?? 0;
-                    const runtime = item.RunTimeTicks ?? 0;
-                    const progress =
-                        item.UserData?.PlayCount && item.UserData?.PlayCount >= 1 && watched <= 0
-                            ? 100
-                            : runtime > 0
-                              ? (watched / runtime) * 100
-                              : 0;
-
-                    return (
-                        <Link
-                            to={`/item/${item.Id}`}
-                            key={item.Id}
-                            className="group min-w-48 lg:min-w-64 2xl:min-w-80"
-                        >
-                            <div className="relative w-full aspect-video rounded-md overflow-hidden">
-                                {imageErrors[item.Id!] ? (
-                                    <div className="w-full h-full bg-muted flex items-center justify-center rounded-md">
-                                        <ImageOff className="w-12 h-12 text-muted-foreground" />
-                                    </div>
-                                ) : (
-                                    <div className="relative">
-                                        <img
-                                            src={
-                                                item.SeriesId
-                                                    ? getPrimaryImageUrl(item.Id!, {
-                                                          width: 416,
-                                                      })
-                                                    : getThumbUrl(item.Id!, {
-                                                          width: 416,
-                                                      })
-                                            }
-                                            alt={item.Name || t('no_title')}
-                                            className="w-full h-full object-cover rounded-md group-hover:opacity-75 transition-all group-hover:scale-105"
-                                            onError={() => handleImageError(item.Id!)}
-                                        />
-                                        <div className="absolute inset-0 flex items-center justify-center opacity-0 group-hover:opacity-100 transition-opacity">
-                                            <div
-                                                className="bg-black/60 rounded-full p-4 cursor-pointer hover:bg-black/75"
-                                                role="button"
-                                                onClick={(e) => {
-                                                    e.preventDefault();
-                                                    navigate(`/play/${item.Id}`);
-                                                }}
-                                            >
-                                                <Play className="w-6 h-6 text-white fill-white" />
-                                            </div>
-                                        </div>
-                                        {item.RunTimeTicks && (
-                                            <Badge className="absolute top-2 right-2 bg-black/70 text-white">
-                                                {ticksToReadableTime(item.RunTimeTicks)}
-                                            </Badge>
-                                        )}
-                                    </div>
-                                )}
-                                {progress > 0 && (
-                                    <div className="absolute bottom-0 left-0 right-0 h-1 bg-gray-700">
-                                        <div
-                                            style={{ width: `${progress}%` }}
-                                            className="h-full bg-blue-500 transition-all"
-                                        />
-                                    </div>
-                                )}
-                            </div>
-                            <p className="mt-2 text-md line-clamp-1 text-ellipsis break-all">
-                                {item.Name || 'No Title'}
-                            </p>
-                            <p className="mt-1 text-sm line-clamp-2 text-ellipsis break-all text-muted-foreground">
-                                {item.Overview}
-                            </p>
-                            <div className="flex flex-wrap items-center gap-2 mt-2">
-                                {item.IndexNumber !== undefined && (
-                                    <Badge variant={'outline'}>
-                                        S{item.ParentIndexNumber} E{item.IndexNumber}
-                                    </Badge>
-                                )}
-                                {item.CommunityRating !== undefined && (
-                                    <Badge variant={'outline'}>
-                                        <Star size={14} />
-                                        {item.CommunityRating?.toFixed(1)}
-                                    </Badge>
-                                )}
-                                {item.PremiereDate && (
-                                    <Badge variant={'outline'}>
-                                        {new Date(item.PremiereDate).toLocaleDateString(undefined, {
-                                            year: 'numeric',
-                                            month: 'long',
-                                            day: 'numeric',
-                                        })}
-                                    </Badge>
-                                )}
-                            </div>
-                        </Link>
-                    );
-                }) || []
-            }
-        />
-    );
-};
+EpisodesRow.displayName = 'EpisodesRow';
 
 const DescriptionItem = ({
     label,
