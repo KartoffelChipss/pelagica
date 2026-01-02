@@ -44,14 +44,19 @@ export const SearchCommand = () => {
 
     const posterUrls = useMemo(() => {
         if (!results) return {};
-        const imageApi = getImageApi(getApi());
-        return results.reduce(
-            (acc, item) => {
-                acc[item.Id!] = imageApi.getItemImageUrl({ Id: item.Id }) || '';
-                return acc;
-            },
-            {} as Record<string, string>
-        );
+        try {
+            const imageApi = getImageApi(getApi());
+            return results.reduce(
+                (acc, item) => {
+                    acc[item.Id!] = imageApi.getItemImageUrl({ Id: item.Id }) || '';
+                    return acc;
+                },
+                {} as Record<string, string>
+            );
+        } catch {
+            // if not authenticated return empty object
+            return {};
+        }
     }, [results]);
 
     return (
