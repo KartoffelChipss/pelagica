@@ -134,8 +134,12 @@ const ContinueWatchingRow = ({ title, titleLine, detailLine }: ContinueWatchingR
                                                   <img
                                                       src={
                                                           item.SeriesId
-                                                              ? getPrimaryImageUrl(item.Id!)
-                                                              : getThumbUrl(item.Id!)
+                                                              ? getPrimaryImageUrl(item.Id!, {
+                                                                    width: 416,
+                                                                })
+                                                              : getThumbUrl(item.Id!, {
+                                                                    width: 416,
+                                                                })
                                                       }
                                                       alt={item.Name || t('no_title')}
                                                       className="w-full h-full object-cover rounded-md group-hover:opacity-75 transition-all group-hover:scale-105"

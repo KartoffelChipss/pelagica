@@ -1,6 +1,6 @@
 import { getAccessToken, getServerUrl } from './localstorageCredentials';
 
-export function getBackdropUrl(itemId: string) {
+export function getBackdropUrl(itemId: string, size?: { width?: number; height?: number }) {
     try {
         const server = getServerUrl();
         const token = getAccessToken();
@@ -12,6 +12,12 @@ export function getBackdropUrl(itemId: string) {
         url.searchParams.append('tag', 'v1');
         url.searchParams.append('quality', '90');
         url.searchParams.append('token', token);
+        if (size?.width) {
+            url.searchParams.append('width', size.width.toString());
+        }
+        if (size?.height) {
+            url.searchParams.append('height', size.height.toString());
+        }
 
         return url.toString();
     } catch {
@@ -19,7 +25,7 @@ export function getBackdropUrl(itemId: string) {
     }
 }
 
-export function getLogoUrl(itemId: string) {
+export function getLogoUrl(itemId: string, size?: { width?: number; height?: number }) {
     try {
         const server = getServerUrl();
         const token = getAccessToken();
@@ -31,6 +37,12 @@ export function getLogoUrl(itemId: string) {
         url.searchParams.append('tag', 'v1');
         url.searchParams.append('quality', '90');
         url.searchParams.append('token', token);
+        if (size?.width) {
+            url.searchParams.append('width', size.width.toString());
+        }
+        if (size?.height) {
+            url.searchParams.append('height', size.height.toString());
+        }
 
         return url.toString();
     } catch {
@@ -38,7 +50,7 @@ export function getLogoUrl(itemId: string) {
     }
 }
 
-export function getThumbUrl(itemId: string) {
+export function getThumbUrl(itemId: string, size?: { width?: number; height?: number }) {
     try {
         const server = getServerUrl();
         const token = getAccessToken();
@@ -50,6 +62,12 @@ export function getThumbUrl(itemId: string) {
         url.searchParams.append('tag', 'v1');
         url.searchParams.append('quality', '90');
         url.searchParams.append('token', token);
+        if (size?.width) {
+            url.searchParams.append('width', size.width.toString());
+        }
+        if (size?.height) {
+            url.searchParams.append('height', size.height.toString());
+        }
 
         return url.toString();
     } catch {
@@ -57,7 +75,7 @@ export function getThumbUrl(itemId: string) {
     }
 }
 
-export function getPrimaryImageUrl(itemId: string) {
+export function getPrimaryImageUrl(itemId: string, size?: { width?: number; height?: number }) {
     try {
         const server = getServerUrl();
         const token = getAccessToken();
@@ -69,6 +87,12 @@ export function getPrimaryImageUrl(itemId: string) {
         url.searchParams.append('tag', 'v1');
         url.searchParams.append('quality', '90');
         url.searchParams.append('token', token);
+        if (size?.width) {
+            url.searchParams.append('width', size.width.toString());
+        }
+        if (size?.height) {
+            url.searchParams.append('height', size.height.toString());
+        }
 
         return url.toString();
     } catch {

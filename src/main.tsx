@@ -11,6 +11,7 @@ import LibraryPage from './pages/Library/LibraryPage.tsx';
 import { SearchProvider } from './context/SearchProvider.tsx';
 import { SearchCommand } from './components/SearchCommand.tsx';
 import { KeyboardShortcuts } from './components/KeyboardShortcuts.tsx';
+import ItemPage from './pages/Item/ItemPage.tsx';
 
 const queryClient = new QueryClient();
 
@@ -24,6 +25,7 @@ createRoot(document.getElementById('root')!).render(
                     <Routes>
                         <Route path="/" element={<HomePage />} />
                         <Route path="/library" element={<LibraryPage />} />
+                        <Route path="/item/:itemId" element={<ItemPage />} />
                         <Route path="/login" element={<LoginPage />} />
                     </Routes>
                 </BrowserRouter>

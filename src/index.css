@@ -17,6 +17,11 @@ body {
     /* background-color: tomato; */
 }
 
+.backdrop-blur {
+    -webkit-backdrop-filter: blur(5px);
+    backdrop-filter: blur(5px);
+}
+
 .custom-scrollbar::-webkit-scrollbar,
 .cm-scroller::-webkit-scrollbar {
     width: 6px;

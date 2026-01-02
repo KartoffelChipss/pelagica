@@ -15,6 +15,7 @@ import { getEndsAt, ticksToReadableTime } from '@/utils/timeConversion';
 import { Play, Star } from 'lucide-react';
 import { useState } from 'react';
 import { useTranslation } from 'react-i18next';
+import { Link } from 'react-router';
 
 interface MediaBarProps {
     className?: string;
@@ -63,7 +64,7 @@ const MediaBar = ({ className, size = 'medium', itemsConfig, title }: MediaBarPr
                                 <div
                                     className={`rounded-md bg-cover bg-center flex flex-col items-start justify-end gap-4 overflow-hidden relative min-h-130 ${outerSize}`}
                                 >
-                                    <div className="absolute inset-0 bg-gradient-to-r from-black/70 via-black/70 to-transparent pointer-events-none max-w-5xl" />
+                                    <div className="absolute inset-0 bg-linear-to-r from-black/70 via-black/70 to-transparent pointer-events-none max-w-5xl" />
                                     <div className="flex flex-col items-start gap-4 max-w-2xl px-6 sm:px-16 py-6 rounded relative z-10 w-full">
                                         <Skeleton className={`${logoSize} w-full`} />
                                         <div className="flex flex-wrap gap-2 w-full">
@@ -89,7 +90,7 @@ const MediaBar = ({ className, size = 'medium', itemsConfig, title }: MediaBarPr
                                         backgroundImage: `url('${getBackdropUrl(item.Id!)}?maxWidth=1920&quality=75')`,
                                     }}
                                 >
-                                    <div className="absolute inset-0 bg-gradient-to-r from-black/70 via-black/70 to-transparent pointer-events-none max-w-5xl" />
+                                    <div className="absolute inset-0 bg-linear-to-r from-black/70 via-black/70 to-transparent pointer-events-none max-w-5xl" />
                                     <div className="flex flex-col items-start gap-4 max-w-2xl px-6 sm:px-16 py-6 rounded relative z-10">
                                         {getLogoUrl(item.Id!) && !logoErrors.has(item.Id!) ? (
                                             <img
@@ -175,9 +176,11 @@ const MediaBar = ({ className, size = 'medium', itemsConfig, title }: MediaBarPr
                                             {item.Overview}
                                         </p>
                                         <div className="flex items-center gap-4">
-                                            <Button variant="default" size="lg">
-                                                <Play />
-                                                {t('play')}
+                                            <Button variant="default" size="lg" asChild>
+                                                <Link to={`/item/${item.Id}`}>
+                                                    <Play />
+                                                    {t('play')}
+                                                </Link>
                                             </Button>
                                         </div>
                                     </div>

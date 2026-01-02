@@ -1,9 +1,9 @@
 import { ChevronLeft, ChevronRight } from 'lucide-react';
-import { useEffect, useRef, useState } from 'react';
+import React, { useEffect, useRef, useState } from 'react';
 import { Button } from './ui/button';
 
 interface SectionScrollerProps {
-    title?: string;
+    title?: React.ReactNode;
     items: React.ReactNode[];
     icon?: React.ReactNode;
     className?: string;
