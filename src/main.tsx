@@ -8,19 +8,26 @@ import LoginPage from './pages/Login/LoginPage.tsx';
 import './index.css';
 import './i18n.ts';
 import LibraryPage from './pages/Library/LibraryPage.tsx';
+import { SearchProvider } from './context/SearchProvider.tsx';
+import { SearchCommand } from './components/SearchCommand.tsx';
+import { KeyboardShortcuts } from './components/KeyboardShortcuts.tsx';
 
 const queryClient = new QueryClient();
 
 createRoot(document.getElementById('root')!).render(
     <QueryClientProvider client={queryClient}>
         <ThemeProvider>
-            <BrowserRouter>
-                <Routes>
-                    <Route path="/" element={<HomePage />} />
-                    <Route path="/library" element={<LibraryPage />} />
-                    <Route path="/login" element={<LoginPage />} />
-                </Routes>
-            </BrowserRouter>
+            <SearchProvider>
+                <BrowserRouter>
+                    <KeyboardShortcuts />
+                    <SearchCommand />
+                    <Routes>
+                        <Route path="/" element={<HomePage />} />
+                        <Route path="/library" element={<LibraryPage />} />
+                        <Route path="/login" element={<LoginPage />} />
+                    </Routes>
+                </BrowserRouter>
+            </SearchProvider>
         </ThemeProvider>
     </QueryClientProvider>
 );

@@ -14,9 +14,11 @@ import { Link } from 'react-router';
 import { NavUser } from './NavUser';
 import { Avatar, AvatarFallback } from './ui/avatar';
 import { useTranslation } from 'react-i18next';
+import { useSearch } from '@/context/SearchContext';
 
 const AppSidebar = () => {
     const { t } = useTranslation('sidebar');
+    const search = useSearch();
 
     return (
         <Sidebar variant="floating" collapsible="icon">
@@ -51,11 +53,9 @@ const AppSidebar = () => {
                                 </SidebarMenuButton>
                             </SidebarMenuItem>
                             <SidebarMenuItem>
-                                <SidebarMenuButton asChild>
-                                    <Link to={'/search'}>
-                                        <Search />
-                                        {t('search')}
-                                    </Link>
+                                <SidebarMenuButton onClick={() => search.openSearch()}>
+                                    <Search />
+                                    {t('search')}
                                 </SidebarMenuButton>
                             </SidebarMenuItem>
                         </SidebarMenu>
