@@ -6,6 +6,8 @@ import { useNavigate } from 'react-router';
 import { useCurrentUser } from '@/hooks/api/useCurrentUser';
 import { Avatar, AvatarFallback } from '@/components/ui/avatar';
 import { getServerUrl } from '@/utils/localstorageCredentials';
+import { PageBackgroundProvider } from '@/context/PageBackgroundProvider';
+import { usePageBackground } from '@/hooks/usePageBackground';
 
 interface PageProps {
     title?: string;
@@ -30,7 +32,7 @@ function serverUrlToDomain(url: string) {
     }
 }
 
-const Page = ({
+const PageContent = ({
     children,
     title,
     className,
@@ -42,6 +44,7 @@ const Page = ({
 }: PropsWithChildren<PageProps>) => {
     const navigate = useNavigate();
     const { isLoading, isError } = useCurrentUser();
+    const { background } = usePageBackground();
     const serverUrl = getServerUrl();
     const serverDomain = serverUrl ? serverUrlToDomain(serverUrl) : null;
 
@@ -68,7 +71,7 @@ const Page = ({
             className={`relative min-h-dvh h-dvh ${containerClassName ?? ''}`}
             defaultOpen={false}
         >
-            {bgItem}
+            {background || bgItem}
             {sidebar && <AppSidebar />}
             <div className="relative w-full flex flex-col overflow-x-hidden overflow-y-auto h-dvh md:h-[calc(100dvh-2rem)] px-4 my-0 md:my-4 z-5 [&::-webkit-scrollbar]:w-2 [&::-webkit-scrollbar-track]:bg-transparent [&::-webkit-scrollbar-thumb]:bg-muted-foreground [&::-webkit-scrollbar-thumb]:rounded-full">
                 {sidebar && breadcrumbs ? (
@@ -99,6 +102,14 @@ const Page = ({
                 <main className={`w-full ${className ?? ''}`}>{children}</main>
             </div>
         </SidebarProvider>
+    );
+};
+
+const Page = (props: PropsWithChildren<PageProps>) => {
+    return (
+        <PageBackgroundProvider>
+            <PageContent {...props} />
+        </PageBackgroundProvider>
     );
 };
 

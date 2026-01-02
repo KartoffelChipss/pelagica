@@ -2,9 +2,9 @@ import { Badge } from '@/components/ui/badge';
 import { Button } from '@/components/ui/button';
 import { useSeasons } from '@/hooks/api/useSeasons';
 import { getBackdropUrl, getLogoUrl, getPrimaryImageUrl, getThumbUrl } from '@/utils/images';
-import type { BaseItemDto, BaseItemPerson } from '@jellyfin/sdk/lib/generated-client/models';
+import type { BaseItemDto } from '@jellyfin/sdk/lib/generated-client/models';
 import { ImageOff, Play, Star } from 'lucide-react';
-import { useState } from 'react';
+import { useEffect, useState } from 'react';
 import { Link, useNavigate } from 'react-router';
 import {
     Select,
@@ -18,6 +18,8 @@ import SectionScroller from '@/components/SectionScroller';
 import { useTranslation } from 'react-i18next';
 import { Skeleton } from '@/components/ui/skeleton';
 import { ticksToReadableTime } from '@/utils/timeConversion';
+import { usePageBackground } from '@/hooks/usePageBackground';
+import PeopleRow from './PeopleRow';
 
 const EpisodesRow = ({
     seasonId,
@@ -162,87 +164,6 @@ const EpisodesRow = ({
     );
 };
 
-const PeopleRow = ({
-    title,
-    people,
-    loading,
-}: {
-    title?: React.ReactNode;
-    people: BaseItemPerson[] | undefined;
-    loading?: boolean;
-}) => {
-    const [profilePictureErrors, setProfilePictureErrors] = useState<Record<string, boolean>>({});
-
-    const handleProfilePictureError = (itemId: string) => {
-        setProfilePictureErrors((prev) => ({ ...prev, [itemId]: true }));
-    };
-
-    if (loading) {
-        return (
-            <SectionScroller
-                title={title}
-                items={Array.from({ length: 10 }, (_, i) => (
-                    <div key={i} className="group min-w-30 w-30">
-                        <div className="aspect-square w-full rounded-full overflow-hidden">
-                            <Skeleton className="h-full w-full" />
-                        </div>
-                        <Skeleton className="mt-2 h-4 w-3/4 rounded-md mx-auto" />
-                        <Skeleton className="mt-1 h-3 w-1/2 rounded-md mx-auto" />
-                    </div>
-                ))}
-            />
-        );
-    }
-
-    return (
-        <SectionScroller
-            title={title}
-            items={
-                people?.map((person) => (
-                    <Link to={`/item/${person.Id}`} key={person.Id} className="group min-w-30 w-30">
-                        <div className="aspect-square w-full rounded-full overflow-hidden">
-                            {profilePictureErrors[person.Id!] ? (
-                                <div className="bg-muted w-full h-full flex items-center justify-center rounded-full text-2xl">
-                                    {person.Name ? (
-                                        person.Name.split(' ')
-                                            .map((n) => n[0])
-                                            .join('')
-                                            .toUpperCase()
-                                    ) : (
-                                        <ImageOff className="w-12 h-12 text-muted-foreground" />
-                                    )}
-                                </div>
-                            ) : (
-                                <img
-                                    src={getPrimaryImageUrl(person.Id!, {
-                                        width: 120,
-                                    })}
-                                    alt={person.Name || 'No Name'}
-                                    className="h-full w-full object-cover group-hover:opacity-75 transition-all group-hover:scale-105"
-                                    onError={() => handleProfilePictureError(person.Id!)}
-                                />
-                            )}
-                        </div>
-                        <p className="mt-2 text-md line-clamp-1 text-ellipsis break-all text-center">
-                            {person.Name || 'No Name'}
-                        </p>
-                        {person.Role && (
-                            <p className="mt-1 text-sm line-clamp-2 text-ellipsis text-muted-foreground text-center">
-                                {person.Role}
-                            </p>
-                        )}
-                        {person.Type && (
-                            <p className="mt-1 text-sm line-clamp-2 text-ellipsis text-muted-foreground text-center">
-                                {person.Type}
-                            </p>
-                        )}
-                    </Link>
-                )) || []
-            }
-        />
-    );
-};
-
 const DescriptionItem = ({
     label,
     items,
@@ -280,6 +201,29 @@ interface SeriesPageProps {
 const SeriesPage = ({ item }: SeriesPageProps) => {
     const [selectedSeason, setSelectedSeason] = useState<string | null>(null);
     const { data: seasons, isLoading, error } = useSeasons(item.Id || '');
+    const { setBackground } = usePageBackground();
+
+    useEffect(() => {
+        if (item.BackdropImageTags && item.BackdropImageTags.length > 0) {
+            setBackground(
+                <div className="fixed top-0 left-0 w-full h-full -z-20 overflow-hidden">
+                    <div className="absolute inset-0">
+                        <img
+                            src={getBackdropUrl(item.Id || '')}
+                            alt={item.Name + ' Backdrop'}
+                            className="w-full h-full object-cover blur-3xl scale-110 opacity-40"
+                        />
+                    </div>
+                    <div className="absolute inset-0 bg-linear-to-b from-background/80 via-background/50 to-background" />
+                    <div className="absolute inset-0 bg-linear-to-t from-background via-transparent to-transparent" />
+                </div>
+            );
+        }
+
+        return () => {
+            setBackground(null);
+        };
+    }, [item, setBackground]);
 
     const effectiveSelectedSeason =
         selectedSeason ||
@@ -311,11 +255,11 @@ const SeriesPage = ({ item }: SeriesPageProps) => {
         <div className="relative h-full w-full">
             <div className="absolute top-0 left-0 h-3/4 w-full -z-10">
                 <img
-                    className="h-full w-full object-cover rounded-md"
+                    className="h-full w-full object-cover rounded-md border border-border"
                     src={getBackdropUrl(item.Id || '')}
                     alt={item.Name + ' Backdrop'}
                 />
-                <div className="absolute bottom-0 left-0 h-full w-full bg-linear-to-t from-background to-transparent rounded-md" />
+                <div className="absolute bottom-0 left-0 h-full w-full px-4 bg-linear-to-t from-background to-transparent rounded-md" />
             </div>
             <div className="h-2/5 flex items-center justify-center">
                 <img

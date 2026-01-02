@@ -112,7 +112,7 @@ const ItemsRow = ({ title, allLink, items, detailFields }: ItemsRowProps) => {
         ((recentItems && recentItems.length > 0) || isLoading) && (
             <SectionScroller
                 className="max-w-full"
-                title={title}
+                title={<h2 className="text-2xl font-bold flex items-center gap-2">{title}</h2>}
                 additionalButtons={
                     <>
                         {allLink && (

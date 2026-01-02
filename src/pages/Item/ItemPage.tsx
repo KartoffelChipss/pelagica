@@ -11,7 +11,10 @@ const ItemPage = () => {
     const { data: item, isLoading, error } = useItem(itemId);
 
     return (
-        <Page title="Item Details" className="min-h-full">
+        <Page
+            title={item ? `${item.Name}` : isLoading ? 'Loading...' : 'Item Not Found'}
+            className="min-h-full"
+        >
             {isLoading && <p>Loading...</p>}
             {error && <p>Error loading item details.</p>}
             {item && item.Type === 'Movie' && <MoviePage item={item} />}

@@ -101,7 +101,11 @@ const ContinueWatchingRow = ({ title, titleLine, detailLine }: ContinueWatchingR
             {error && <p>Error loading continue watching items: {String(error)}</p>}
             {((continueWatchingData && continueWatchingData.items.length > 0) || isLoading) && (
                 <SectionScroller
-                    title={title || t('continue_watching')}
+                    title={
+                        <h2 className="text-2xl font-bold flex items-center gap-2">
+                            {title || t('continue_watching')}
+                        </h2>
+                    }
                     items={
                         isLoading || !continueWatchingData
                             ? Array.from({ length: 5 }).map((_, index) => (

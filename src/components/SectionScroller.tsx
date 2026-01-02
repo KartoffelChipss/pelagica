@@ -13,7 +13,6 @@ interface SectionScrollerProps {
 export default function SectionScroller({
     title,
     items,
-    icon,
     className,
     additionalButtons,
 }: SectionScrollerProps) {
@@ -52,14 +51,7 @@ export default function SectionScroller({
     return (
         <div className={className}>
             <div className="flex items-center justify-between mb-3">
-                {title ? (
-                    <h2 className="text-2xl font-bold flex items-center gap-2">
-                        {icon}
-                        {title}
-                    </h2>
-                ) : (
-                    <div />
-                )}
+                {title ? title : <div />}
 
                 <div className="flex gap-2">
                     <Button
