@@ -1,10 +1,10 @@
 import { Badge } from '@/components/ui/badge';
 import { Button } from '@/components/ui/button';
 import { useSeasons } from '@/hooks/api/useSeasons';
-import { getBackdropUrl, getLogoUrl, getPrimaryImageUrl, getThumbUrl } from '@/utils/images';
+import { getPrimaryImageUrl, getThumbUrl } from '@/utils/images';
 import type { BaseItemDto } from '@jellyfin/sdk/lib/generated-client/models';
 import { ImageOff, Play, Star } from 'lucide-react';
-import { useEffect, useState, useCallback, memo } from 'react';
+import { useState, useCallback, memo } from 'react';
 import { Link, useNavigate } from 'react-router';
 import {
     Select,
@@ -18,8 +18,9 @@ import SectionScroller from '@/components/SectionScroller';
 import { useTranslation } from 'react-i18next';
 import { Skeleton } from '@/components/ui/skeleton';
 import { ticksToReadableTime } from '@/utils/timeConversion';
-import { usePageBackground } from '@/hooks/usePageBackground';
 import PeopleRow from './PeopleRow';
+import BaseMediaPage from './BaseMediaPage';
+import DescriptionItem from './DescriptionItem';
 
 const EpisodesRow = memo(
     ({
@@ -174,36 +175,6 @@ const EpisodesRow = memo(
 
 EpisodesRow.displayName = 'EpisodesRow';
 
-const DescriptionItem = ({
-    label,
-    items,
-}: {
-    label: string;
-    items: { link: string | null; name: string }[];
-}) => {
-    if (items.length === 0) {
-        return null;
-    }
-    return (
-        <div className="flex flex-wrap gap-2">
-            <p className="text-muted-foreground">{label}:</p>
-            <div className="flex flex-wrap gap-2 mt-1">
-                {items.map((item) =>
-                    item.link ? (
-                        <Badge key={item.name} variant="secondary" asChild>
-                            <Link to={item.link}>{item.name}</Link>
-                        </Badge>
-                    ) : (
-                        <Badge key={item.name} variant="secondary">
-                            {item.name}
-                        </Badge>
-                    )
-                )}
-            </div>
-        </div>
-    );
-};
-
 interface SeriesPageProps {
     item: BaseItemDto;
 }
@@ -211,29 +182,6 @@ interface SeriesPageProps {
 const SeriesPage = ({ item }: SeriesPageProps) => {
     const [selectedSeason, setSelectedSeason] = useState<string | null>(null);
     const { data: seasons, isLoading, error } = useSeasons(item.Id || '');
-    const { setBackground } = usePageBackground();
-
-    useEffect(() => {
-        if (item.BackdropImageTags && item.BackdropImageTags.length > 0) {
-            setBackground(
-                <div className="fixed top-0 left-0 w-full h-full -z-20 overflow-hidden">
-                    <div className="absolute inset-0">
-                        <img
-                            src={getBackdropUrl(item.Id || '')}
-                            alt={item.Name + ' Backdrop'}
-                            className="w-full h-full object-cover blur-3xl scale-110 opacity-40"
-                        />
-                    </div>
-                    <div className="absolute inset-0 bg-linear-to-b from-background/80 via-background/50 to-background" />
-                    <div className="absolute inset-0 bg-linear-to-t from-background via-transparent to-transparent" />
-                </div>
-            );
-        }
-
-        return () => {
-            setBackground(null);
-        };
-    }, [item, setBackground]);
 
     const effectiveSelectedSeason =
         selectedSeason ||
@@ -262,129 +210,114 @@ const SeriesPage = ({ item }: SeriesPageProps) => {
     const studios = item.Studios?.filter((studio) => studio.Name) || [];
 
     return (
-        <div className="relative h-full w-full">
-            <div className="absolute top-0 left-0 h-3/4 w-full -z-10">
+        <BaseMediaPage item={item}>
+            <div className="flex flex-col md:flex-row gap-6 max-w-7xl">
                 <img
-                    className="h-full w-full object-cover rounded-md border border-border"
-                    src={getBackdropUrl(item.Id || '')}
-                    alt={item.Name + ' Backdrop'}
+                    src={getPrimaryImageUrl(item.Id || '')}
+                    alt={item.Name + ' Primary'}
+                    className="w-60 sm:w-70 object-cover rounded-md hidden sm:block"
                 />
-                <div className="absolute bottom-0 left-0 h-full w-full px-4 bg-linear-to-t from-background to-transparent rounded-md" />
-            </div>
-            <div className="h-2/5 flex items-center justify-center">
-                <img
-                    src={getLogoUrl(item.Id || '')}
-                    alt={item.Name + ' Logo'}
-                    className="relative mx-auto px-4 h-32 object-contain"
-                />
-            </div>
-            <div className="relative z-10 p-2 sm:p-4">
-                <div className="bg-background/30 backdrop-blur-md p-4 sm:p-8 rounded-md w-full flex flex-col gap-8">
-                    <div className="flex flex-col md:flex-row gap-6 max-w-7xl">
-                        <img
-                            src={getPrimaryImageUrl(item.Id || '')}
-                            alt={item.Name + ' Primary'}
-                            className="w-60 sm:w-70 object-cover rounded-md hidden sm:block"
-                        />
-                        <div className="flex flex-col gap-3">
-                            <h2 className="text-4xl sm:text-5xl font-bold mt-2">{item.Name}</h2>
-                            <div className="flex flex-wrap gap-2">
-                                <Badge variant={'outline'}>{item.ProductionYear}</Badge>
-                                <Badge variant={'outline'}>
-                                    <Star size={14} />
-                                    {item.CommunityRating?.toFixed(1)}
-                                </Badge>
-                                <Badge variant={'outline'}>{item.OfficialRating}</Badge>
-                            </div>
-                            {episodeToContinue && (
-                                <Button className="w-fit mt-1" asChild>
-                                    <Link to={`/item/${episodeToContinue.Id}`}>
-                                        <Play />
-                                        {episodeToContinue.UserData?.PlaybackPositionTicks
-                                            ? 'Continue'
-                                            : 'Play'}{' '}
-                                        S{episodeToContinue.ParentIndexNumber} E
-                                        {episodeToContinue.IndexNumber}
-                                    </Link>
-                                </Button>
-                            )}
-                            <p>{item.Overview}</p>
-                            <DescriptionItem
-                                label="Genres"
-                                items={
-                                    item.Genres?.map((genre) => ({
-                                        link: null,
-                                        name: genre,
-                                    })) || []
-                                }
-                            />
-                            <DescriptionItem
-                                label="Writers"
-                                items={writers.map((person) => ({
-                                    link: `/item/${person.Id}`,
-                                    name: person.Name!,
-                                }))}
-                            />
-                            <DescriptionItem
-                                label="Directors"
-                                items={directors.map((person) => ({
-                                    link: `/item/${person.Id}`,
-                                    name: person.Name!,
-                                }))}
-                            />
-                            <DescriptionItem
-                                label="Studios"
-                                items={studios.map((studio) => ({
-                                    link: null,
-                                    name: studio.Name!,
-                                }))}
-                            />
-                        </div>
+                <div className="flex flex-col gap-3">
+                    <h2 className="text-4xl sm:text-5xl font-bold mt-2">{item.Name}</h2>
+                    <div className="flex flex-wrap gap-2">
+                        {item.ProductionYear && (
+                            <Badge variant={'outline'}>{item.ProductionYear}</Badge>
+                        )}
+                        {item.CommunityRating && (
+                            <Badge variant={'outline'}>
+                                <Star size={14} />
+                                {item.CommunityRating?.toFixed(1)}
+                            </Badge>
+                        )}
+                        {item.OfficialRating && (
+                            <Badge variant={'outline'}>{item.OfficialRating}</Badge>
+                        )}
                     </div>
-                    <div>
-                        <EpisodesRow
-                            title={
-                                <div className="flex items-center gap-4">
-                                    <h3 className="text-3xl font-bold">Seasons </h3>
-                                    <Select
-                                        value={effectiveSelectedSeason || ''}
-                                        onValueChange={(value) => setSelectedSeason(value || null)}
-                                        disabled={isLoading || !seasons || seasons.length === 0}
-                                    >
-                                        <SelectTrigger>
-                                            <SelectValue placeholder="Select Season" />
-                                        </SelectTrigger>
-                                        <SelectContent>
-                                            {seasons?.map((season) => (
-                                                <SelectItem
-                                                    key={season.Id}
-                                                    value={season.Id || ''}
-                                                    onSelect={() =>
-                                                        setSelectedSeason(season.Id || null)
-                                                    }
-                                                >
-                                                    {season.Name}
-                                                </SelectItem>
-                                            ))}
-                                        </SelectContent>
-                                    </Select>
-                                </div>
-                            }
-                            seasonsLoading={isLoading}
-                            seasonId={effectiveSelectedSeason}
-                        />
-                        {error && <p>Error loading seasons: {(error as Error).message}</p>}
-                    </div>
-                    <div>
-                        <PeopleRow
-                            title={<h3 className="text-3xl font-bold">Cast & Crew</h3>}
-                            people={item.People || []}
-                            loading={isLoading}
-                        />
-                    </div>
+                    {episodeToContinue && (
+                        <Button className="w-fit mt-1" asChild>
+                            <Link to={`/item/${episodeToContinue.Id}`}>
+                                <Play />
+                                {episodeToContinue.UserData?.PlaybackPositionTicks
+                                    ? 'Continue'
+                                    : 'Play'}{' '}
+                                S{episodeToContinue.ParentIndexNumber} E
+                                {episodeToContinue.IndexNumber}
+                            </Link>
+                        </Button>
+                    )}
+                    <p>{item.Overview}</p>
+                    <DescriptionItem
+                        label="Genres"
+                        items={
+                            item.Genres?.map((genre) => ({
+                                link: null,
+                                name: genre,
+                            })) || []
+                        }
+                    />
+                    <DescriptionItem
+                        label="Writers"
+                        items={writers.map((person) => ({
+                            link: `/item/${person.Id}`,
+                            name: person.Name!,
+                        }))}
+                    />
+                    <DescriptionItem
+                        label="Directors"
+                        items={directors.map((person) => ({
+                            link: `/item/${person.Id}`,
+                            name: person.Name!,
+                        }))}
+                    />
+                    <DescriptionItem
+                        label="Studios"
+                        items={studios.map((studio) => ({
+                            link: null,
+                            name: studio.Name!,
+                        }))}
+                    />
                 </div>
             </div>
-        </div>
+            <div>
+                <EpisodesRow
+                    title={
+                        <div className="flex items-center gap-4">
+                            <h3 className="text-3xl font-bold">Seasons </h3>
+                            <Select
+                                value={effectiveSelectedSeason || ''}
+                                onValueChange={(value) => setSelectedSeason(value || null)}
+                                disabled={isLoading || !seasons || seasons.length === 0}
+                            >
+                                <SelectTrigger>
+                                    <SelectValue placeholder="Select Season" />
+                                </SelectTrigger>
+                                <SelectContent>
+                                    {seasons?.map((season) => (
+                                        <SelectItem
+                                            key={season.Id}
+                                            value={season.Id || ''}
+                                            onSelect={() => setSelectedSeason(season.Id || null)}
+                                        >
+                                            {season.Name}
+                                        </SelectItem>
+                                    ))}
+                                </SelectContent>
+                            </Select>
+                        </div>
+                    }
+                    seasonsLoading={isLoading}
+                    seasonId={effectiveSelectedSeason}
+                />
+                {error && <p>Error loading seasons: {(error as Error).message}</p>}
+            </div>
+            <div>
+                <PeopleRow
+                    title={<h3 className="text-3xl font-bold">Cast & Crew</h3>}
+                    people={item.People || []}
+                    loading={isLoading}
+                />
+            </div>
+        </BaseMediaPage>
     );
 };
 
