@@ -50,7 +50,8 @@ export type DetailField =
     | 'PlayDuration'
     | 'PlayEnd'
     | 'SeasonCount'
-    | 'EpisodeCount';
+    | 'EpisodeCount'
+    | 'AgeRating';
 
 /** A generic section displaying a grid of items */
 export interface ItemsSection extends BaseHomeScreenSection {

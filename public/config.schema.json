@@ -72,7 +72,8 @@
         "PlayDuration",
         "PlayEnd",
         "SeasonCount",
-        "EpisodeCount"
+        "EpisodeCount",
+        "AgeRating"
       ],
       "type": "string"
     },

@@ -19,5 +19,6 @@
     "release_date_unknown": "Unknown date",
     "rating_unavailable": "No rating",
     "duration_unknown": "Unknown duration",
-    "not_available": "N/A"
+    "not_available": "N/A",
+    "not_rated": "Not Rated"
 }

@@ -79,6 +79,8 @@ function getDetailFieldsStringForItem(
                     ? t('episode_count', { count: item.RecursiveItemCount })
                     : t('episode_count_plural', { count: item.RecursiveItemCount })
                 : t('not_available');
+        case 'AgeRating':
+            return item.OfficialRating || t('not_rated');
         default:
             return '';
     }

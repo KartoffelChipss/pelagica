@@ -19,5 +19,6 @@
     "release_date_unknown": "Unbekanntes Datum",
     "rating_unavailable": "Keine Bewertung",
     "duration_unknown": "Unbekannte Laufzeit",
-    "not_available": "Nicht verfügbar"
+    "not_available": "Nicht verfügbar",
+    "not_rated": "Nicht bewertet"
 }
