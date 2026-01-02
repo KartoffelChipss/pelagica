@@ -144,6 +144,7 @@ const LoginPage = () => {
                                 autoCapitalize="none"
                                 autoCorrect="off"
                                 inputMode="url"
+                                autoFocus
                             />
                             <p className="mt-2 text-xs text-muted-foreground">{t('no_http')}</p>
                             {serverCheckError && (
@@ -187,6 +188,7 @@ const LoginPage = () => {
                                 type="text"
                                 placeholder={t('username')}
                                 className="mb-4 w-full"
+                                autoFocus
                             />
                             <Label htmlFor="password" className="mb-2 block font-medium">
                                 {t('password')}
