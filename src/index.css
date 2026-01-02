@@ -3,16 +3,18 @@
 
 body {
     width: 100%;
-    min-height: 100vh;
+    min-height: 100dvh;
     margin: 0;
     padding: 0;
 
     display: flex;
     justify-content: center;
+    /* background-color: olive; */
 }
 
 #root {
     width: 100%;
+    /* background-color: tomato; */
 }
 
 .custom-scrollbar::-webkit-scrollbar,

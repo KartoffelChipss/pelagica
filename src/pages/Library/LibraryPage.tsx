@@ -142,7 +142,7 @@ const LibraryContent = ({
                             </Link>
                         ))}
                     </div>
-                    <div className="mt-8">
+                    <div className="my-4 md:mb-0">
                         <Pagination>
                             <PaginationContent>
                                 <PaginationItem>

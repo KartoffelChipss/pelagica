@@ -1,0 +1,8 @@
+{
+    "name": "Pelagica",
+    "short_name": "Pelagica",
+    "description": "Watch Movies and TV Shows from your Jellyfin server.",
+    "display": "standalone",
+    "categories": ["entertainment", "video", "movies", "tv"],
+    "start_url": "/"
+}
