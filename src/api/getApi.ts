@@ -1,8 +1,9 @@
+import { getAccessToken, getServerUrl } from '@/utils/localstorageCredentials';
 import { createApi } from './jellyfinClient';
 
 export function getApi() {
-    const server = localStorage.getItem('jf_server');
-    const token = localStorage.getItem('jf_token');
+    const server = getServerUrl();
+    const token = getAccessToken();
 
     if (!server || !token) throw new Error('Not authenticated');
 

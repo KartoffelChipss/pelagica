@@ -1,6 +1,7 @@
 import { useMutation } from '@tanstack/react-query';
 import { createApi } from '../../api/jellyfinClient';
 import { getUserApi } from '@jellyfin/sdk/lib/utils/api/user-api';
+import { saveCredentials } from '@/utils/localstorageCredentials';
 
 export function useLogin() {
     return useMutation({
@@ -24,9 +25,7 @@ export function useLogin() {
             const accessToken = res.data.AccessToken || '';
             const userId = res.data.User?.Id || '';
 
-            localStorage.setItem('jf_server', server);
-            localStorage.setItem('jf_token', accessToken);
-            localStorage.setItem('jf_user', userId);
+            saveCredentials(server, userId, accessToken);
 
             return { api, user: res.data.User };
         },

@@ -1,7 +1,9 @@
+import { getAccessToken, getServerUrl } from '@/utils/localstorageCredentials';
+
 export function getUserProfileImage(userId: string): string {
     try {
-        const server = localStorage.getItem('jf_server');
-        const token = localStorage.getItem('jf_token');
+        const server = getServerUrl();
+        const token = getAccessToken();
 
         if (!server || !token) return '';
 

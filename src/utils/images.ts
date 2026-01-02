@@ -1,7 +1,9 @@
+import { getAccessToken, getServerUrl } from './localstorageCredentials';
+
 export function getBackdropUrl(itemId: string) {
     try {
-        const server = localStorage.getItem('jf_server');
-        const token = localStorage.getItem('jf_token');
+        const server = getServerUrl();
+        const token = getAccessToken();
 
         if (!server || !token) return '/default-backdrop.jpg';
 
@@ -19,8 +21,8 @@ export function getBackdropUrl(itemId: string) {
 
 export function getLogoUrl(itemId: string) {
     try {
-        const server = localStorage.getItem('jf_server');
-        const token = localStorage.getItem('jf_token');
+        const server = getServerUrl();
+        const token = getAccessToken();
 
         if (!server || !token) return '';
 
@@ -38,8 +40,8 @@ export function getLogoUrl(itemId: string) {
 
 export function getThumbUrl(itemId: string) {
     try {
-        const server = localStorage.getItem('jf_server');
-        const token = localStorage.getItem('jf_token');
+        const server = getServerUrl();
+        const token = getAccessToken();
 
         if (!server || !token) return '/default-thumb.jpg';
 
@@ -57,8 +59,8 @@ export function getThumbUrl(itemId: string) {
 
 export function getPrimaryImageUrl(itemId: string) {
     try {
-        const server = localStorage.getItem('jf_server');
-        const token = localStorage.getItem('jf_token');
+        const server = getServerUrl();
+        const token = getAccessToken();
 
         if (!server || !token) return '/default-thumb.jpg';
 

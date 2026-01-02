@@ -4,10 +4,12 @@ import {
     SidebarFooter,
     SidebarGroup,
     SidebarGroupContent,
+    SidebarGroupLabel,
     SidebarHeader,
     SidebarMenu,
     SidebarMenuButton,
     SidebarMenuItem,
+    SidebarMenuSub,
 } from '@/components/ui/sidebar';
 import { Home, Library, Search } from 'lucide-react';
 import { Link } from 'react-router';
@@ -15,25 +17,51 @@ import { NavUser } from './NavUser';
 import { Avatar, AvatarFallback } from './ui/avatar';
 import { useTranslation } from 'react-i18next';
 import { useSearch } from '@/context/SearchContext';
+import { useUserViews } from '@/hooks/api/useMediaFolders';
+import JellyfinLibraryIcon from './JellyfinLibraryIcon';
+import { getServerUrl } from '@/utils/localstorageCredentials';
+
+function serverUrlToDomain(url: string) {
+    try {
+        const parsedUrl = new URL(url);
+        return parsedUrl.hostname;
+    } catch {
+        return url;
+    }
+}
 
 const AppSidebar = () => {
     const { t } = useTranslation('sidebar');
     const search = useSearch();
+    const { data: views } = useUserViews();
+    const serverUrl = getServerUrl();
+    const serverDomain = serverUrl ? serverUrlToDomain(serverUrl) : null;
 
     return (
         <Sidebar variant="floating" collapsible="icon">
             <SidebarHeader>
                 <SidebarMenu>
-                    <SidebarMenuButton size="lg" className="cursor-default">
+                    <SidebarMenuButton
+                        size="lg"
+                        className="cursor-default hover:bg-transparent active:bg-transparent"
+                    >
                         <Avatar className="h-8 w-8 rounded-lg">
                             <AvatarFallback className="rounded-lg">{'PE'}</AvatarFallback>
                         </Avatar>
-                        Pelagica
+                        <div className="grid flex-1 text-left text-sm leading-tight">
+                            <span className="truncate font-medium">Pelagica</span>
+                            {serverDomain && (
+                                <span className="truncate text-xs font-normal text-muted-foreground">
+                                    {serverDomain}
+                                </span>
+                            )}
+                        </div>
                     </SidebarMenuButton>
                 </SidebarMenu>
             </SidebarHeader>
             <SidebarContent>
                 <SidebarGroup>
+                    <SidebarGroupLabel>{t('navigation')}</SidebarGroupLabel>
                     <SidebarGroupContent>
                         <SidebarMenu>
                             <SidebarMenuItem>
@@ -51,6 +79,22 @@ const AppSidebar = () => {
                                         {t('library')}
                                     </Link>
                                 </SidebarMenuButton>
+                                {views && views.Items && views.Items.length > 0 && (
+                                    <SidebarMenuSub>
+                                        {views.Items.map((view) => (
+                                            <SidebarMenuItem key={view.Id}>
+                                                <SidebarMenuButton asChild>
+                                                    <Link to={`/library?library=${view.Id}`}>
+                                                        <JellyfinLibraryIcon
+                                                            libraryType={view.CollectionType}
+                                                        />
+                                                        {view.Name}
+                                                    </Link>
+                                                </SidebarMenuButton>
+                                            </SidebarMenuItem>
+                                        ))}
+                                    </SidebarMenuSub>
+                                )}
                             </SidebarMenuItem>
                             <SidebarMenuItem>
                                 <SidebarMenuButton onClick={() => search.openSearch()}>

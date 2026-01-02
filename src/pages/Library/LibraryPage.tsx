@@ -3,7 +3,7 @@ import Page from '../Page';
 import { useUserViews } from '@/hooks/api/useMediaFolders';
 import { useMemo, useState, useEffect, useRef } from 'react';
 import { useLibraryItems } from '@/hooks/api/useLibraryItems';
-import { Link } from 'react-router';
+import { Link, useSearchParams } from 'react-router';
 import { getImageApi } from '@jellyfin/sdk/lib/utils/api/image-api';
 import { getApi } from '@/api/getApi';
 import { useTranslation } from 'react-i18next';
@@ -24,8 +24,8 @@ import {
     EmptyMedia,
     EmptyTitle,
 } from '@/components/ui/empty';
-import type { CollectionType } from '@jellyfin/sdk/lib/generated-client/models';
-import { Clapperboard, Folder, FolderOpen, MonitorPlay } from 'lucide-react';
+import { FolderOpen } from 'lucide-react';
+import JellyfinLibraryIcon from '@/components/JellyfinLibraryIcon';
 
 const ITEM_ROWS = 5;
 
@@ -205,41 +205,35 @@ const LibraryContent = ({
     );
 };
 
-function getLibraryTypeIcon(libraryType: CollectionType | undefined) {
-    switch (libraryType) {
-        case 'movies':
-            return <Clapperboard />;
-        case 'tvshows':
-            return <MonitorPlay />;
-        default:
-            return <Folder />;
-    }
-}
-
 const LibraryPage = () => {
     const pageRef = useRef<HTMLDivElement>(null);
     const { t } = useTranslation('library');
     const { data: libraries } = useUserViews();
-    const [selectedLibraryId, setSelectedLibraryId] = useState<string>('');
+    const [searchParams, setSearchParams] = useSearchParams();
 
     const firstLibraryId = libraries?.Items?.[0]?.Id ?? '';
+    const libraryIdFromUrl = searchParams.get('library') || '';
     const activeLibraryId =
-        selectedLibraryId && libraries?.Items?.some((library) => library.Id === selectedLibraryId)
-            ? selectedLibraryId
+        libraryIdFromUrl && libraries?.Items?.some((library) => library.Id === libraryIdFromUrl)
+            ? libraryIdFromUrl
             : firstLibraryId;
+
+    const handleLibraryChange = (libraryId: string) => {
+        setSearchParams({ library: libraryId });
+    };
 
     return (
         <Page title={t('title')} requiresAuth>
             <Tabs
                 value={activeLibraryId}
-                onValueChange={setSelectedLibraryId}
+                onValueChange={handleLibraryChange}
                 className="w-full"
                 ref={pageRef}
             >
                 <TabsList>
                     {libraries?.Items?.map((library) => (
                         <TabsTrigger key={library.Id} value={library.Id ?? ''}>
-                            {getLibraryTypeIcon(library.CollectionType)}
+                            <JellyfinLibraryIcon libraryType={library.CollectionType} />
                             {library.Name}
                         </TabsTrigger>
                     ))}
