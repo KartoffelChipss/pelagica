@@ -13,8 +13,10 @@ import { getImageApi } from '@jellyfin/sdk/lib/utils/api/image-api';
 import { getApi } from '@/api/getApi';
 import { Skeleton } from './ui/skeleton';
 import { Dot } from 'lucide-react';
+import { useTranslation } from 'react-i18next';
 
 export const SearchCommand = () => {
+    const { t } = useTranslation('search');
     const { isOpen, closeSearch } = useSearch();
     const navigate = useNavigate();
     const [query, setQuery] = useState('');
@@ -63,18 +65,22 @@ export const SearchCommand = () => {
         <CommandDialog
             open={isOpen}
             onOpenChange={closeSearch}
-            title="Search Media"
-            description="Search for movies, shows, and other media items"
+            title={t('title')}
+            description={t('description')}
             shouldFilter={false}
         >
-            <CommandInput placeholder="Search media..." value={query} onValueChange={setQuery} />
+            <CommandInput
+                placeholder={t('input_placeholder')}
+                value={query}
+                onValueChange={setQuery}
+            />
             <CommandList>
                 {error ? (
                     <div className="px-4 py-8 text-center text-sm text-destructive">
-                        Error: {error.message || 'Failed to search'}
+                        Error: {error.message || t('failed_search')}
                     </div>
                 ) : !query ? (
-                    <CommandEmpty>Start typing to search...</CommandEmpty>
+                    <CommandEmpty>{t('start_typing')}</CommandEmpty>
                 ) : isLoading ? (
                     <>
                         {Array.from({ length: 3 }).map((_, i) => (
@@ -123,7 +129,7 @@ export const SearchCommand = () => {
                         ))}
                     </>
                 ) : (
-                    <CommandEmpty>No results found</CommandEmpty>
+                    <CommandEmpty>{t('no_results')}</CommandEmpty>
                 )}
             </CommandList>
         </CommandDialog>

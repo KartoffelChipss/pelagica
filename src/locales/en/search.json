@@ -1,0 +1,8 @@
+{
+    "title": "Search Media",
+    "description": "Search for movies, shows, and other media items",
+    "input_placeholder": "Search media...",
+    "failed_search": "Failed to search",
+    "start_typing": "Start typing to search...",
+    "no_results": "No results found"
+}

@@ -12,6 +12,8 @@ import enHome from './locales/en/home.json';
 import deHome from './locales/de/home.json';
 import enLibrary from './locales/en/library.json';
 import deLibrary from './locales/de/library.json';
+import enSearch from './locales/en/search.json';
+import deSearch from './locales/de/search.json';
 
 i18n.use(LanguageDetector)
     .use(initReactI18next)
@@ -23,6 +25,7 @@ i18n.use(LanguageDetector)
                 login: enLogin,
                 home: enHome,
                 library: enLibrary,
+                search: enSearch,
             },
             de: {
                 common: deCommon,
@@ -30,6 +33,7 @@ i18n.use(LanguageDetector)
                 login: deLogin,
                 home: deHome,
                 library: deLibrary,
+                search: deSearch,
             },
         },
         fallbackLng: 'en',

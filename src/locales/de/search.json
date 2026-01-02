@@ -1,0 +1,8 @@
+{
+    "title": "Durchsuche Medien",
+    "description": "Suche nach Filmen, Serien und anderen Medieninhalten",
+    "input_placeholder": "Medien durchsuchen...",
+    "failed_search": "Suche fehlgeschlagen",
+    "start_typing": "Gib etwas ein um zu suchen...",
+    "no_results": "Keine Ergebnisse gefunden"
+}
