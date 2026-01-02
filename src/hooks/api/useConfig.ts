@@ -91,6 +91,7 @@ export interface LibrarySettings {
 }
 
 export interface AppConfig {
+    serverAddress?: string;
     /** Sections to display on the home screen, in order */
     homeScreenSections?: HomeScreenSection[];
 }

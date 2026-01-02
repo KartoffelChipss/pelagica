@@ -1,4 +1,4 @@
-import { useState } from 'react';
+import { useEffect, useState } from 'react';
 import Page from '../Page';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
@@ -10,11 +10,15 @@ import { useLogin } from '@/hooks/api/useLogin';
 import { Spinner } from '@/components/ui/spinner';
 import { useNavigate } from 'react-router';
 import { useTranslation } from 'react-i18next';
+import { useConfig } from '@/hooks/api/useConfig';
 
 const LoginPage = () => {
+    const { config } = useConfig();
     const navigate = useNavigate();
     const { t } = useTranslation('login');
-    const [step, setStep] = useState<'server' | 'login'>('server');
+    const [step, setStep] = useState<'server' | 'login'>(
+        config?.serverAddress ? 'login' : 'server'
+    );
 
     const [checkingServer, setCheckingServer] = useState(false);
     const [serverCheckError, setServerCheckError] = useState<string | null>(null);
@@ -22,6 +26,24 @@ const LoginPage = () => {
     const login = useLogin();
     const [loggingIn, setLoggingIn] = useState(false);
     const [loginError, setLoginError] = useState<string | null>(null);
+
+    useEffect(() => {
+        if (config?.serverAddress) {
+            if (!config.serverAddress.trim()) return;
+            if (
+                !config.serverAddress.startsWith('http://') &&
+                !config.serverAddress.startsWith('https://')
+            ) {
+                console.warn(
+                    'Ignoring predefined server address: If you specify a server address in config.json, it must include http:// or https://'
+                );
+                return;
+            }
+            localStorage.setItem('jf_server', config.serverAddress);
+            setStep('login');
+            setServerCheckError(null);
+        }
+    }, [config?.serverAddress]);
 
     const onSubmitServer = async (e: React.FormEvent) => {
         setCheckingServer(true);
@@ -71,6 +93,8 @@ const LoginPage = () => {
         }
 
         try {
+            console.log('Attempting login for user:', username);
+            console.log('Using server:', localStorage.getItem('jf_server') || '');
             await login.mutateAsync({
                 server: localStorage.getItem('jf_server') || '',
                 username,

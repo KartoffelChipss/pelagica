@@ -10,6 +10,9 @@
             "$ref": "#/definitions/HomeScreenSection"
           },
           "type": "array"
+        },
+        "serverAddress": {
+          "type": "string"
         }
       },
       "type": "object"
