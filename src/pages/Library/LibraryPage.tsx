@@ -30,6 +30,7 @@ import { Clapperboard, Folder, FolderOpen, MonitorPlay } from 'lucide-react';
 const ITEM_ROWS = 5;
 
 function getColumnCount(width: number): number {
+    if (width >= 1536) return 9; // 2xl
     if (width >= 1280) return 7; // xl
     if (width >= 1024) return 5; // lg
     if (width >= 768) return 4; // md
@@ -115,7 +116,7 @@ const LibraryContent = ({
             )}
             {!isLoading && libraryData && libraryData.items && libraryData.items.length > 0 && (
                 <>
-                    <div className="w-full grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 lg:grid-cols-5 xl:grid-cols-7 gap-4 mt-2">
+                    <div className="w-full gap-4 mt-2 grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 lg:grid-cols-5 xl:grid-cols-7 2xl:grid-cols-9">
                         {libraryData.items.map((item) => (
                             <Link to={`/item/${item.Id}`} key={item.Id} className="p-0 m-0">
                                 <div className="relative w-full aspect-2/3 overflow-hidden rounded-md group">
