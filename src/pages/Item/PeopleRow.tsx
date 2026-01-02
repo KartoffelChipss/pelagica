@@ -82,11 +82,6 @@ const PeopleRow = memo(
                                     {person.Role}
                                 </p>
                             )}
-                            {person.Type && (
-                                <p className="mt-1 text-sm line-clamp-2 text-ellipsis text-muted-foreground text-center">
-                                    {person.Type}
-                                </p>
-                            )}
                         </Link>
                     )) || []
                 }
