@@ -48,7 +48,7 @@ const PeopleRow = memo(
                     people?.map((person) => (
                         <Link
                             to={`/item/${person.Id}`}
-                            key={person.Id}
+                            key={`${person.Id}-${person.Role}`}
                             className="group min-w-30 w-30"
                         >
                             <div className="aspect-square w-full rounded-full overflow-hidden">
