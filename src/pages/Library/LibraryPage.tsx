@@ -45,7 +45,7 @@ const LibraryContent = ({
     libraryId: string;
     pageRef: React.RefObject<HTMLDivElement | null>;
 }) => {
-    const { t } = useTranslation('library');
+    const { t } = useTranslation(['library', 'common']);
     const [page, setPage] = useState(0);
     const [pageSize, setPageSize] = useState(
         () => getColumnCount(typeof window !== 'undefined' ? window.innerWidth : 640) * ITEM_ROWS
@@ -109,8 +109,8 @@ const LibraryContent = ({
                         <EmptyMedia variant="icon">
                             <FolderOpen />
                         </EmptyMedia>
-                        <EmptyTitle>{t('no_items_title')}</EmptyTitle>
-                        <EmptyDescription>{t('no_items_description')}</EmptyDescription>
+                        <EmptyTitle>{t('library:no_items_title')}</EmptyTitle>
+                        <EmptyDescription>{t('library:no_items_description')}</EmptyDescription>
                     </EmptyHeader>
                 </Empty>
             )}
@@ -123,7 +123,7 @@ const LibraryContent = ({
                                     <img
                                         key={item.Id}
                                         src={`${posterUrls[item.Id!]}?maxWidth=416&maxHeight=640&quality=85`}
-                                        alt={item.Name || t('no_title')}
+                                        alt={item.Name || t('library:no_title')}
                                         className="w-full h-full object-cover rounded-md group-hover:opacity-75 transition-all group-hover:scale-105 z-10"
                                         loading="lazy"
                                     />
@@ -147,6 +147,7 @@ const LibraryContent = ({
                             <PaginationContent>
                                 <PaginationItem>
                                     <PaginationPrevious
+                                        text={t('common:previous')}
                                         onClick={() => setPage((p) => Math.max(0, p - 1))}
                                         className={
                                             page === 0
@@ -186,6 +187,7 @@ const LibraryContent = ({
                                 })}
                                 <PaginationItem>
                                     <PaginationNext
+                                        text={t('common:next')}
                                         onClick={() =>
                                             setPage((p) => Math.min(totalPages - 1, p + 1))
                                         }
