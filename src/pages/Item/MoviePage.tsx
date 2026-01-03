@@ -1,9 +1,8 @@
 import type { BaseItemDto } from '@jellyfin/sdk/lib/generated-client/models';
 import BaseMediaPage from './BaseMediaPage';
 import DescriptionItem from './DescriptionItem';
-import { Badge } from '@/components/ui/badge';
 import { getPrimaryImageUrl } from '@/utils/images';
-import { Heart, Play, Star } from 'lucide-react';
+import { Heart, Play } from 'lucide-react';
 import PeopleRow from './PeopleRow';
 import { Button } from '@/components/ui/button';
 import { useTranslation } from 'react-i18next';
@@ -11,13 +10,14 @@ import { Skeleton } from '@/components/ui/skeleton';
 import MoreLikeThisRow from './MoreLikeThisRow';
 import type { AppConfig } from '@/hooks/api/useConfig';
 import { useFavorite } from '@/hooks/api/useFavorite';
+import DetailBadges from './DetailBadges';
 
 interface MoviePageProps {
     item: BaseItemDto;
     config: AppConfig;
 }
 
-const MoviePage = ({ item }: MoviePageProps) => {
+const MoviePage = ({ item, config }: MoviePageProps) => {
     const { t } = useTranslation('item');
     const { isFavorite, toggleFavorite, isLoading: isFavoriteLoading } = useFavorite(item.Id);
 
@@ -49,20 +49,7 @@ const MoviePage = ({ item }: MoviePageProps) => {
                 </div>
                 <div className="flex flex-col gap-3">
                     <h2 className="text-4xl sm:text-5xl font-bold mt-2">{item.Name}</h2>
-                    <div className="flex flex-wrap gap-2">
-                        {item.ProductionYear && (
-                            <Badge variant={'outline'}>{item.ProductionYear}</Badge>
-                        )}
-                        {item.CommunityRating && (
-                            <Badge variant={'outline'}>
-                                <Star size={14} />
-                                {item.CommunityRating?.toFixed(1)}
-                            </Badge>
-                        )}
-                        {item.OfficialRating && (
-                            <Badge variant={'outline'}>{item.OfficialRating}</Badge>
-                        )}
-                    </div>
+                    <DetailBadges item={item} appConfig={config} />
                     <div className="mt-1 flex items-center gap-2">
                         <Button className="w-min">
                             <Play />

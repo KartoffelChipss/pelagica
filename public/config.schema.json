@@ -70,6 +70,20 @@
       ],
       "type": "string"
     },
+    "DetailBadge": {
+      "enum": [
+        "ReleaseYear",
+        "ReleaseYearAndMonth",
+        "ReleaseDate",
+        "CommunityRating",
+        "PlayDuration",
+        "PlayEnd",
+        "SeasonCount",
+        "EpisodeCount",
+        "AgeRating"
+      ],
+      "type": "string"
+    },
     "DetailField": {
       "enum": [
         "ReleaseYear",
@@ -109,6 +123,13 @@
     },
     "ItemPageSettings": {
       "properties": {
+        "detailBadges": {
+          "description": "Which badges to show on item detail pages",
+          "items": {
+            "$ref": "#/definitions/DetailBadge"
+          },
+          "type": "array"
+        },
         "episodeDisplay": {
           "$ref": "#/definitions/EpisodeDisplay",
           "description": "How to display episodes on series pages"

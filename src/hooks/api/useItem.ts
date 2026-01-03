@@ -12,7 +12,14 @@ export function useItem(itemId: string | null | undefined) {
             const itemsApi = getItemsApi(api);
             const response = await itemsApi.getItems({
                 ids: [itemId!],
-                fields: ['Overview', 'Genres', 'People', 'Studios'],
+                fields: [
+                    'Overview',
+                    'Genres',
+                    'People',
+                    'Studios',
+                    'ChildCount',
+                    'RecursiveItemCount',
+                ],
             });
             const item = response.data.Items?.[0];
             if (!item) {

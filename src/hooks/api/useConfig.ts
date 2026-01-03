@@ -89,9 +89,22 @@ export type HomeScreenSection =
 
 export type EpisodeDisplay = 'grid' | 'row';
 
+export type DetailBadge =
+    | 'ReleaseYear'
+    | 'ReleaseYearAndMonth'
+    | 'ReleaseDate'
+    | 'CommunityRating'
+    | 'PlayDuration'
+    | 'PlayEnd'
+    | 'SeasonCount'
+    | 'EpisodeCount'
+    | 'AgeRating';
+
 export interface ItemPageSettings {
     /** How to display episodes on series pages */
     episodeDisplay?: EpisodeDisplay;
+    /** Which badges to show on item detail pages */
+    detailBadges?: DetailBadge[];
 }
 
 export interface AppConfig {
@@ -104,6 +117,7 @@ export interface AppConfig {
 
 const DEFAULT_ITEM_PAGE_SETTINGS: ItemPageSettings = {
     episodeDisplay: 'row',
+    detailBadges: ['ReleaseYear', 'CommunityRating', 'AgeRating'],
 };
 
 const DEFAULT_CONFIG: AppConfig = {

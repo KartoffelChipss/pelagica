@@ -24,6 +24,7 @@ import DescriptionItem from './DescriptionItem';
 import MoreLikeThisRow from './MoreLikeThisRow';
 import { type AppConfig, type EpisodeDisplay } from '@/hooks/api/useConfig';
 import { useFavorite } from '@/hooks/api/useFavorite';
+import DetailBadges from './DetailBadges';
 
 const EpisodeComponent = memo(
     ({
@@ -301,20 +302,7 @@ const SeriesPage = ({ item, config }: SeriesPageProps) => {
                 </div>
                 <div className="flex flex-col gap-3">
                     <h2 className="text-4xl sm:text-5xl font-bold mt-2">{item.Name}</h2>
-                    <div className="flex flex-wrap gap-2">
-                        {item.ProductionYear && (
-                            <Badge variant={'outline'}>{item.ProductionYear}</Badge>
-                        )}
-                        {item.CommunityRating && (
-                            <Badge variant={'outline'}>
-                                <Star size={14} />
-                                {item.CommunityRating?.toFixed(1)}
-                            </Badge>
-                        )}
-                        {item.OfficialRating && (
-                            <Badge variant={'outline'}>{item.OfficialRating}</Badge>
-                        )}
-                    </div>
+                    <DetailBadges item={item} appConfig={config} />
                     <div className="mt-1 flex items-center gap-2">
                         {episodeToContinue ? (
                             <Button className="w-fit" asChild>

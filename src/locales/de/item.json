@@ -13,5 +13,10 @@
     "select_season": "Staffel auswählen",
     "loading": "Laden...",
     "item_not_found": "Element nicht gefunden",
-    "more_like_this": "Mehr davon"
+    "more_like_this": "Mehr davon",
+    "season_count": "{{count}} Staffel",
+    "season_count_plural": "{{count}} Staffeln",
+    "episode_count": "{{count}} Episode",
+    "episode_count_plural": "{{count}} Episoden",
+    "ends_at": "Endet um {{date}}"
 }
