@@ -12,6 +12,7 @@ import { getEndsAt, ticksToReadableTime } from '@/utils/timeConversion';
 import { Star } from 'lucide-react';
 import { useTranslation } from 'react-i18next';
 import type { TFunction } from 'i18next';
+import ScrollableSectionPoster from '@/components/ScrollableSectionPoster';
 
 interface ItemsRowProps {
     title?: string;
@@ -125,20 +126,11 @@ const ItemsRow = ({ title, allLink, items, detailFields }: ItemsRowProps) => {
                 items={
                     recentItems
                         ? recentItems.map((item) => (
-                              <Link to={`/item/${item.Id}`} key={item.Id}>
-                                  <div className="relative w-36 h-54 lg:w-44 lg:h-64 2xl:w-52 2xl:h-80 overflow-hidden rounded-md group">
-                                      <img
-                                          key={item.Id}
-                                          src={`${posterUrls[item.Id!]}?maxWidth=416&maxHeight=640&quality=85`}
-                                          alt={item.Name || t('no_title')}
-                                          className="min-w-36 lg:min-w-44 2xl:min-w-52 w-36 lg:w-44 2xl:w-52 min-h-54 lg:min-h-64 2xl:min-h-80 h-54 lg:h-64 2xl:h-80 object-cover rounded-md group-hover:opacity-75 transition-all group-hover:scale-105 z-10"
-                                          loading="lazy"
-                                      />
-                                      <Skeleton className="absolute bottom-0 left-0 right-0 h-54 lg:h-64 2xl:h-80 -z-1" />
-                                  </div>
-                                  <p className="mt-2 text-sm line-clamp-1 text-ellipsis break-all max-w-36 lg:max-w-44 2xl:max-w-52">
-                                      {item.Name || t('no_title')}
-                                  </p>
+                              <ScrollableSectionPoster
+                                  key={item.Id}
+                                  item={item}
+                                  posterUrl={`${posterUrls[item.Id!]}?maxWidth=416&maxHeight=640&quality=85`}
+                              >
                                   <div className="flex flex-wrap items-center mt-1">
                                       {detailFields && detailFields.length > 0
                                           ? detailFields.map((field) => (
@@ -151,7 +143,7 @@ const ItemsRow = ({ title, allLink, items, detailFields }: ItemsRowProps) => {
                                             ))
                                           : null}
                                   </div>
-                              </Link>
+                              </ScrollableSectionPoster>
                           ))
                         : Array.from({ length: 5 }).map((_, index) => (
                               <div key={index} className="w-36 lg:w-44 2xl:w-52">

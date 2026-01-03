@@ -12,7 +12,7 @@ const HomePage = () => {
     const { config } = useConfig();
 
     return (
-        <Page title={t('title')} requiresAuth={true}>
+        <Page title={'Pelagica'} requiresAuth={true}>
             <div className="flex flex-col gap-4">
                 {config.homeScreenSections?.map((section, index) => {
                     if (!section.enabled) return null;

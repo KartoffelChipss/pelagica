@@ -21,6 +21,7 @@ import { ticksToReadableTime } from '@/utils/timeConversion';
 import PeopleRow from './PeopleRow';
 import BaseMediaPage from './BaseMediaPage';
 import DescriptionItem from './DescriptionItem';
+import MoreLikeThisRow from './MoreLikeThisRow';
 
 const EpisodesRow = memo(
     ({
@@ -323,13 +324,15 @@ const SeriesPage = ({ item }: SeriesPageProps) => {
                 />
                 {error && <p>Error loading seasons: {(error as Error).message}</p>}
             </div>
-            <div>
-                <PeopleRow
-                    title={<h3 className="text-3xl font-bold">{t('cast_and_crew')}</h3>}
-                    people={item.People || []}
-                    loading={isLoading}
-                />
-            </div>
+            <PeopleRow
+                title={<h3 className="text-3xl font-bold">{t('cast_and_crew')}</h3>}
+                people={item.People || []}
+                loading={isLoading}
+            />
+            <MoreLikeThisRow
+                title={<h3 className="text-3xl font-bold">{t('more_like_this')}</h3>}
+                itemId={item.Id || ''}
+            />
         </BaseMediaPage>
     );
 };

@@ -12,5 +12,6 @@
     "episodes": "Episoden",
     "select_season": "Staffel auswählen",
     "loading": "Laden...",
-    "item_not_found": "Element nicht gefunden"
+    "item_not_found": "Element nicht gefunden",
+    "more_like_this": "Mehr davon"
 }

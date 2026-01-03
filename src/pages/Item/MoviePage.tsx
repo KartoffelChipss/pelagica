@@ -8,6 +8,7 @@ import PeopleRow from './PeopleRow';
 import { Button } from '@/components/ui/button';
 import { useTranslation } from 'react-i18next';
 import { Skeleton } from '@/components/ui/skeleton';
+import MoreLikeThisRow from './MoreLikeThisRow';
 
 interface MoviePageProps {
     item: BaseItemDto;
@@ -95,7 +96,14 @@ const MoviePage = ({ item }: MoviePageProps) => {
                     />
                 </div>
             </div>
-            <PeopleRow title={t('cast_and_crew')} people={item.People || []} />
+            <PeopleRow
+                title={<h3 className="text-3xl font-bold">{t('cast_and_crew')}</h3>}
+                people={item.People || []}
+            />
+            <MoreLikeThisRow
+                title={<h3 className="text-3xl font-bold">{t('more_like_this')}</h3>}
+                itemId={item.Id || ''}
+            />
         </BaseMediaPage>
     );
 };
