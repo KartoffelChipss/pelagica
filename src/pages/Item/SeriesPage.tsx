@@ -102,7 +102,7 @@ const EpisodeComponent = memo(
                 <p className="mt-2 text-md line-clamp-1 text-ellipsis break-all">
                     {episode.Name || t('no_title')}
                 </p>
-                <p className="mt-1 text-sm line-clamp-2 text-ellipsis break-all text-muted-foreground">
+                <p className="mt-1 text-sm line-clamp-2 text-ellipsis text-muted-foreground">
                     {episode.Overview}
                 </p>
                 <div className="flex flex-wrap items-center gap-2 mt-2">
