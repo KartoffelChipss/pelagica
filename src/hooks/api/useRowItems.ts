@@ -24,7 +24,7 @@ export function useRowItems(items?: SectionItemsConfig) {
                 includeItemTypes: sectionTypes,
                 genres: items?.genres,
                 tags: items?.tags,
-                isFavorite: items?.isFavorite || undefined,
+                isFavorite: items?.isFavorite ?? undefined,
             });
             return response.data.Items;
         },
