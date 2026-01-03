@@ -12,8 +12,10 @@ import { useNavigate } from 'react-router';
 import { getImageApi } from '@jellyfin/sdk/lib/utils/api/image-api';
 import { getApi } from '@/api/getApi';
 import { Skeleton } from './ui/skeleton';
-import { Dot } from 'lucide-react';
+import { Calendar, Star } from 'lucide-react';
 import { useTranslation } from 'react-i18next';
+import JellyfinItemKindIcon from './JellyfinItemKindIcon';
+import { Badge } from './ui/badge';
 
 export const SearchCommand = () => {
     const { t } = useTranslation('search');
@@ -74,7 +76,7 @@ export const SearchCommand = () => {
                 value={query}
                 onValueChange={setQuery}
             />
-            <CommandList>
+            <CommandList className="[&::-webkit-scrollbar]:w-2 [&::-webkit-scrollbar-track]:bg-transparent [&::-webkit-scrollbar-thumb]:bg-muted-foreground [&::-webkit-scrollbar-thumb]:rounded-full">
                 {error ? (
                     <div className="px-4 py-8 text-center text-sm text-destructive">
                         Error: {error.message || t('failed_search')}
@@ -105,7 +107,7 @@ export const SearchCommand = () => {
                                 }}
                             >
                                 <div className="flex items-start gap-3 w-full">
-                                    <div className="relative w-12 h-18 overflow-hidden rounded-md shrink-0">
+                                    <div className="relative w-13 h-20 overflow-hidden rounded-md shrink-0">
                                         <img
                                             src={`${posterUrls[item.Id!]}?maxWidth=96&maxHeight=144&quality=85`}
                                             alt={item.Name || ''}
@@ -115,14 +117,34 @@ export const SearchCommand = () => {
                                         <Skeleton className="absolute bottom-0 left-0 right-0 top-0 -z-1" />
                                     </div>
                                     <div className="flex flex-col justify-start min-w-0 flex-1">
-                                        <p className="text-md font-medium line-clamp-2 text-ellipsis break-all">
-                                            {item.Name || ''}
-                                        </p>
-                                        <div className="flex items-center mt-1 text-xs text-muted-foreground">
-                                            <span>{item.Type}</span>
-                                            <Dot />
-                                            <span>{item.ProductionYear}</span>
+                                        <div className="flex items-center">
+                                            <p className="text-lg line-clamp-1 text-ellipsis break-all">
+                                                {item.Name || ''}
+                                            </p>
+                                            <Badge variant={'outline'} className="flex ml-2">
+                                                <JellyfinItemKindIcon kind={item.Type!} />
+                                                {item.Type}
+                                            </Badge>
                                         </div>
+                                        <div className="flex items-center gap-3 mt-1 text-xs text-muted-foreground">
+                                            {item.ProductionYear && (
+                                                <div className="flex items-center gap-1">
+                                                    <Calendar className="h-3! w-3!" />
+                                                    <span>{item.ProductionYear}</span>
+                                                </div>
+                                            )}
+                                            {item.CommunityRating && (
+                                                <div className="flex items-center gap-1">
+                                                    <Star className="h-3! w-3!" />
+                                                    <span>{item.CommunityRating.toFixed(1)}</span>
+                                                </div>
+                                            )}
+                                        </div>
+                                        {item.Overview && (
+                                            <p className="text-xs text-muted-foreground line-clamp-1 mt-2">
+                                                {item.Overview}
+                                            </p>
+                                        )}
                                     </div>
                                 </div>
                             </CommandItem>
