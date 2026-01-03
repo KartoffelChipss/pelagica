@@ -2,7 +2,7 @@
     "$schema": "./config.schema.json",
     "itemPage": {
         "episodeDisplay": "grid",
-        "detailBadges": []
+        "detailBadges": ["ReleaseYear", "CommunityRating", "AgeRating"]
     },
     "homeScreenSections": [
         {

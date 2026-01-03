@@ -41,7 +41,7 @@ function getDetailBadge(
             return item.RunTimeTicks ? ticksToReadableTime(item.RunTimeTicks) : null;
         case 'PlayEnd':
             return item.RunTimeTicks
-                ? t('item:ends_at', {
+                ? t('ends_at', {
                       date: getEndsAt(item.RunTimeTicks).toLocaleTimeString([], {
                           hour: '2-digit',
                           minute: '2-digit',
@@ -49,50 +49,49 @@ function getDetailBadge(
                   })
                 : null;
         case 'SeasonCount':
-            console.log('ChildCount:', item.ChildCount);
             return item.ChildCount !== undefined && item.ChildCount !== null
                 ? item.ChildCount === 1
-                    ? t('item:season_count', { count: item.ChildCount })
-                    : t('item:season_count_plural', { count: item.ChildCount })
+                    ? t('season_count', { count: item.ChildCount })
+                    : t('season_count_plural', { count: item.ChildCount })
                 : null;
         case 'EpisodeCount':
             return item.RecursiveItemCount !== undefined && item.RecursiveItemCount !== null
                 ? item.RecursiveItemCount === 1
-                    ? t('item:episode_count', { count: item.RecursiveItemCount })
-                    : t('item:episode_count_plural', { count: item.RecursiveItemCount })
+                    ? t('episode_count', { count: item.RecursiveItemCount })
+                    : t('episode_count_plural', { count: item.RecursiveItemCount })
                 : null;
         case 'AgeRating':
             return item.OfficialRating || null;
         default:
-            return '';
+            return null;
     }
 }
 
-interface TopDetailsDisplayProps {
+interface DetailBadgesProps {
     item: BaseItemDto;
     appConfig: AppConfig;
 }
 
-const DetailBadges = ({ item, appConfig }: TopDetailsDisplayProps) => {
-    const { t } = useTranslation('library');
+const DetailBadges = ({ item, appConfig }: DetailBadgesProps) => {
+    const { t } = useTranslation('item');
     const detailBadges = appConfig.itemPage?.detailBadges;
+
     if (!detailBadges || detailBadges.length === 0) return null;
 
-    return (
-        <div className="flex flex-wrap gap-2">
-            {detailBadges.map((badgeType) => {
-                const badgeContent = getDetailBadge(item, badgeType, t);
-                if (badgeContent) {
-                    return (
-                        <Badge key={badgeType} variant={'outline'}>
-                            {badgeContent}
-                        </Badge>
-                    );
-                }
-                return null;
-            })}
-        </div>
-    );
+    const badgeElements = detailBadges
+        .map((badgeType) => {
+            const badgeContent = getDetailBadge(item, badgeType, t);
+            return badgeContent ? (
+                <Badge key={badgeType} variant={'outline'}>
+                    {badgeContent}
+                </Badge>
+            ) : null;
+        })
+        .filter(Boolean);
+
+    return badgeElements.length > 0 ? (
+        <div className="flex flex-wrap gap-2">{badgeElements}</div>
+    ) : null;
 };
 
 export default DetailBadges;
