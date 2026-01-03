@@ -8,6 +8,7 @@ export function useItem(itemId: string | null | undefined) {
     return useQuery<BaseItemDto>({
         queryKey: ['item', itemId],
         queryFn: async (): Promise<BaseItemDto> => {
+            await new Promise((resolve) => setTimeout(resolve, 3000)); // Simulate network delay
             const api = getApi();
             const itemsApi = getItemsApi(api);
             const response = await itemsApi.getItems({
