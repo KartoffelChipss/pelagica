@@ -7,6 +7,7 @@ import { Skeleton } from '@/components/ui/skeleton';
 import { memo } from 'react';
 import { useTranslation } from 'react-i18next';
 import { useConfig } from '@/hooks/api/useConfig';
+import EpisodePage from './EpisodePage';
 
 const ItemPageSkeleton = memo(() => {
     return (
@@ -102,8 +103,24 @@ const ItemPage = () => {
         >
             {(isLoading || configLoading) && <ItemPageSkeleton />}
             {error && <p>Error loading item details.</p>}
-            {item && item.Type === 'Movie' && <MoviePage item={item} config={config} />}
-            {item && item.Type === 'Series' && <SeriesPage item={item} config={config} />}
+            {item &&
+                (() => {
+                    switch (item.Type) {
+                        case 'Movie':
+                            return <MoviePage item={item} config={config} />;
+                        case 'Series':
+                            return <SeriesPage item={item} config={config} />;
+                        case 'Episode':
+                            return <EpisodePage item={item} config={config} />;
+                        default:
+                            return (
+                                <p>
+                                    Unsupported item type "{item.Type}" for item "{item.Name}" with
+                                    ID "{item.Id}"
+                                </p>
+                            );
+                    }
+                })()}
         </Page>
     );
 };

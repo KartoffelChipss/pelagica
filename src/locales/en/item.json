@@ -9,6 +9,7 @@
     "studios": "Studios",
     "cast_and_crew": "Cast and Crew",
     "no_title": "No Title",
+    "season_x": "Season {{number}}",
     "episodes": "Episodes",
     "select_season": "Select Season",
     "loading": "Loading...",

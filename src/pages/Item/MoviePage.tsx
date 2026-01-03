@@ -37,7 +37,7 @@ const MoviePage = ({ item, config }: MoviePageProps) => {
         item.UserData.PlaybackPositionTicks < item.RunTimeTicks;
 
     return (
-        <BaseMediaPage item={item}>
+        <BaseMediaPage itemId={item.Id || ''} name={item.Name || ''}>
             <div className="flex flex-col md:flex-row gap-6 max-w-7xl">
                 <div className="relative w-60 min-w-60 h-90 sm:w-72 sm:min-w-72 sm:h-108 hidden sm:block">
                     <img

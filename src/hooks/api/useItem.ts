@@ -19,6 +19,7 @@ export function useItem(itemId: string | null | undefined) {
                     'Studios',
                     'ChildCount',
                     'RecursiveItemCount',
+                    'ParentId',
                 ],
             });
             const item = response.data.Items?.[0];
