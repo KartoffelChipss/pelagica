@@ -4,6 +4,7 @@ import { useItem } from '@/hooks/api/useItem';
 import MoviePage from './MoviePage';
 import SeriesPage from './SeriesPage';
 import { Skeleton } from '@/components/ui/skeleton';
+import { useTranslation } from 'react-i18next';
 
 const ItemPageSkeleton = () => {
     return (
@@ -83,6 +84,7 @@ const ItemPageSkeleton = () => {
 };
 
 const ItemPage = () => {
+    const { t } = useTranslation('item');
     const params = useParams<{ itemId: string }>();
     const itemId = params.itemId;
 
@@ -90,7 +92,7 @@ const ItemPage = () => {
 
     return (
         <Page
-            title={item ? `${item.Name}` : isLoading ? 'Loading...' : 'Item Not Found'}
+            title={item ? `${item.Name}` : isLoading ? t('loading') : t('item_not_found')}
             className="min-h-full"
         >
             {isLoading && <ItemPageSkeleton />}

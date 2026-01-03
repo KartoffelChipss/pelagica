@@ -11,5 +11,6 @@
     "no_title": "Kein Titel",
     "episodes": "Episoden",
     "select_season": "Staffel auswählen",
-    "loading": "Laden..."
+    "loading": "Laden...",
+    "item_not_found": "Element nicht gefunden"
 }
