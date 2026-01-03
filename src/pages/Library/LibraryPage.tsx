@@ -24,8 +24,26 @@ import {
     EmptyMedia,
     EmptyTitle,
 } from '@/components/ui/empty';
-import { FolderOpen } from 'lucide-react';
+import {
+    ArrowDownWideNarrow,
+    ArrowUpNarrowWideIcon,
+    Calendar,
+    CalendarPlus,
+    CaseSensitive,
+    Clock,
+    FolderOpen,
+    Star,
+} from 'lucide-react';
 import JellyfinLibraryIcon from '@/components/JellyfinLibraryIcon';
+import {
+    Select,
+    SelectContent,
+    SelectItem,
+    SelectTrigger,
+    SelectValue,
+} from '@/components/ui/select';
+import type { ItemSortBy, SortOrder } from '@jellyfin/sdk/lib/generated-client/models';
+import { ButtonGroup } from '@/components/ui/button-group';
 
 const ITEM_ROWS = 5;
 
@@ -41,9 +59,13 @@ function getColumnCount(width: number): number {
 const LibraryContent = ({
     libraryId,
     pageRef,
+    sortBy,
+    sortOrder,
 }: {
     libraryId: string;
     pageRef: React.RefObject<HTMLDivElement | null>;
+    sortBy: ItemSortBy;
+    sortOrder: SortOrder;
 }) => {
     const { t } = useTranslation(['library', 'common']);
     const [page, setPage] = useState(0);
@@ -66,6 +88,8 @@ const LibraryContent = ({
         limit: pageSize,
         startIndex: page * pageSize,
         includeItemTypes: ['Series', 'Movie'],
+        sortBy: [sortBy],
+        sortOrder,
     });
 
     useEffect(() => {
@@ -212,6 +236,8 @@ const LibraryPage = () => {
     const { t } = useTranslation('library');
     const { data: libraries } = useUserViews();
     const [searchParams, setSearchParams] = useSearchParams();
+    const [sortBy, setSortBy] = useState<ItemSortBy>('Name');
+    const [sortOrder, setSortOrder] = useState<SortOrder>('Ascending');
 
     const firstLibraryId = libraries?.Items?.[0]?.Id ?? '';
     const libraryIdFromUrl = searchParams.get('library') || '';
@@ -232,17 +258,77 @@ const LibraryPage = () => {
                 className="w-full"
                 ref={pageRef}
             >
-                <TabsList>
-                    {libraries?.Items?.map((library) => (
-                        <TabsTrigger key={library.Id} value={library.Id ?? ''}>
-                            <JellyfinLibraryIcon libraryType={library.CollectionType} />
-                            {library.Name}
-                        </TabsTrigger>
-                    ))}
-                </TabsList>
+                <div className="flex items-center justify-between">
+                    <TabsList>
+                        {libraries?.Items?.map((library) => (
+                            <TabsTrigger key={library.Id} value={library.Id ?? ''}>
+                                <JellyfinLibraryIcon libraryType={library.CollectionType} />
+                                {library.Name}
+                            </TabsTrigger>
+                        ))}
+                    </TabsList>
+                    <ButtonGroup>
+                        <Select
+                            onValueChange={(value) => setSortBy(value as ItemSortBy)}
+                            value={sortBy}
+                        >
+                            <SelectTrigger size="sm">
+                                <SelectValue placeholder="Sort" />
+                            </SelectTrigger>
+                            <SelectContent>
+                                <SelectItem value="Name">
+                                    <CaseSensitive />
+                                    {t('sort_name')}
+                                </SelectItem>
+                                <SelectItem value="DateCreated">
+                                    <CalendarPlus />
+                                    {t('sort_date_added')}
+                                </SelectItem>
+                                <SelectItem value="PremiereDate">
+                                    <Calendar />
+                                    {t('sort_premiere_date')}
+                                </SelectItem>
+                                <SelectItem value="CommunityRating">
+                                    <Star />
+                                    {t('sort_community_rating')}
+                                </SelectItem>
+                                <SelectItem value="Runtime">
+                                    <Clock />
+                                    {t('sort_runtime')}
+                                </SelectItem>
+                            </SelectContent>
+                        </Select>
+                        <Select
+                            onValueChange={(value) => setSortOrder(value as SortOrder)}
+                            value={sortOrder}
+                        >
+                            <SelectTrigger size="sm">
+                                <SelectValue placeholder="Order" />
+                            </SelectTrigger>
+                            <SelectContent>
+                                <SelectItem value="Ascending">
+                                    <ArrowUpNarrowWideIcon />
+                                    {t('ascending')}
+                                </SelectItem>
+                                <SelectItem value="Descending">
+                                    <ArrowDownWideNarrow />
+                                    {t('descending')}
+                                </SelectItem>
+                            </SelectContent>
+                        </Select>
+                    </ButtonGroup>
+                </div>
                 {libraries?.Items?.map((library) => (
                     <TabsContent key={library.Id} value={library.Id ?? ''}>
-                        {library.Id && <LibraryContent libraryId={library.Id} pageRef={pageRef} />}
+                        {library.Id && (
+                            <LibraryContent
+                                key={`${library.Id}-${sortBy}-${sortOrder}`}
+                                libraryId={library.Id}
+                                pageRef={pageRef}
+                                sortBy={sortBy}
+                                sortOrder={sortOrder}
+                            />
+                        )}
                     </TabsContent>
                 ))}
             </Tabs>
