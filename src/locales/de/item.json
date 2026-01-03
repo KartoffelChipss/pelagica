@@ -1,0 +1,15 @@
+{
+    "resume": "Fortsetzen",
+    "continue_episode": "Setze S{{season}} E{{episode}} fort",
+    "play": "Abspielen",
+    "play_episode": "Starte S{{season}} E{{episode}}",
+    "genres": "Genres",
+    "writers": "Autoren",
+    "directors": "Regisseure",
+    "studios": "Studios",
+    "cast_and_crew": "Cast und Crew",
+    "no_title": "Kein Titel",
+    "episodes": "Episoden",
+    "select_season": "Staffel auswählen",
+    "loading": "Laden..."
+}

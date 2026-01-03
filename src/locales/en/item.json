@@ -1,0 +1,15 @@
+{
+    "resume": "Resume",
+    "continue_episode": "Continue S{{season}} E{{episode}}",
+    "play": "Play",
+    "play_episode": "Play S{{season}} E{{episode}}",
+    "genres": "Genres",
+    "writers": "Writers",
+    "directors": "Directors",
+    "studios": "Studios",
+    "cast_and_crew": "Cast and Crew",
+    "no_title": "No Title",
+    "episodes": "Episodes",
+    "select_season": "Select Season",
+    "loading": "Loading..."
+}

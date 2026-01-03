@@ -134,7 +134,7 @@ const EpisodesRow = memo(
                                     )}
                                 </div>
                                 <p className="mt-2 text-md line-clamp-1 text-ellipsis break-all">
-                                    {item.Name || 'No Title'}
+                                    {item.Name || t('no_title')}
                                 </p>
                                 <p className="mt-1 text-sm line-clamp-2 text-ellipsis break-all text-muted-foreground">
                                     {item.Overview}
@@ -180,6 +180,7 @@ interface SeriesPageProps {
 }
 
 const SeriesPage = ({ item }: SeriesPageProps) => {
+    const { t } = useTranslation('item');
     const [selectedSeason, setSelectedSeason] = useState<string | null>(null);
     const { data: seasons, isLoading, error } = useSeasons(item.Id || '');
 
@@ -193,7 +194,7 @@ const SeriesPage = ({ item }: SeriesPageProps) => {
         seasons && seasons.length > 0
             ? seasons.find((s) => s.IndexNumber === 1)?.Id || seasons[0]?.Id
             : undefined;
-    const { data: firstSeasonEpisodes } = useEpisodes(firstSeasonId || '');
+    const { data: firstSeasonEpisodes } = useEpisodes(firstSeasonId);
 
     const episodeToContinue =
         firstSeasonEpisodes?.find(
@@ -212,11 +213,14 @@ const SeriesPage = ({ item }: SeriesPageProps) => {
     return (
         <BaseMediaPage item={item}>
             <div className="flex flex-col md:flex-row gap-6 max-w-7xl">
-                <img
-                    src={getPrimaryImageUrl(item.Id || '')}
-                    alt={item.Name + ' Primary'}
-                    className="w-60 sm:w-70 object-cover rounded-md hidden sm:block"
-                />
+                <div className="relative w-60 min-w-60 h-90 sm:w-72 sm:min-w-72 sm:h-108 hidden sm:block">
+                    <img
+                        src={getPrimaryImageUrl(item.Id || '')}
+                        alt={item.Name + ' Primary'}
+                        className="object-cover rounded-md w-full h-full"
+                    />
+                    <Skeleton className="absolute inset-0 w-full h-full rounded-md -z-1" />
+                </div>
                 <div className="flex flex-col gap-3">
                     <h2 className="text-4xl sm:text-5xl font-bold mt-2">{item.Name}</h2>
                     <div className="flex flex-wrap gap-2">
@@ -233,21 +237,30 @@ const SeriesPage = ({ item }: SeriesPageProps) => {
                             <Badge variant={'outline'}>{item.OfficialRating}</Badge>
                         )}
                     </div>
-                    {episodeToContinue && (
+                    {episodeToContinue ? (
                         <Button className="w-fit mt-1" asChild>
                             <Link to={`/item/${episodeToContinue.Id}`}>
                                 <Play />
                                 {episodeToContinue.UserData?.PlaybackPositionTicks
-                                    ? 'Continue'
-                                    : 'Play'}{' '}
-                                S{episodeToContinue.ParentIndexNumber} E
-                                {episodeToContinue.IndexNumber}
+                                    ? t('continue_episode', {
+                                          season: episodeToContinue.ParentIndexNumber,
+                                          episode: episodeToContinue.IndexNumber,
+                                      })
+                                    : t('play_episode', {
+                                          season: episodeToContinue.ParentIndexNumber,
+                                          episode: episodeToContinue.IndexNumber,
+                                      })}
                             </Link>
+                        </Button>
+                    ) : (
+                        <Button className="w-fit mt-1" disabled>
+                            <Play />
+                            {t('loading')}
                         </Button>
                     )}
                     <p>{item.Overview}</p>
                     <DescriptionItem
-                        label="Genres"
+                        label={t('genres')}
                         items={
                             item.Genres?.map((genre) => ({
                                 link: null,
@@ -256,21 +269,21 @@ const SeriesPage = ({ item }: SeriesPageProps) => {
                         }
                     />
                     <DescriptionItem
-                        label="Writers"
+                        label={t('writers')}
                         items={writers.map((person) => ({
                             link: `/item/${person.Id}`,
                             name: person.Name!,
                         }))}
                     />
                     <DescriptionItem
-                        label="Directors"
+                        label={t('directors')}
                         items={directors.map((person) => ({
                             link: `/item/${person.Id}`,
                             name: person.Name!,
                         }))}
                     />
                     <DescriptionItem
-                        label="Studios"
+                        label={t('studios')}
                         items={studios.map((studio) => ({
                             link: null,
                             name: studio.Name!,
@@ -282,14 +295,14 @@ const SeriesPage = ({ item }: SeriesPageProps) => {
                 <EpisodesRow
                     title={
                         <div className="flex items-center gap-4">
-                            <h3 className="text-3xl font-bold">Seasons </h3>
+                            <h3 className="text-3xl font-bold">{t('episodes')}</h3>
                             <Select
                                 value={effectiveSelectedSeason || ''}
                                 onValueChange={(value) => setSelectedSeason(value || null)}
                                 disabled={isLoading || !seasons || seasons.length === 0}
                             >
                                 <SelectTrigger>
-                                    <SelectValue placeholder="Select Season" />
+                                    <SelectValue placeholder={t('select_season')} />
                                 </SelectTrigger>
                                 <SelectContent>
                                     {seasons?.map((season) => (
@@ -312,7 +325,7 @@ const SeriesPage = ({ item }: SeriesPageProps) => {
             </div>
             <div>
                 <PeopleRow
-                    title={<h3 className="text-3xl font-bold">Cast & Crew</h3>}
+                    title={<h3 className="text-3xl font-bold">{t('cast_and_crew')}</h3>}
                     people={item.People || []}
                     loading={isLoading}
                 />
