@@ -24,6 +24,7 @@ export function useRowItems(items?: SectionItemsConfig) {
                 includeItemTypes: sectionTypes,
                 genres: items?.genres,
                 tags: items?.tags,
+                isFavorite: items?.isFavorite || false,
             });
             return response.data.Items;
         },

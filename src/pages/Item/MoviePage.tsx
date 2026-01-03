@@ -3,13 +3,14 @@ import BaseMediaPage from './BaseMediaPage';
 import DescriptionItem from './DescriptionItem';
 import { Badge } from '@/components/ui/badge';
 import { getPrimaryImageUrl } from '@/utils/images';
-import { Play, Star } from 'lucide-react';
+import { Heart, Play, Star } from 'lucide-react';
 import PeopleRow from './PeopleRow';
 import { Button } from '@/components/ui/button';
 import { useTranslation } from 'react-i18next';
 import { Skeleton } from '@/components/ui/skeleton';
 import MoreLikeThisRow from './MoreLikeThisRow';
 import type { AppConfig } from '@/hooks/api/useConfig';
+import { useFavorite } from '@/hooks/api/useFavorite';
 
 interface MoviePageProps {
     item: BaseItemDto;
@@ -18,6 +19,7 @@ interface MoviePageProps {
 
 const MoviePage = ({ item }: MoviePageProps) => {
     const { t } = useTranslation('item');
+    const { isFavorite, toggleFavorite, isLoading: isFavoriteLoading } = useFavorite(item.Id);
 
     const writers =
         item.People?.filter((person) => person.Type === 'Writer').filter((person) => person.Name) ||
@@ -61,10 +63,20 @@ const MoviePage = ({ item }: MoviePageProps) => {
                             <Badge variant={'outline'}>{item.OfficialRating}</Badge>
                         )}
                     </div>
-                    <Button className="w-min">
-                        <Play />
-                        {isCurrentlyPlaying ? t('resume') : t('play')}
-                    </Button>
+                    <div className="mt-1 flex items-center gap-2">
+                        <Button className="w-min">
+                            <Play />
+                            {isCurrentlyPlaying ? t('resume') : t('play')}
+                        </Button>
+                        <Button
+                            variant={'outline'}
+                            size={'icon'}
+                            onClick={() => toggleFavorite(!isFavorite)}
+                            disabled={isFavoriteLoading}
+                        >
+                            <Heart fill={isFavorite ? 'currentColor' : 'none'} />
+                        </Button>
+                    </div>
                     <p>{item.Overview}</p>
                     <DescriptionItem
                         label={t('genres')}

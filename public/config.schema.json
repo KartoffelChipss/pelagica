@@ -350,6 +350,10 @@
           },
           "type": "array"
         },
+        "isFavorite": {
+          "description": "Whether to only include favorite items",
+          "type": "boolean"
+        },
         "libraryId": {
           "description": "Filter items from a specific library by its ID",
           "type": "string"

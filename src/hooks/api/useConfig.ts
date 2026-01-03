@@ -24,6 +24,8 @@ export interface SectionItemsConfig {
     sortOrder?: 'Ascending' | 'Descending';
     /** Maximum number of items to display */
     limit?: number;
+    /** Whether to only include favorite items */
+    isFavorite?: boolean;
 }
 
 /** A large carousel banner showcasing featured media with backdrop images */

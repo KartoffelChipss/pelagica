@@ -3,7 +3,7 @@ import { Button } from '@/components/ui/button';
 import { useSeasons } from '@/hooks/api/useSeasons';
 import { getPrimaryImageUrl, getThumbUrl } from '@/utils/images';
 import type { BaseItemDto } from '@jellyfin/sdk/lib/generated-client/models';
-import { ImageOff, Play, Star } from 'lucide-react';
+import { Heart, ImageOff, Play, Star } from 'lucide-react';
 import { useState, memo } from 'react';
 import { Link, useNavigate } from 'react-router';
 import {
@@ -23,6 +23,7 @@ import BaseMediaPage from './BaseMediaPage';
 import DescriptionItem from './DescriptionItem';
 import MoreLikeThisRow from './MoreLikeThisRow';
 import { type AppConfig, type EpisodeDisplay } from '@/hooks/api/useConfig';
+import { useFavorite } from '@/hooks/api/useFavorite';
 
 const EpisodeComponent = memo(
     ({
@@ -259,6 +260,7 @@ const SeriesPage = ({ item, config }: SeriesPageProps) => {
     const { t } = useTranslation('item');
     const [selectedSeason, setSelectedSeason] = useState<string | null>(null);
     const { data: seasons, isLoading, error } = useSeasons(item.Id || '');
+    const { isFavorite, toggleFavorite, isLoading: isFavoriteLoading } = useFavorite(item.Id);
 
     const effectiveSelectedSeason =
         selectedSeason ||
@@ -313,27 +315,37 @@ const SeriesPage = ({ item, config }: SeriesPageProps) => {
                             <Badge variant={'outline'}>{item.OfficialRating}</Badge>
                         )}
                     </div>
-                    {episodeToContinue ? (
-                        <Button className="w-fit mt-1" asChild>
-                            <Link to={`/item/${episodeToContinue.Id}`}>
+                    <div className="mt-1 flex items-center gap-2">
+                        {episodeToContinue ? (
+                            <Button className="w-fit" asChild>
+                                <Link to={`/item/${episodeToContinue.Id}`}>
+                                    <Play />
+                                    {episodeToContinue.UserData?.PlaybackPositionTicks
+                                        ? t('continue_episode', {
+                                              season: episodeToContinue.ParentIndexNumber,
+                                              episode: episodeToContinue.IndexNumber,
+                                          })
+                                        : t('play_episode', {
+                                              season: episodeToContinue.ParentIndexNumber,
+                                              episode: episodeToContinue.IndexNumber,
+                                          })}
+                                </Link>
+                            </Button>
+                        ) : (
+                            <Button className="w-fit" disabled>
                                 <Play />
-                                {episodeToContinue.UserData?.PlaybackPositionTicks
-                                    ? t('continue_episode', {
-                                          season: episodeToContinue.ParentIndexNumber,
-                                          episode: episodeToContinue.IndexNumber,
-                                      })
-                                    : t('play_episode', {
-                                          season: episodeToContinue.ParentIndexNumber,
-                                          episode: episodeToContinue.IndexNumber,
-                                      })}
-                            </Link>
+                                {t('loading')}
+                            </Button>
+                        )}
+                        <Button
+                            variant={'outline'}
+                            size={'icon'}
+                            onClick={() => toggleFavorite(!isFavorite)}
+                            disabled={isFavoriteLoading}
+                        >
+                            <Heart fill={isFavorite ? 'currentColor' : 'none'} />
                         </Button>
-                    ) : (
-                        <Button className="w-fit mt-1" disabled>
-                            <Play />
-                            {t('loading')}
-                        </Button>
-                    )}
+                    </div>
                     <p>{item.Overview}</p>
                     <DescriptionItem
                         label={t('genres')}
