@@ -85,16 +85,24 @@ export type HomeScreenSection =
     | ItemsSection
     | ContinueWatchingSection;
 
-export interface LibrarySettings {
-    /** Number of rows per page in the library view */
-    rowsPerPage?: number;
+export type EpisodeDisplay = 'grid' | 'row';
+
+export interface ItemPageSettings {
+    /** How to display episodes on series pages */
+    episodeDisplay?: EpisodeDisplay;
 }
 
 export interface AppConfig {
+    /** Optional server address to automatically choose */
     serverAddress?: string;
+    itemPage?: ItemPageSettings;
     /** Sections to display on the home screen, in order */
     homeScreenSections?: HomeScreenSection[];
 }
+
+const DEFAULT_ITEM_PAGE_SETTINGS: ItemPageSettings = {
+    episodeDisplay: 'row',
+};
 
 const DEFAULT_CONFIG: AppConfig = {
     homeScreenSections: [
@@ -122,6 +130,10 @@ export const useConfig = () => {
                     setConfig({
                         ...DEFAULT_CONFIG,
                         ...data,
+                        itemPage: {
+                            ...DEFAULT_ITEM_PAGE_SETTINGS,
+                            ...data.itemPage,
+                        },
                     });
                 }
             } catch (err) {

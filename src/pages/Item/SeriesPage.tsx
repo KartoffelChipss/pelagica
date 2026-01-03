@@ -4,7 +4,7 @@ import { useSeasons } from '@/hooks/api/useSeasons';
 import { getPrimaryImageUrl, getThumbUrl } from '@/utils/images';
 import type { BaseItemDto } from '@jellyfin/sdk/lib/generated-client/models';
 import { ImageOff, Play, Star } from 'lucide-react';
-import { useState, useCallback, memo } from 'react';
+import { useState, memo } from 'react';
 import { Link, useNavigate } from 'react-router';
 import {
     Select,
@@ -22,6 +22,163 @@ import PeopleRow from './PeopleRow';
 import BaseMediaPage from './BaseMediaPage';
 import DescriptionItem from './DescriptionItem';
 import MoreLikeThisRow from './MoreLikeThisRow';
+import { type AppConfig, type EpisodeDisplay } from '@/hooks/api/useConfig';
+
+const EpisodeComponent = memo(
+    ({
+        episode,
+        navigate,
+        className,
+    }: {
+        episode: BaseItemDto;
+        navigate: ReturnType<typeof useNavigate>;
+        className?: string;
+    }) => {
+        const { t } = useTranslation('item');
+        const [imageError, setImageError] = useState(false);
+
+        const watched = episode.UserData?.PlaybackPositionTicks ?? 0;
+        const runtime = episode.RunTimeTicks ?? 0;
+        const progress =
+            episode.UserData?.PlayCount && episode.UserData?.PlayCount >= 1 && watched <= 0
+                ? 100
+                : runtime > 0
+                  ? (watched / runtime) * 100
+                  : 0;
+
+        return (
+            <Link to={`/item/${episode.Id}`} key={episode.Id} className={'group ' + className}>
+                <div className="relative w-full aspect-video rounded-md overflow-hidden">
+                    {imageError ? (
+                        <div className="w-full h-full bg-muted flex items-center justify-center rounded-md">
+                            <ImageOff className="w-12 h-12 text-muted-foreground" />
+                        </div>
+                    ) : (
+                        <div className="relative">
+                            <img
+                                src={
+                                    episode.SeriesId
+                                        ? getPrimaryImageUrl(episode.Id!, {
+                                              width: 416,
+                                          })
+                                        : getThumbUrl(episode.Id!, {
+                                              width: 416,
+                                          })
+                                }
+                                alt={episode.Name || t('no_title')}
+                                className="w-full h-full object-cover rounded-md group-hover:opacity-75 group-hover:scale-105 transition-opacity transition-transform duration-300 ease-out will-change-transform"
+                                onError={() => setImageError(true)}
+                            />
+                            <div className="absolute inset-0 flex items-center justify-center opacity-0 group-hover:opacity-100 transition-opacity">
+                                <div
+                                    className="bg-black/60 rounded-full p-4 cursor-pointer hover:bg-black/75"
+                                    role="button"
+                                    onClick={(e) => {
+                                        e.preventDefault();
+                                        navigate(`/play/${episode.Id}`);
+                                    }}
+                                >
+                                    <Play className="w-6 h-6 text-white fill-white" />
+                                </div>
+                            </div>
+                            {episode.RunTimeTicks && (
+                                <Badge className="absolute top-2 right-2 bg-black/70 text-white">
+                                    {ticksToReadableTime(episode.RunTimeTicks)}
+                                </Badge>
+                            )}
+                        </div>
+                    )}
+                    {progress > 0 && (
+                        <div className="absolute bottom-0 left-0 right-0 h-1 bg-gray-700">
+                            <div
+                                style={{ width: `${progress}%` }}
+                                className="h-full bg-blue-500 transition-all"
+                            />
+                        </div>
+                    )}
+                </div>
+                <p className="mt-2 text-md line-clamp-1 text-ellipsis break-all">
+                    {episode.Name || t('no_title')}
+                </p>
+                <p className="mt-1 text-sm line-clamp-2 text-ellipsis break-all text-muted-foreground">
+                    {episode.Overview}
+                </p>
+                <div className="flex flex-wrap items-center gap-2 mt-2">
+                    {episode.IndexNumber !== undefined && (
+                        <Badge variant={'outline'}>
+                            S{episode.ParentIndexNumber} E{episode.IndexNumber}
+                        </Badge>
+                    )}
+                    {episode.CommunityRating !== undefined && (
+                        <Badge variant={'outline'}>
+                            <Star size={14} />
+                            {episode.CommunityRating?.toFixed(1)}
+                        </Badge>
+                    )}
+                    {episode.PremiereDate && (
+                        <Badge variant={'outline'}>
+                            {new Date(episode.PremiereDate).toLocaleDateString(undefined, {
+                                year: 'numeric',
+                                month: 'long',
+                                day: 'numeric',
+                            })}
+                        </Badge>
+                    )}
+                </div>
+            </Link>
+        );
+    }
+);
+
+EpisodeComponent.displayName = 'EpisodeComponent';
+
+const EpisodesGrid = memo(
+    ({
+        seasonId,
+        title,
+        seasonsLoading,
+    }: {
+        seasonId: string;
+        title?: React.ReactNode;
+        seasonsLoading?: boolean;
+    }) => {
+        const navigate = useNavigate();
+        const { data: episodes, isLoading, error } = useEpisodes(seasonId);
+
+        if (isLoading || seasonsLoading) {
+            return (
+                <div className="flex flex-col gap-4">
+                    {title}
+                    <div className="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 lg:grid-cols-5 xl:grid-cols-6 gap-4">
+                        {Array.from({ length: 12 }, (_, i) => (
+                            <div key={i} className="group animate-pulse">
+                                <Skeleton className="w-full aspect-video rounded-md" />
+                                <Skeleton className="mt-2 h-4 w-3/4 rounded-md" />
+                            </div>
+                        ))}
+                    </div>
+                </div>
+            );
+        }
+
+        if (error) {
+            return <p>Error loading episodes: {(error as Error).message}</p>;
+        }
+
+        return (
+            <div className="flex flex-col gap-4">
+                {title}
+                <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 xl:grid-cols-5 2xl:grid-cols-6 gap-4">
+                    {episodes?.map((item) => (
+                        <EpisodeComponent key={item.Id} episode={item} navigate={navigate} />
+                    ))}
+                </div>
+            </div>
+        );
+    }
+);
+
+EpisodesGrid.displayName = 'EpisodesGrid';
 
 const EpisodesRow = memo(
     ({
@@ -34,13 +191,7 @@ const EpisodesRow = memo(
         seasonsLoading?: boolean;
     }) => {
         const navigate = useNavigate();
-        const { t } = useTranslation('item');
         const { data: episodes, isLoading, error } = useEpisodes(seasonId);
-        const [imageErrors, setImageErrors] = useState<Record<string, boolean>>({});
-
-        const handleImageError = useCallback((itemId: string) => {
-            setImageErrors((prev) => ({ ...prev, [itemId]: true }));
-        }, []);
 
         if (isLoading || seasonsLoading) {
             return (
@@ -67,107 +218,14 @@ const EpisodesRow = memo(
             <SectionScroller
                 title={title}
                 items={
-                    episodes?.map((item) => {
-                        const watched = item.UserData?.PlaybackPositionTicks ?? 0;
-                        const runtime = item.RunTimeTicks ?? 0;
-                        const progress =
-                            item.UserData?.PlayCount &&
-                            item.UserData?.PlayCount >= 1 &&
-                            watched <= 0
-                                ? 100
-                                : runtime > 0
-                                  ? (watched / runtime) * 100
-                                  : 0;
-
-                        return (
-                            <Link
-                                to={`/item/${item.Id}`}
-                                key={item.Id}
-                                className="group min-w-48 lg:min-w-64 2xl:min-w-80"
-                            >
-                                <div className="relative w-full aspect-video rounded-md overflow-hidden">
-                                    {imageErrors[item.Id!] ? (
-                                        <div className="w-full h-full bg-muted flex items-center justify-center rounded-md">
-                                            <ImageOff className="w-12 h-12 text-muted-foreground" />
-                                        </div>
-                                    ) : (
-                                        <div className="relative">
-                                            <img
-                                                src={
-                                                    item.SeriesId
-                                                        ? getPrimaryImageUrl(item.Id!, {
-                                                              width: 416,
-                                                          })
-                                                        : getThumbUrl(item.Id!, {
-                                                              width: 416,
-                                                          })
-                                                }
-                                                alt={item.Name || t('no_title')}
-                                                className="w-full h-full object-cover rounded-md group-hover:opacity-75 group-hover:scale-105 transition-opacity transition-transform duration-300 ease-out will-change-transform"
-                                                onError={() => handleImageError(item.Id!)}
-                                            />
-                                            <div className="absolute inset-0 flex items-center justify-center opacity-0 group-hover:opacity-100 transition-opacity">
-                                                <div
-                                                    className="bg-black/60 rounded-full p-4 cursor-pointer hover:bg-black/75"
-                                                    role="button"
-                                                    onClick={(e) => {
-                                                        e.preventDefault();
-                                                        navigate(`/play/${item.Id}`);
-                                                    }}
-                                                >
-                                                    <Play className="w-6 h-6 text-white fill-white" />
-                                                </div>
-                                            </div>
-                                            {item.RunTimeTicks && (
-                                                <Badge className="absolute top-2 right-2 bg-black/70 text-white">
-                                                    {ticksToReadableTime(item.RunTimeTicks)}
-                                                </Badge>
-                                            )}
-                                        </div>
-                                    )}
-                                    {progress > 0 && (
-                                        <div className="absolute bottom-0 left-0 right-0 h-1 bg-gray-700">
-                                            <div
-                                                style={{ width: `${progress}%` }}
-                                                className="h-full bg-blue-500 transition-all"
-                                            />
-                                        </div>
-                                    )}
-                                </div>
-                                <p className="mt-2 text-md line-clamp-1 text-ellipsis break-all">
-                                    {item.Name || t('no_title')}
-                                </p>
-                                <p className="mt-1 text-sm line-clamp-2 text-ellipsis break-all text-muted-foreground">
-                                    {item.Overview}
-                                </p>
-                                <div className="flex flex-wrap items-center gap-2 mt-2">
-                                    {item.IndexNumber !== undefined && (
-                                        <Badge variant={'outline'}>
-                                            S{item.ParentIndexNumber} E{item.IndexNumber}
-                                        </Badge>
-                                    )}
-                                    {item.CommunityRating !== undefined && (
-                                        <Badge variant={'outline'}>
-                                            <Star size={14} />
-                                            {item.CommunityRating?.toFixed(1)}
-                                        </Badge>
-                                    )}
-                                    {item.PremiereDate && (
-                                        <Badge variant={'outline'}>
-                                            {new Date(item.PremiereDate).toLocaleDateString(
-                                                undefined,
-                                                {
-                                                    year: 'numeric',
-                                                    month: 'long',
-                                                    day: 'numeric',
-                                                }
-                                            )}
-                                        </Badge>
-                                    )}
-                                </div>
-                            </Link>
-                        );
-                    }) || []
+                    episodes?.map((item) => (
+                        <EpisodeComponent
+                            key={item.Id}
+                            episode={item}
+                            navigate={navigate}
+                            className="min-w-48 lg:min-w-64 2xl:min-w-80"
+                        />
+                    )) || []
                 }
             />
         );
@@ -176,11 +234,28 @@ const EpisodesRow = memo(
 
 EpisodesRow.displayName = 'EpisodesRow';
 
+const EpisodesDisplay = ({
+    seasonId,
+    title,
+    seasonsLoading,
+    episodeDisplay,
+}: {
+    seasonId: string;
+    title?: React.ReactNode;
+    seasonsLoading?: boolean;
+    episodeDisplay: EpisodeDisplay;
+}) => {
+    if (episodeDisplay === 'grid')
+        return <EpisodesGrid seasonId={seasonId} title={title} seasonsLoading={seasonsLoading} />;
+    else return <EpisodesRow seasonId={seasonId} title={title} seasonsLoading={seasonsLoading} />;
+};
+
 interface SeriesPageProps {
     item: BaseItemDto;
+    config: AppConfig;
 }
 
-const SeriesPage = ({ item }: SeriesPageProps) => {
+const SeriesPage = ({ item, config }: SeriesPageProps) => {
     const { t } = useTranslation('item');
     const [selectedSeason, setSelectedSeason] = useState<string | null>(null);
     const { data: seasons, isLoading, error } = useSeasons(item.Id || '');
@@ -293,7 +368,7 @@ const SeriesPage = ({ item }: SeriesPageProps) => {
                 </div>
             </div>
             <div>
-                <EpisodesRow
+                <EpisodesDisplay
                     title={
                         <div className="flex items-center gap-4">
                             <h3 className="text-3xl font-bold">{t('episodes')}</h3>
@@ -321,6 +396,7 @@ const SeriesPage = ({ item }: SeriesPageProps) => {
                     }
                     seasonsLoading={isLoading}
                     seasonId={effectiveSelectedSeason}
+                    episodeDisplay={config.itemPage?.episodeDisplay || 'row'}
                 />
                 {error && <p>Error loading seasons: {(error as Error).message}</p>}
             </div>

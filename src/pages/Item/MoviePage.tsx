@@ -9,9 +9,11 @@ import { Button } from '@/components/ui/button';
 import { useTranslation } from 'react-i18next';
 import { Skeleton } from '@/components/ui/skeleton';
 import MoreLikeThisRow from './MoreLikeThisRow';
+import type { AppConfig } from '@/hooks/api/useConfig';
 
 interface MoviePageProps {
     item: BaseItemDto;
+    config: AppConfig;
 }
 
 const MoviePage = ({ item }: MoviePageProps) => {

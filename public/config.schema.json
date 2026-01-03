@@ -11,7 +11,11 @@
           },
           "type": "array"
         },
+        "itemPage": {
+          "$ref": "#/definitions/ItemPageSettings"
+        },
         "serverAddress": {
+          "description": "Optional server address to automatically choose",
           "type": "string"
         }
       },
@@ -80,6 +84,13 @@
       ],
       "type": "string"
     },
+    "EpisodeDisplay": {
+      "enum": [
+        "grid",
+        "row"
+      ],
+      "type": "string"
+    },
     "HomeScreenSection": {
       "anyOf": [
         {
@@ -95,6 +106,15 @@
           "$ref": "#/definitions/ContinueWatchingSection"
         }
       ]
+    },
+    "ItemPageSettings": {
+      "properties": {
+        "episodeDisplay": {
+          "$ref": "#/definitions/EpisodeDisplay",
+          "description": "How to display episodes on series pages"
+        }
+      },
+      "type": "object"
     },
     "ItemSortBy": {
       "anyOf": [

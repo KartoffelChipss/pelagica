@@ -6,6 +6,7 @@ import SeriesPage from './SeriesPage';
 import { Skeleton } from '@/components/ui/skeleton';
 import { memo } from 'react';
 import { useTranslation } from 'react-i18next';
+import { useConfig } from '@/hooks/api/useConfig';
 
 const ItemPageSkeleton = memo(() => {
     return (
@@ -91,6 +92,7 @@ const ItemPage = () => {
     const params = useParams<{ itemId: string }>();
     const itemId = params.itemId;
 
+    const { config, loading: configLoading } = useConfig();
     const { data: item, isLoading, error } = useItem(itemId);
 
     return (
@@ -98,10 +100,10 @@ const ItemPage = () => {
             title={item ? `${item.Name}` : isLoading ? t('loading') : t('item_not_found')}
             className="min-h-full"
         >
-            {isLoading && <ItemPageSkeleton />}
+            {(isLoading || configLoading) && <ItemPageSkeleton />}
             {error && <p>Error loading item details.</p>}
-            {item && item.Type === 'Movie' && <MoviePage item={item} />}
-            {item && item.Type === 'Series' && <SeriesPage item={item} />}
+            {item && item.Type === 'Movie' && <MoviePage item={item} config={config} />}
+            {item && item.Type === 'Series' && <SeriesPage item={item} config={config} />}
         </Page>
     );
 };
