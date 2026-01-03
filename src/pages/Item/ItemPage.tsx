@@ -4,9 +4,10 @@ import { useItem } from '@/hooks/api/useItem';
 import MoviePage from './MoviePage';
 import SeriesPage from './SeriesPage';
 import { Skeleton } from '@/components/ui/skeleton';
+import { memo } from 'react';
 import { useTranslation } from 'react-i18next';
 
-const ItemPageSkeleton = () => {
+const ItemPageSkeleton = memo(() => {
     return (
         <div className="relative h-full w-full">
             {/* banner */}
@@ -81,7 +82,9 @@ const ItemPageSkeleton = () => {
             </div>
         </div>
     );
-};
+});
+
+ItemPageSkeleton.displayName = 'ItemPageSkeleton';
 
 const ItemPage = () => {
     const { t } = useTranslation('item');
