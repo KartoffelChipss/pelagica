@@ -1,0 +1,17 @@
+{
+    "resume": "再開",
+    "continue_episode": "シーズン{{season}} エピソード{{episode}} を再開",
+    "play": "再生",
+    "play_episode": "シーズン{{season}} エピソード{{episode}} を再生",
+    "genres": "ジャンル",
+    "writers": "脚本家",
+    "directors": "監督",
+    "studios": "スタジオ",
+    "cast_and_crew": "キャストとクルー",
+    "no_title": "タイトルなし",
+    "episodes": "エピソード",
+    "select_season": "シーズンを選択",
+    "loading": "読み込み中...",
+    "item_not_found": "アイテムが見つかりません",
+    "more_like_this": "同様のコンテンツ"
+}
