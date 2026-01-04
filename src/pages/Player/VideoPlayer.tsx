@@ -7,10 +7,11 @@ type VideoJsPlayer = ReturnType<typeof videojs>;
 interface VideoPlayerProps {
     src: string;
     poster?: string;
+    startTicks: number;
     onReady?: (player: VideoJsPlayer) => void;
 }
 
-const VideoPlayer = ({ src, poster, onReady }: VideoPlayerProps) => {
+const VideoPlayer = ({ src, poster, startTicks, onReady }: VideoPlayerProps) => {
     const videoRef = useRef<HTMLVideoElement | null>(null);
     const playerRef = useRef<VideoJsPlayer | null>(null);
 
@@ -19,7 +20,7 @@ const VideoPlayer = ({ src, poster, onReady }: VideoPlayerProps) => {
 
         const player = videojs(videoRef.current, {
             controls: false,
-            autoplay: true,
+            autoplay: false,
             preload: 'auto',
             poster: poster,
             responsive: false,
@@ -34,6 +35,11 @@ const VideoPlayer = ({ src, poster, onReady }: VideoPlayerProps) => {
 
         player.ready(() => {
             onReady?.(player);
+            const startSeconds = startTicks / 10000000;
+            player.currentTime(startSeconds);
+            player.play()?.catch((error) => {
+                console.error('Error attempting to play:', error);
+            });
         });
 
         return () => {
@@ -42,7 +48,7 @@ const VideoPlayer = ({ src, poster, onReady }: VideoPlayerProps) => {
                 playerRef.current = null;
             }
         };
-    }, [onReady, poster]);
+    }, [onReady, poster, startTicks]);
 
     useEffect(() => {
         if (playerRef.current && src) {

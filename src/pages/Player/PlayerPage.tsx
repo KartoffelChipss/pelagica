@@ -17,8 +17,9 @@ const PlayerPage = () => {
     const [player, setPlayer] = useState<VideoJsPlayer | null>(null);
     const containerRef = useRef<HTMLDivElement>(null);
     const progressReportingIntervalRef = useRef<ReturnType<typeof setInterval> | null>(null);
+    const lastPositionRef = useRef<number>(0);
 
-    const { data: item, isLoading, error } = useItem(itemId);
+    const { data: item, isLoading, error } = useItem(itemId, true);
     const { reportProgress } = useReportPlaybackProgress();
     const { startPlayback } = usePlaybackStart();
     const { stopPlayback } = usePlaybackStop();
@@ -54,26 +55,33 @@ const PlayerPage = () => {
 
         // Report playback progress every 5 seconds
         progressReportingIntervalRef.current = setInterval(() => {
-            const currentTime = player.currentTime() || 0;
-            const positionTicks = Math.floor(currentTime * 10000000); // Convert to ticks
-            const isPaused = player.paused();
+            if (!player || player.isDisposed?.()) return;
 
-            reportProgress({
-                itemId,
-                positionTicks,
-                isPaused,
-            });
+            try {
+                const currentTime = player.currentTime() || 0;
+                const positionTicks = Math.floor(currentTime * 10000000); // Convert to ticks
+                const isPaused = player.paused();
+
+                lastPositionRef.current = positionTicks;
+
+                reportProgress({
+                    itemId,
+                    positionTicks,
+                    isPaused,
+                });
+            } catch (error) {
+                console.error('Error reporting progress:', error);
+            }
         }, 5000);
 
         return () => {
-            // Report playback stopped when unmounting
-            const currentTime = player.currentTime() || 0;
-            const positionTicks = Math.floor(currentTime * 10000000);
-            stopPlayback({ itemId, positionTicks });
-
+            // Clear interval first
             if (progressReportingIntervalRef.current) {
                 clearInterval(progressReportingIntervalRef.current);
             }
+
+            // Here we need the last know position since the player might be already in the shadow realm
+            stopPlayback({ itemId, positionTicks: lastPositionRef.current });
         };
     }, [itemId, player, reportProgress, startPlayback, stopPlayback]);
 
@@ -91,7 +99,12 @@ const PlayerPage = () => {
 
     return (
         <div ref={containerRef} className="relative w-full h-screen bg-black flex">
-            <VideoPlayer src={videoUrl} poster={posterUrl} onReady={setPlayer} />
+            <VideoPlayer
+                src={videoUrl}
+                poster={posterUrl}
+                onReady={setPlayer}
+                startTicks={item.UserData?.PlaybackPositionTicks || 0}
+            />
             <PlayerControls item={item} player={player} onFullscreen={handleFullscreen} />
         </div>
     );

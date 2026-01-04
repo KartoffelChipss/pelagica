@@ -4,7 +4,7 @@ import { getItemsApi } from '@jellyfin/sdk/lib/utils/api/items-api';
 import type { BaseItemDto } from '@jellyfin/sdk/lib/generated-client/models';
 import { getRetryConfig } from '@/utils/authErrorHandler';
 
-export function useItem(itemId: string | null | undefined) {
+export function useItem(itemId: string | null | undefined, enableUserData?: boolean | undefined) {
     return useQuery<BaseItemDto>({
         queryKey: ['item', itemId],
         queryFn: async (): Promise<BaseItemDto> => {
@@ -22,6 +22,7 @@ export function useItem(itemId: string | null | undefined) {
                     'ParentId',
                     'MediaStreams',
                 ],
+                enableUserData,
             });
             const item = response.data.Items?.[0];
             if (!item) {
