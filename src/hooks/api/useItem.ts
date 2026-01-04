@@ -20,6 +20,7 @@ export function useItem(itemId: string | null | undefined) {
                     'ChildCount',
                     'RecursiveItemCount',
                     'ParentId',
+                    'MediaStreams',
                 ],
             });
             const item = response.data.Items?.[0];

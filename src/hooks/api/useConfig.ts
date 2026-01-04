@@ -98,7 +98,10 @@ export type DetailBadge =
     | 'PlayEnd'
     | 'SeasonCount'
     | 'EpisodeCount'
-    | 'AgeRating';
+    | 'AgeRating'
+    | 'EpisodeNumber'
+    | 'Duration'
+    | 'VideoQuality';
 
 export interface ItemPageSettings {
     /** How to display episodes on series pages */
@@ -117,7 +120,7 @@ export interface AppConfig {
 
 const DEFAULT_ITEM_PAGE_SETTINGS: ItemPageSettings = {
     episodeDisplay: 'row',
-    detailBadges: ['ReleaseYear', 'CommunityRating', 'AgeRating'],
+    detailBadges: ['ReleaseYear', 'CommunityRating', 'AgeRating', 'EpisodeNumber'],
 };
 
 const DEFAULT_CONFIG: AppConfig = {

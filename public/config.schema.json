@@ -80,7 +80,10 @@
         "PlayEnd",
         "SeasonCount",
         "EpisodeCount",
-        "AgeRating"
+        "AgeRating",
+        "EpisodeNumber",
+        "Duration",
+        "VideoQuality"
       ],
       "type": "string"
     },

@@ -1,6 +1,7 @@
 import { Badge } from '@/components/ui/badge';
 import type { AppConfig, DetailBadge } from '@/hooks/api/useConfig';
 import { getEndsAt, ticksToReadableTime } from '@/utils/timeConversion';
+import { getVideoQualityLabel } from '@/utils/videoQuality';
 import type { BaseItemDto } from '@jellyfin/sdk/lib/generated-client/models';
 import type { TFunction } from 'i18next';
 import { Star } from 'lucide-react';
@@ -62,6 +63,17 @@ function getDetailBadge(
                 : null;
         case 'AgeRating':
             return item.OfficialRating || null;
+        case 'EpisodeNumber':
+            return item.IndexNumber !== undefined &&
+                item.IndexNumber !== null &&
+                item.ParentIndexNumber !== undefined &&
+                item.ParentIndexNumber !== null
+                ? t('season_episode', { season: item.ParentIndexNumber, episode: item.IndexNumber })
+                : null;
+        case 'Duration':
+            return item.RunTimeTicks ? ticksToReadableTime(item.RunTimeTicks) : null;
+        case 'VideoQuality':
+            return item.MediaStreams ? getVideoQualityLabel(item.MediaStreams) : null;
         default:
             return null;
     }

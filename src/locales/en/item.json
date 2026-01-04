@@ -19,5 +19,6 @@
     "season_count_plural": "{{count}} Seasons",
     "episode_count": "{{count}} Episode",
     "episode_count_plural": "{{count}} Episodes",
-    "ends_at": "Ends at {{date}}"
+    "ends_at": "Ends at {{date}}",
+    "season_episode": "S{{season}} E{{episode}}"
 }
