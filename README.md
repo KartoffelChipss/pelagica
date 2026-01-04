@@ -98,7 +98,7 @@ If you want to build the Docker image from source instead of using prebuilt imag
 
 ```bash
 # Clone the repository
-git clone https://github.com/YOUR_USERNAME/pelagica.git
+git clone https://github.com/KartoffelChipss/pelagica.git
 cd pelagica
 
 # Build and start
@@ -124,3 +124,7 @@ For local development without Docker:
     ```
 
 3. **Access at:** http://localhost:3000
+
+## What does that name mean?
+
+You might be wondering about the name "Pelagica". Since I didn't want to call it the usual *fin or jelly* names, I looked for synonyms related to the sea. "Pelagic" refers to living in the deep ocean, which felt fitting for a Jellyfin frontend.
