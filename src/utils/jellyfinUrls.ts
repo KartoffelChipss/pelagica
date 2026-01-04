@@ -83,10 +83,15 @@ export function getVideoStreamUrl(itemId: string) {
         if (!server || !token) return '';
 
         const url = new URL(server);
-        url.pathname = `/Videos/${itemId}/stream`;
-        url.searchParams.append('static', 'true');
+        url.pathname = `/videos/${itemId}/master.m3u8`;
         url.searchParams.append('mediaSourceId', itemId);
-        url.searchParams.append('token', token);
+        url.searchParams.append('api_key', token);
+        url.searchParams.append('videoCodec', 'av1,hevc,h264,vp9');
+        url.searchParams.append('audioCodec', 'aac');
+        url.searchParams.append('segmentContainer', 'mp4');
+        url.searchParams.append('minSegments', '2');
+        url.searchParams.append('breakOnNonKeyFrames', 'true');
+        url.searchParams.append('requireAvc', 'false');
 
         return url.toString();
     } catch {

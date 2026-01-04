@@ -45,8 +45,11 @@ const VideoPlayer = ({ src, poster, onReady }: VideoPlayerProps) => {
     }, [onReady, poster]);
 
     useEffect(() => {
-        if (playerRef.current) {
-            playerRef.current.src({ src, type: 'video/mp4' });
+        if (playerRef.current && src) {
+            playerRef.current.src({
+                src,
+                type: 'application/x-mpegURL',
+            });
         }
     }, [src]);
 
