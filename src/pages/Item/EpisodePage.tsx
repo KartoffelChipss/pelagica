@@ -19,6 +19,7 @@ import {
 import PeopleRow from './PeopleRow';
 import { Link } from 'react-router';
 import JellyfinItemKindIcon from '@/components/JellyfinItemKindIcon';
+import MediaInfoDialog from './MediaInfoDialog';
 
 interface EpisodePageProps {
     item: BaseItemDto;
@@ -108,6 +109,7 @@ const EpisodePage = ({ item, config }: EpisodePageProps) => {
                                 {t(progress > 0 && progress < 100 ? 'resume' : 'play')}
                             </Link>
                         </Button>
+                        <MediaInfoDialog streams={item.MediaStreams || []} />
                     </div>
                     <p>{item.Overview}</p>
                 </div>

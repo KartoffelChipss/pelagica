@@ -12,6 +12,7 @@ import type { AppConfig } from '@/hooks/api/useConfig';
 import { useFavorite } from '@/hooks/api/useFavorite';
 import DetailBadges from './DetailBadges';
 import { Link } from 'react-router';
+import MediaInfoDialog from './MediaInfoDialog';
 
 interface MoviePageProps {
     item: BaseItemDto;
@@ -66,6 +67,7 @@ const MoviePage = ({ item, config }: MoviePageProps) => {
                         >
                             <Heart fill={isFavorite ? 'currentColor' : 'none'} />
                         </Button>
+                        <MediaInfoDialog streams={item.MediaStreams || []} />
                     </div>
                     <p>{item.Overview}</p>
                     <DescriptionItem
