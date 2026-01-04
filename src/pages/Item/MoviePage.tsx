@@ -11,6 +11,7 @@ import MoreLikeThisRow from './MoreLikeThisRow';
 import type { AppConfig } from '@/hooks/api/useConfig';
 import { useFavorite } from '@/hooks/api/useFavorite';
 import DetailBadges from './DetailBadges';
+import { Link } from 'react-router';
 
 interface MoviePageProps {
     item: BaseItemDto;
@@ -51,9 +52,11 @@ const MoviePage = ({ item, config }: MoviePageProps) => {
                     <h2 className="text-4xl sm:text-5xl font-bold mt-2">{item.Name}</h2>
                     <DetailBadges item={item} appConfig={config} />
                     <div className="mt-1 flex items-center gap-2">
-                        <Button className="w-min">
-                            <Play />
-                            {isCurrentlyPlaying ? t('resume') : t('play')}
+                        <Button className="w-min" asChild>
+                            <Link to={`/play/${item.Id}`}>
+                                <Play />
+                                {isCurrentlyPlaying ? t('resume') : t('play')}
+                            </Link>
                         </Button>
                         <Button
                             variant={'outline'}

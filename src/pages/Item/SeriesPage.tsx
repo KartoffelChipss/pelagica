@@ -78,7 +78,7 @@ const SeriesPage = ({ item, config }: SeriesPageProps) => {
                     <div className="mt-1 flex items-center gap-2">
                         {episodeToContinue ? (
                             <Button className="w-fit" asChild>
-                                <Link to={`/item/${episodeToContinue.Id}`}>
+                                <Link to={`/play/${episodeToContinue.Id}`}>
                                     <Play />
                                     {episodeToContinue.UserData?.PlaybackPositionTicks
                                         ? t('continue_episode', {

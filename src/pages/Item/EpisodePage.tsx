@@ -102,17 +102,12 @@ const EpisodePage = ({ item, config }: EpisodePageProps) => {
                     <h2 className="text-4xl sm:text-5xl font-bold -mt-2">{item.Name}</h2>
                     <DetailBadges item={item} appConfig={config} />
                     <div className="mt-1 flex items-center gap-2">
-                        {progress > 0 && progress < 100 ? (
-                            <Button className="w-fit">
+                        <Button className="w-fit" asChild>
+                            <Link to={`/play/${item.Id}`}>
                                 <Play />
-                                {t('resume')}
-                            </Button>
-                        ) : (
-                            <Button className="w-fit">
-                                <Play />
-                                {t('play')}
-                            </Button>
-                        )}
+                                {t(progress > 0 && progress < 100 ? 'resume' : 'play')}
+                            </Link>
+                        </Button>
                     </div>
                     <p>{item.Overview}</p>
                 </div>
