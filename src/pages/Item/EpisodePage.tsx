@@ -4,7 +4,7 @@ import BaseMediaPage from './BaseMediaPage';
 import { Button } from '@/components/ui/button';
 import { Dot, ImageOff, Play } from 'lucide-react';
 import { useTranslation } from 'react-i18next';
-import { getPrimaryImageUrl, getThumbUrl } from '@/utils/images';
+import { getPrimaryImageUrl, getThumbUrl } from '@/utils/jellyfinUrls';
 import DetailBadges from './DetailBadges';
 import { useState } from 'react';
 import { useSeasons } from '@/hooks/api/useSeasons';

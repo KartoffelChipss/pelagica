@@ -1,7 +1,7 @@
 import type { BaseItemDto } from '@jellyfin/sdk/lib/generated-client/models';
 import { Link } from 'react-router';
 import { Skeleton } from './ui/skeleton';
-import { getPrimaryImageUrl } from '@/utils/images';
+import { getPrimaryImageUrl } from '@/utils/jellyfinUrls';
 
 interface ScrollableSectionPosterProps {
     item: BaseItemDto;

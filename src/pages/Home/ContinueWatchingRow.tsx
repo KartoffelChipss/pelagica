@@ -2,7 +2,7 @@ import SectionScroller from '@/components/SectionScroller';
 import { Skeleton } from '@/components/ui/skeleton';
 import type { ContinueWatchingDetailLine, ContinueWatchingTitleLine } from '@/hooks/api/useConfig';
 import { useContinueWatchingAndNextUp } from '@/hooks/api/useContinueWatchingAndNextUp';
-import { getThumbUrl, getPrimaryImageUrl } from '@/utils/images';
+import { getThumbUrl, getPrimaryImageUrl } from '@/utils/jellyfinUrls';
 import { ticksToReadableTime } from '@/utils/timeConversion';
 import type { BaseItemDto } from '@jellyfin/sdk/lib/generated-client/models';
 import { Dot, ImageOff } from 'lucide-react';

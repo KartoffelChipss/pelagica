@@ -3,7 +3,7 @@ import { Badge } from '@/components/ui/badge';
 import { Skeleton } from '@/components/ui/skeleton';
 import type { EpisodeDisplay } from '@/hooks/api/useConfig';
 import { useEpisodes } from '@/hooks/api/useEpisodes';
-import { getPrimaryImageUrl, getThumbUrl } from '@/utils/images';
+import { getPrimaryImageUrl, getThumbUrl } from '@/utils/jellyfinUrls';
 import { ticksToReadableTime } from '@/utils/timeConversion';
 import type { BaseItemDto } from '@jellyfin/sdk/lib/generated-client/models';
 import { ImageOff, Play, Star } from 'lucide-react';

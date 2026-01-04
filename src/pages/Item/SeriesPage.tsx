@@ -1,6 +1,6 @@
 import { Button } from '@/components/ui/button';
 import { useSeasons } from '@/hooks/api/useSeasons';
-import { getPrimaryImageUrl } from '@/utils/images';
+import { getPrimaryImageUrl } from '@/utils/jellyfinUrls';
 import type { BaseItemDto } from '@jellyfin/sdk/lib/generated-client/models';
 import { Heart, Play } from 'lucide-react';
 import { useState } from 'react';

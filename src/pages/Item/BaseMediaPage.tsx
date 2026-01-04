@@ -1,5 +1,5 @@
 import { usePageBackground } from '@/hooks/usePageBackground';
-import { getBackdropUrl, getLogoUrl } from '@/utils/images';
+import { getBackdropUrl, getLogoUrl } from '@/utils/jellyfinUrls';
 import { useEffect } from 'react';
 
 interface BaseMediaPageProps {

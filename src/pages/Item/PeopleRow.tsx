@@ -1,6 +1,6 @@
 import SectionScroller from '@/components/SectionScroller';
 import { Skeleton } from '@/components/ui/skeleton';
-import { getPrimaryImageUrl } from '@/utils/images';
+import { getPrimaryImageUrl } from '@/utils/jellyfinUrls';
 import type { BaseItemPerson } from '@jellyfin/sdk/lib/generated-client/models';
 import { ImageOff } from 'lucide-react';
 import { useState, useCallback, memo } from 'react';

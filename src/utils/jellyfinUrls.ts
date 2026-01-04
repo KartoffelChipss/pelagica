@@ -75,6 +75,25 @@ export function getThumbUrl(itemId: string, size?: { width?: number; height?: nu
     }
 }
 
+export function getVideoStreamUrl(itemId: string) {
+    try {
+        const server = getServerUrl();
+        const token = getAccessToken();
+
+        if (!server || !token) return '';
+
+        const url = new URL(server);
+        url.pathname = `/Videos/${itemId}/stream`;
+        url.searchParams.append('static', 'true');
+        url.searchParams.append('mediaSourceId', itemId);
+        url.searchParams.append('token', token);
+
+        return url.toString();
+    } catch {
+        return '';
+    }
+}
+
 export function getPrimaryImageUrl(itemId: string, size?: { width?: number; height?: number }) {
     try {
         const server = getServerUrl();

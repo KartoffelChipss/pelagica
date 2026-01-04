@@ -1,7 +1,7 @@
 import type { BaseItemDto } from '@jellyfin/sdk/lib/generated-client/models';
 import BaseMediaPage from './BaseMediaPage';
 import DescriptionItem from './DescriptionItem';
-import { getPrimaryImageUrl } from '@/utils/images';
+import { getPrimaryImageUrl } from '@/utils/jellyfinUrls';
 import { Heart, Play } from 'lucide-react';
 import PeopleRow from './PeopleRow';
 import { Button } from '@/components/ui/button';

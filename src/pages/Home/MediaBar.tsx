@@ -10,7 +10,7 @@ import {
 import { Skeleton } from '@/components/ui/skeleton';
 import type { SectionItemsConfig } from '@/hooks/api/useConfig';
 import { useMediaBarItems } from '@/hooks/api/useMediaBarItems';
-import { getBackdropUrl, getLogoUrl } from '@/utils/images';
+import { getBackdropUrl, getLogoUrl } from '@/utils/jellyfinUrls';
 import { getEndsAt, ticksToReadableTime } from '@/utils/timeConversion';
 import { Play, Star } from 'lucide-react';
 import { useState } from 'react';
