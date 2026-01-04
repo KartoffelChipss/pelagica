@@ -1,0 +1,73 @@
+{
+    "$schema": "./config.schema.json",
+    "itemPage": {
+        "episodeDisplay": "grid",
+        "detailBadges": ["ReleaseYear", "CommunityRating", "AgeRating", "EpisodeNumber"]
+    },
+    "homeScreenSections": [
+        {
+            "type": "mediaBar",
+            "enabled": true,
+            "size": "medium",
+            "items": {
+                "sortBy": ["Random"],
+                "types": ["Movie", "Series"]
+            }
+        },
+        {
+            "type": "continueWatching",
+            "enabled": true,
+            "titleLine": "ItemTitleWithEpisodeInfo",
+            "detailLine": ["TimeRemaining"]
+        },
+        {
+            "type": "items",
+            "enabled": true,
+            "title": "Favorites",
+            "items": {
+                "isFavorite": true,
+                "limit": 10
+            }
+        },
+        {
+            "type": "items",
+            "enabled": true,
+            "title": "Top Rated Anime",
+            "items": {
+                "sortBy": ["CommunityRating"],
+                "sortOrder": "Descending",
+                "limit": 10,
+                "tags": ["Anime", "anime"]
+            },
+            "detailFields": ["CommunityRating"]
+        },
+        {
+            "type": "items",
+            "enabled": true,
+            "title": "Recently Released Anime",
+            "items": {
+                "sortBy": ["PremiereDate"],
+                "sortOrder": "Descending",
+                "limit": 10,
+                "tags": ["Anime", "anime"]
+            },
+            "detailFields": ["ReleaseYearAndMonth"]
+        },
+        {
+            "type": "items",
+            "enabled": true,
+            "title": "Recently Released Movies",
+            "items": {
+                "sortBy": ["PremiereDate"],
+                "sortOrder": "Descending",
+                "limit": 10,
+                "types": ["Movie"]
+            },
+            "detailFields": ["ReleaseYearAndMonth"]
+        },
+        {
+            "type": "recentlyAdded",
+            "enabled": true
+        }
+    ]
+}
