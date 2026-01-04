@@ -1,5 +1,13 @@
 import { useEffect, useRef, useState } from 'react';
-import { Play, Pause, Volume2, VolumeX, Maximize, ArrowLeft } from 'lucide-react';
+import {
+    Play,
+    Pause,
+    Volume2,
+    VolumeX,
+    Maximize,
+    ArrowLeft,
+    PictureInPicture2,
+} from 'lucide-react';
 import { Button } from '../../components/ui/button';
 import { Link } from 'react-router';
 import type { BaseItemDto } from '@jellyfin/sdk/lib/generated-client/models';
@@ -24,6 +32,7 @@ const PlayerControls = ({ item, player, onFullscreen }: PlayerControlsProps) => 
     const [hoverTime, setHoverTime] = useState<number | null>(null);
     const [hoverPosition, setHoverPosition] = useState<number>(0);
     const [showControls, setShowControls] = useState(true);
+    const [isPiP, setIsPiP] = useState(false);
     const progressRef = useRef<HTMLDivElement>(null);
     const hideTimeoutRef = useRef<ReturnType<typeof setTimeout> | null>(null);
 
@@ -76,6 +85,15 @@ const PlayerControls = ({ item, player, onFullscreen }: PlayerControlsProps) => 
             }
         };
 
+        // PiP event listeners
+        const videoEl = player.el()?.querySelector('video');
+        const handleEnterPiP = () => setIsPiP(true);
+        const handleLeavePiP = () => setIsPiP(false);
+        if (videoEl) {
+            videoEl.addEventListener('enterpictureinpicture', handleEnterPiP);
+            videoEl.addEventListener('leavepictureinpicture', handleLeavePiP);
+        }
+
         player.on('play', updatePlayState);
         player.on('pause', updatePlayState);
         player.on('timeupdate', updateTime);
@@ -92,6 +110,11 @@ const PlayerControls = ({ item, player, onFullscreen }: PlayerControlsProps) => 
             player.off('loadedmetadata', updateDuration);
             player.off('progress', updateBuffered);
             player.off('volumechange', updateMuted);
+
+            if (videoEl) {
+                videoEl.removeEventListener('enterpictureinpicture', handleEnterPiP);
+                videoEl.removeEventListener('leavepictureinpicture', handleLeavePiP);
+            }
         };
     }, [player, volume]);
 
@@ -123,6 +146,22 @@ const PlayerControls = ({ item, player, onFullscreen }: PlayerControlsProps) => 
 
     const handleProgressLeave = () => {
         setHoverTime(null);
+    };
+
+    const togglePiP = async () => {
+        if (!player) return;
+        const videoEl = player.el()?.querySelector('video');
+        if (!videoEl) return;
+
+        try {
+            if (document.pictureInPictureElement) {
+                await document.exitPictureInPicture();
+            } else if (document.pictureInPictureEnabled) {
+                await videoEl.requestPictureInPicture();
+            }
+        } catch (error) {
+            console.error('Error toggling PiP:', error);
+        }
     };
 
     const handleVolumeChange = (values: number[]) => {
@@ -160,7 +199,7 @@ const PlayerControls = ({ item, player, onFullscreen }: PlayerControlsProps) => 
     return (
         <>
             <div
-                className="absolute top-4 left-4 z-20 text-gray-200 text-lg flex items-center gap-2 transition-opacity duration-300"
+                className="absolute top-0 left-0 w-full p-4 bg-linear-to-b from-black/80 to-transparent z-20 text-gray-200 text-lg flex items-center gap-2 transition-opacity duration-300"
                 style={{
                     opacity: showControls ? 1 : 0,
                     pointerEvents: showControls ? 'auto' : 'none',
@@ -272,6 +311,20 @@ const PlayerControls = ({ item, player, onFullscreen }: PlayerControlsProps) => 
                                 className="w-25 cursor-pointer"
                             />
                         </div>
+                        {document.pictureInPictureEnabled && (
+                            <Button
+                                variant={'ghost'}
+                                size={'icon-lg'}
+                                onClick={togglePiP}
+                                className="cursor-pointer"
+                                title="Picture in Picture"
+                            >
+                                <PictureInPicture2
+                                    size={20}
+                                    className={isPiP ? 'text-blue-500' : ''}
+                                />
+                            </Button>
+                        )}
                         <Button
                             variant={'ghost'}
                             size={'icon-lg'}
