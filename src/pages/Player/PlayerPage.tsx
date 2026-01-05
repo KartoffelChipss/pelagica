@@ -9,6 +9,7 @@ import PlayerControls from '@/pages/Player/PlayerControls';
 import { useEffect, useMemo, useRef, useState } from 'react';
 import { getPrimaryImageUrl, getVideoStreamUrl } from '@/utils/jellyfinUrls';
 import { generateRandomId } from '@/utils/idGenerator';
+import { useMediaSegments } from '@/hooks/api/useMediaSegments';
 
 type VideoJsPlayer = ReturnType<typeof import('video.js').default>;
 
@@ -23,6 +24,11 @@ const PlayerPage = () => {
     const [playSessionId, setPlaySessionId] = useState<string>(generateRandomId());
 
     const { data: item, isLoading, error } = useItem(itemId, true);
+    const {
+        data: mediaSegments,
+        isLoading: isLoadingMediaSegments,
+        error: mediaSegmentsError,
+    } = useMediaSegments(itemId);
     const { reportProgress } = useReportPlaybackProgress();
     const { startPlayback } = usePlaybackStart();
     const { stopPlayback } = usePlaybackStop();
@@ -88,12 +94,12 @@ const PlayerPage = () => {
         setAudioTrackIndex(index);
     };
 
-    if (isLoading) {
+    if (isLoading || isLoadingMediaSegments) {
         return <p>Loading...</p>;
     }
 
-    if (error) {
-        return <p>Error loading item: {error.message}</p>;
+    if (error || mediaSegmentsError) {
+        return <p>Error loading item: {error?.message || mediaSegmentsError?.message}</p>;
     }
 
     if (!item) {
@@ -117,6 +123,7 @@ const PlayerPage = () => {
                 audioTrackIndex={audioTrackIndex}
                 onAudioTrackChange={handleAudioTrackChange}
                 onFullscreen={handleFullscreen}
+                mediaSegments={mediaSegments}
             />
         </div>
     );

@@ -13,6 +13,10 @@ export function ticksToReadableTime(ticks: number): string {
     }
 }
 
+export function ticksToSeconds(ticks: number): number {
+    return ticks / 10000000;
+}
+
 export function getEndsAt(durationTicks: number): Date {
     const durationMs = durationTicks / 10000;
     return new Date(new Date().getTime() + durationMs);

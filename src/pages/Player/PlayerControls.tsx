@@ -8,10 +8,15 @@ import {
     ArrowLeft,
     PictureInPicture2,
     AudioLines,
+    SkipForward,
 } from 'lucide-react';
 import { Button } from '../../components/ui/button';
 import { Link } from 'react-router';
-import type { BaseItemDto } from '@jellyfin/sdk/lib/generated-client/models';
+import type {
+    BaseItemDto,
+    MediaSegmentDto,
+    MediaSegmentType,
+} from '@jellyfin/sdk/lib/generated-client/models';
 import { Slider } from '../../components/ui/slider';
 import {
     DropdownMenu,
@@ -22,6 +27,8 @@ import {
     DropdownMenuSeparator,
     DropdownMenuTrigger,
 } from '@/components/ui/dropdown-menu';
+import { ticksToSeconds } from '@/utils/timeConversion';
+import { useTranslation } from 'react-i18next';
 
 interface PlayerControlsProps {
     item: BaseItemDto;
@@ -29,6 +36,7 @@ interface PlayerControlsProps {
     audioTrackIndex: number | null;
     onAudioTrackChange: (index: number) => void;
     onFullscreen?: () => void;
+    mediaSegments?: MediaSegmentDto[];
 }
 
 const PlayerControls = ({
@@ -37,7 +45,9 @@ const PlayerControls = ({
     audioTrackIndex,
     onAudioTrackChange,
     onFullscreen,
+    mediaSegments,
 }: PlayerControlsProps) => {
+    const { t } = useTranslation('player');
     const [isPlaying, setIsPlaying] = useState(false);
     const [currentTime, setCurrentTime] = useState(0);
     const [duration, setDuration] = useState(0);
@@ -216,8 +226,42 @@ const PlayerControls = ({
         onAudioTrackChange(index);
     };
 
-    const progressPercentage = duration > 0 ? (currentTime / duration) * 100 : 0;
-    const bufferedPercentage = duration > 0 ? (bufferedTime / duration) * 100 : 0;
+    const getMediaSegment = (type: MediaSegmentType) => {
+        if (!mediaSegments || mediaSegments.length === 0) return null;
+        return mediaSegments.find((segment) => segment.Type === type) || null;
+    };
+
+    const handleSkipSegment = (type: MediaSegmentType) => {
+        if (!player) return;
+        const segment = getMediaSegment(type);
+        if (segment?.EndTicks) {
+            const endSeconds = ticksToSeconds(segment.EndTicks);
+            player.currentTime(endSeconds);
+        }
+    };
+
+    const introSegment = getMediaSegment('Intro');
+    const showSkipIntroButton =
+        introSegment &&
+        introSegment.StartTicks != null &&
+        introSegment.EndTicks != null &&
+        currentTime > ticksToSeconds(introSegment.StartTicks) &&
+        currentTime < ticksToSeconds(introSegment.EndTicks);
+
+    const outtroSegment = getMediaSegment('Outro');
+    const showSkipOutroButton =
+        outtroSegment &&
+        outtroSegment.StartTicks != null &&
+        outtroSegment.EndTicks != null &&
+        currentTime > ticksToSeconds(outtroSegment.StartTicks) &&
+        currentTime < ticksToSeconds(outtroSegment.EndTicks);
+
+    const clampedCurrentTime = duration > 0 ? Math.min(currentTime, duration) : currentTime;
+    const progressPercentage = Math.min(
+        100,
+        duration > 0 ? (clampedCurrentTime / duration) * 100 : 0
+    );
+    const bufferedPercentage = Math.min(100, duration > 0 ? (bufferedTime / duration) * 100 : 0);
 
     const title =
         item.Type === 'Episode'
@@ -247,6 +291,30 @@ const PlayerControls = ({
                 onMouseMove={handleMouseMove}
                 onMouseLeave={handleMouseLeave}
             />
+            <div className="absolute bottom-28 right-8 z-30 flex gap-2">
+                {showSkipIntroButton && (
+                    <Button
+                        variant={'default'}
+                        onClick={() => handleSkipSegment('Intro')}
+                        className="cursor-pointer"
+                        title={t('skipIntro')}
+                    >
+                        <SkipForward />
+                        {t('skipIntro')}
+                    </Button>
+                )}
+                {showSkipOutroButton && (
+                    <Button
+                        variant={'default'}
+                        onClick={() => handleSkipSegment('Outro')}
+                        className="cursor-pointer"
+                        title={t('skipOutro')}
+                    >
+                        <SkipForward />
+                        {t('skipOutro')}
+                    </Button>
+                )}
+            </div>
             <div
                 className="absolute bottom-0 left-0 right-0 z-20 bg-linear-to-t from-black/80 to-transparent p-4 transition-opacity duration-300"
                 style={{
@@ -286,7 +354,7 @@ const PlayerControls = ({
                     {/* Hover preview */}
                     {hoverTime !== null && (
                         <div
-                            className="absolute bottom-4 -translate-x-1/2 bg-black/90 text-white px-3 py-2 rounded text-sm pointer-events-none"
+                            className="absolute bottom-4 -translate-x-1/2 bg-black/90 text-white px-3 py-2 rounded text-sm pointer-events-none z-40"
                             style={{ left: `${hoverPosition}px` }}
                         >
                             <div className="text-center">{formatTime(hoverTime)}</div>
@@ -314,7 +382,7 @@ const PlayerControls = ({
                             {isPlaying ? <Pause size={24} /> : <Play size={24} />}
                         </Button>
                         <div className="text-sm">
-                            {formatTime(currentTime)} / {formatTime(duration)}
+                            {formatTime(clampedCurrentTime)} / {formatTime(duration)}
                         </div>
                     </div>
 
@@ -331,7 +399,7 @@ const PlayerControls = ({
                                     </Button>
                                 </DropdownMenuTrigger>
                                 <DropdownMenuContent>
-                                    <DropdownMenuLabel>Audio Track</DropdownMenuLabel>
+                                    <DropdownMenuLabel>{t('audioTracks')}</DropdownMenuLabel>
                                     <DropdownMenuSeparator />
                                     <DropdownMenuRadioGroup
                                         value={audioTrackIndex?.toString() || ''}

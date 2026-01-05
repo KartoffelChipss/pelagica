@@ -52,7 +52,6 @@ const VideoPlayer = ({ src, poster, startTicks, onReady }: VideoPlayerProps) => 
 
     useEffect(() => {
         if (playerRef.current && src) {
-            console.log('Setting video source to:', src);
             const prevPos = playerRef.current.currentTime();
             playerRef.current.pause();
             playerRef.current.src({
