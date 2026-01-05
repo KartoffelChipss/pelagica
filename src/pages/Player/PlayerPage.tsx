@@ -8,6 +8,7 @@ import VideoPlayer from '@/pages/Player/VideoPlayer';
 import PlayerControls from '@/pages/Player/PlayerControls';
 import { useEffect, useMemo, useRef, useState } from 'react';
 import { getPrimaryImageUrl, getVideoStreamUrl } from '@/utils/jellyfinUrls';
+import { generateRandomId } from '@/utils/idGenerator';
 
 type VideoJsPlayer = ReturnType<typeof import('video.js').default>;
 
@@ -15,19 +16,16 @@ const PlayerPage = () => {
     const params = useParams<{ itemId: string }>();
     const itemId = params.itemId;
     const [player, setPlayer] = useState<VideoJsPlayer | null>(null);
+    const [audioTrackIndex, setAudioTrackIndex] = useState<number>(1);
     const containerRef = useRef<HTMLDivElement>(null);
     const progressReportingIntervalRef = useRef<ReturnType<typeof setInterval> | null>(null);
     const lastPositionRef = useRef<number>(0);
+    const [playSessionId, setPlaySessionId] = useState<string>(generateRandomId());
 
     const { data: item, isLoading, error } = useItem(itemId, true);
     const { reportProgress } = useReportPlaybackProgress();
     const { startPlayback } = usePlaybackStart();
     const { stopPlayback } = usePlaybackStop();
-
-    const videoUrl = useMemo(() => {
-        if (!itemId) return '';
-        return getVideoStreamUrl(itemId);
-    }, [itemId]);
 
     const posterUrl = useMemo(() => {
         if (!item?.Id) return undefined;
@@ -85,6 +83,11 @@ const PlayerPage = () => {
         };
     }, [itemId, player, reportProgress, startPlayback, stopPlayback]);
 
+    const handleAudioTrackChange = (index: number) => {
+        setPlaySessionId(generateRandomId());
+        setAudioTrackIndex(index);
+    };
+
     if (isLoading) {
         return <p>Loading...</p>;
     }
@@ -100,12 +103,21 @@ const PlayerPage = () => {
     return (
         <div ref={containerRef} className="relative w-full h-screen bg-black flex">
             <VideoPlayer
-                src={videoUrl}
+                src={getVideoStreamUrl(itemId!, {
+                    audioStreamIndex: audioTrackIndex,
+                    playSessionId: playSessionId,
+                })}
                 poster={posterUrl}
                 onReady={setPlayer}
                 startTicks={item.UserData?.PlaybackPositionTicks || 0}
             />
-            <PlayerControls item={item} player={player} onFullscreen={handleFullscreen} />
+            <PlayerControls
+                item={item}
+                player={player}
+                audioTrackIndex={audioTrackIndex}
+                onAudioTrackChange={handleAudioTrackChange}
+                onFullscreen={handleFullscreen}
+            />
         </div>
     );
 };

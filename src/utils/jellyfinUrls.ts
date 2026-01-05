@@ -75,7 +75,13 @@ export function getThumbUrl(itemId: string, size?: { width?: number; height?: nu
     }
 }
 
-export function getVideoStreamUrl(itemId: string) {
+export function getVideoStreamUrl(
+    itemId: string,
+    options: {
+        playSessionId?: string;
+        audioStreamIndex?: number;
+    }
+) {
     try {
         const server = getServerUrl();
         const token = getAccessToken();
@@ -84,19 +90,62 @@ export function getVideoStreamUrl(itemId: string) {
 
         const url = new URL(server);
         url.pathname = `/videos/${itemId}/master.m3u8`;
-        url.searchParams.append('mediaSourceId', itemId);
-        url.searchParams.append('api_key', token);
-        url.searchParams.append('videoCodec', 'av1,hevc,h264,vp9');
-        url.searchParams.append('audioCodec', 'aac');
-        url.searchParams.append('segmentContainer', 'mp4');
-        url.searchParams.append('minSegments', '2');
-        url.searchParams.append('breakOnNonKeyFrames', 'true');
-        url.searchParams.append('requireAvc', 'false');
+        url.searchParams.append('MediaSourceId', itemId);
+        url.searchParams.append('ApiKey', token);
+        url.searchParams.append('VideoCodec', 'av1,hevc,h264,vp9');
+        url.searchParams.append('AudioCodec', 'aac');
+        url.searchParams.append('SegmentContainer', 'mp4');
+        url.searchParams.append('MinSegments', '2');
+        url.searchParams.append('BreakOnNonKeyFrames', 'true');
+        url.searchParams.append('RequireAvc', 'false');
+        if (options.playSessionId !== undefined)
+            url.searchParams.append('PlaySessionId', options.playSessionId);
+        if (options.audioStreamIndex !== undefined) {
+            url.searchParams.append('AudioStreamIndex', options.audioStreamIndex.toString());
+        }
 
         return url.toString();
     } catch {
         return '';
     }
+
+    // https://jellyfin.jan.run/videos/12110497-4502-30bc-50b6-aa9b56f85e13/master.m3u8?
+    // &DeviceId=TW96aWxsYS81LjAgKE1hY2ludG9zaDsgSW50ZWwgTWFjIE9TIFggMTBfMTVfNykgQXBwbGVXZWJLaXQvNjA1LjEuMTUgKEtIVE1MLCBsaWtlIEdlY2tvKSBWZXJzaW9uLzE4LjUgU2FmYXJpLzYwNS4xLjE1fDE3NTYwMjYzOTY4MTI1
+    // &MediaSourceId=12110497450230bc50b6aa9b56f85e13
+    // &VideoCodec=av1,hevc,h264,vp9
+    // &AudioCodec=aac
+    // &AudioStreamIndex=1
+    // &VideoBitrate=139872000
+    // &AudioBitrate=128000
+    // &AudioSampleRate=44100
+    // &MaxFramerate=23.976025
+    // &SegmentContainer=mp4
+    // &MinSegments=2
+    // &BreakOnNonKeyFrames=True
+    // &PlaySessionId=20b1c85b8d494d25bdc420f9d91955bc
+    // &ApiKey=XXX
+    // &TranscodingMaxAudioChannels=6
+    // &RequireAvc=false
+    // &EnableAudioVbrEncoding=true
+    // &Tag=e0bf36a4068922681907bddf213fcbfb
+    // &SubtitleMethod=Encode
+    // &hevc-level=150
+    // &hevc-videobitdepth=10
+    // &hevc-profile=main10
+    // &hevc-audiochannels=2
+    // &aac-profile=lc
+    // &av1-profile=main
+    // &av1-rangetype=SDR,HDR10,HDR10Plus,HLG,DOVI,DOVIWithHDR10,DOVIWithHLG,DOVIWithSDR,DOVIWithHDR10Plus
+    // &av1-level=17
+    // &vp9-rangetype=SDR,HDR10,HDR10Plus,HLG
+    // &hevc-rangetype=SDR,HDR10,HDR10Plus,HLG,DOVI,DOVIWithHDR10,DOVIWithHLG,DOVIWithSDR,DOVIWithHDR10Plus
+    // &hevc-deinterlace=true
+    // &hevc-codectag=hvc1,dvh1
+    // &h264-profile=high,main,baseline,constrainedbaseline
+    // &h264-rangetype=SDR
+    // &h264-level=52
+    // &h264-deinterlace=true
+    // &TranscodeReasons=ContainerNotSupported,VideoCodecTagNotSupported
 }
 
 export function getPrimaryImageUrl(itemId: string, size?: { width?: number; height?: number }) {

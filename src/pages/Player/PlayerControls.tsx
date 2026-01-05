@@ -7,19 +7,37 @@ import {
     Maximize,
     ArrowLeft,
     PictureInPicture2,
+    AudioLines,
 } from 'lucide-react';
 import { Button } from '../../components/ui/button';
 import { Link } from 'react-router';
 import type { BaseItemDto } from '@jellyfin/sdk/lib/generated-client/models';
 import { Slider } from '../../components/ui/slider';
+import {
+    DropdownMenu,
+    DropdownMenuContent,
+    DropdownMenuLabel,
+    DropdownMenuRadioGroup,
+    DropdownMenuRadioItem,
+    DropdownMenuSeparator,
+    DropdownMenuTrigger,
+} from '@/components/ui/dropdown-menu';
 
 interface PlayerControlsProps {
     item: BaseItemDto;
     player: ReturnType<typeof import('video.js').default> | null;
+    audioTrackIndex: number | null;
+    onAudioTrackChange: (index: number) => void;
     onFullscreen?: () => void;
 }
 
-const PlayerControls = ({ item, player, onFullscreen }: PlayerControlsProps) => {
+const PlayerControls = ({
+    item,
+    player,
+    audioTrackIndex,
+    onAudioTrackChange,
+    onFullscreen,
+}: PlayerControlsProps) => {
     const [isPlaying, setIsPlaying] = useState(false);
     const [currentTime, setCurrentTime] = useState(0);
     const [duration, setDuration] = useState(0);
@@ -193,6 +211,11 @@ const PlayerControls = ({ item, player, onFullscreen }: PlayerControlsProps) => 
         return `${mins}:${secs.toString().padStart(2, '0')}`;
     };
 
+    const handleAudioTrackChange = (value: string) => {
+        const index = parseInt(value, 10);
+        onAudioTrackChange(index);
+    };
+
     const progressPercentage = duration > 0 ? (currentTime / duration) * 100 : 0;
     const bufferedPercentage = duration > 0 ? (bufferedTime / duration) * 100 : 0;
 
@@ -297,6 +320,37 @@ const PlayerControls = ({ item, player, onFullscreen }: PlayerControlsProps) => 
 
                     <div className="flex items-center gap-4">
                         <div className="flex items-center gap-2">
+                            <DropdownMenu>
+                                <DropdownMenuTrigger asChild>
+                                    <Button
+                                        variant={'ghost'}
+                                        size={'icon-lg'}
+                                        className="cursor-pointer"
+                                    >
+                                        <AudioLines />
+                                    </Button>
+                                </DropdownMenuTrigger>
+                                <DropdownMenuContent>
+                                    <DropdownMenuLabel>Audio Track</DropdownMenuLabel>
+                                    <DropdownMenuSeparator />
+                                    <DropdownMenuRadioGroup
+                                        value={audioTrackIndex?.toString() || ''}
+                                        onValueChange={handleAudioTrackChange}
+                                    >
+                                        {item.MediaStreams?.filter((s) => s.Type === 'Audio').map(
+                                            (stream, index) => (
+                                                <DropdownMenuRadioItem
+                                                    key={index}
+                                                    value={stream.Index!.toString()}
+                                                >
+                                                    {stream.Language || 'Unknown Language'} -{' '}
+                                                    {stream.Codec}
+                                                </DropdownMenuRadioItem>
+                                            )
+                                        )}
+                                    </DropdownMenuRadioGroup>
+                                </DropdownMenuContent>
+                            </DropdownMenu>
                             <Button
                                 variant={'ghost'}
                                 size={'icon-lg'}

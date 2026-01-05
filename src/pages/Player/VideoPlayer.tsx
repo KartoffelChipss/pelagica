@@ -52,9 +52,17 @@ const VideoPlayer = ({ src, poster, startTicks, onReady }: VideoPlayerProps) => 
 
     useEffect(() => {
         if (playerRef.current && src) {
+            console.log('Setting video source to:', src);
+            const prevPos = playerRef.current.currentTime();
+            playerRef.current.pause();
             playerRef.current.src({
                 src,
                 type: 'application/x-mpegURL',
+            });
+            playerRef.current.load();
+            playerRef.current.currentTime(prevPos);
+            playerRef.current.play()?.catch((error) => {
+                console.error('Error attempting to play after source change:', error);
             });
         }
     }, [src]);
