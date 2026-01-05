@@ -196,6 +196,11 @@ const PlayerControls = ({ item, player, onFullscreen }: PlayerControlsProps) => 
     const progressPercentage = duration > 0 ? (currentTime / duration) * 100 : 0;
     const bufferedPercentage = duration > 0 ? (bufferedTime / duration) * 100 : 0;
 
+    const title =
+        item.Type === 'Episode'
+            ? `${item.SeriesName} - S${item.ParentIndexNumber}E${item.IndexNumber} - ${item.Name}`
+            : item.Name;
+
     return (
         <>
             <div
@@ -211,9 +216,7 @@ const PlayerControls = ({ item, player, onFullscreen }: PlayerControlsProps) => 
                         <ArrowLeft />
                     </Link>
                 </Button>
-                <h1>
-                    {item.SeriesName} - S{item.ParentIndexNumber}E{item.IndexNumber} - {item.Name}
-                </h1>
+                <h1>{title}</h1>
             </div>
             <div
                 className={`absolute inset-0 z-10 p-4 ${showControls ? '' : 'cursor-none'}`}
