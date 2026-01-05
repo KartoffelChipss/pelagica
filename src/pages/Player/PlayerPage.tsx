@@ -107,7 +107,7 @@ const PlayerPage = () => {
     }
 
     return (
-        <div ref={containerRef} className="relative w-full h-screen bg-black flex">
+        <div ref={containerRef} className="relative w-full h-screen bg-black flex overflow-hidden">
             <VideoPlayer
                 src={getVideoStreamUrl(itemId!, {
                     audioStreamIndex: audioTrackIndex,

@@ -268,6 +268,8 @@ const PlayerControls = ({
             ? `${item.SeriesName} - S${item.ParentIndexNumber}E${item.IndexNumber} - ${item.Name}`
             : item.Name;
 
+    const audioStreams = item.MediaStreams?.filter((s) => s.Type === 'Audio') || [];
+
     return (
         <>
             <div
@@ -388,25 +390,25 @@ const PlayerControls = ({
 
                     <div className="flex items-center gap-4">
                         <div className="flex items-center gap-2">
-                            <DropdownMenu>
-                                <DropdownMenuTrigger asChild>
-                                    <Button
-                                        variant={'ghost'}
-                                        size={'icon-lg'}
-                                        className="cursor-pointer"
-                                    >
-                                        <AudioLines />
-                                    </Button>
-                                </DropdownMenuTrigger>
-                                <DropdownMenuContent>
-                                    <DropdownMenuLabel>{t('audioTracks')}</DropdownMenuLabel>
-                                    <DropdownMenuSeparator />
-                                    <DropdownMenuRadioGroup
-                                        value={audioTrackIndex?.toString() || ''}
-                                        onValueChange={handleAudioTrackChange}
-                                    >
-                                        {item.MediaStreams?.filter((s) => s.Type === 'Audio').map(
-                                            (stream, index) => (
+                            {audioStreams.length > 1 && (
+                                <DropdownMenu>
+                                    <DropdownMenuTrigger asChild>
+                                        <Button
+                                            variant={'ghost'}
+                                            size={'icon-lg'}
+                                            className="cursor-pointer"
+                                        >
+                                            <AudioLines />
+                                        </Button>
+                                    </DropdownMenuTrigger>
+                                    <DropdownMenuContent>
+                                        <DropdownMenuLabel>{t('audioTracks')}</DropdownMenuLabel>
+                                        <DropdownMenuSeparator />
+                                        <DropdownMenuRadioGroup
+                                            value={audioTrackIndex?.toString() || ''}
+                                            onValueChange={handleAudioTrackChange}
+                                        >
+                                            {audioStreams.map((stream, index) => (
                                                 <DropdownMenuRadioItem
                                                     key={index}
                                                     value={stream.Index!.toString()}
@@ -414,11 +416,11 @@ const PlayerControls = ({
                                                     {stream.Language || 'Unknown Language'} -{' '}
                                                     {stream.Codec}
                                                 </DropdownMenuRadioItem>
-                                            )
-                                        )}
-                                    </DropdownMenuRadioGroup>
-                                </DropdownMenuContent>
-                            </DropdownMenu>
+                                            ))}
+                                        </DropdownMenuRadioGroup>
+                                    </DropdownMenuContent>
+                                </DropdownMenu>
+                            )}
                             <Button
                                 variant={'ghost'}
                                 size={'icon-lg'}
