@@ -1,4 +1,4 @@
-import { useEffect, useRef, useState } from 'react';
+import { useCallback, useEffect, useRef, useState } from 'react';
 import {
     Play,
     Pause,
@@ -27,8 +27,9 @@ import {
     DropdownMenuSeparator,
     DropdownMenuTrigger,
 } from '@/components/ui/dropdown-menu';
-import { ticksToSeconds } from '@/utils/timeConversion';
+import { formatPlayTime, ticksToSeconds } from '@/utils/timeConversion';
 import { useTranslation } from 'react-i18next';
+import { usePlayerKeyboardControls } from '@/hooks/usePlayerKeyboardControls';
 
 interface PlayerControlsProps {
     item: BaseItemDto;
@@ -146,14 +147,14 @@ const PlayerControls = ({
         };
     }, [player, volume]);
 
-    const togglePlay = () => {
+    const togglePlay = useCallback(() => {
         if (!player) return;
         if (player.paused()) {
             player.play();
         } else {
             player.pause();
         }
-    };
+    }, [player]);
 
     const handleProgressClick = (e: React.MouseEvent<HTMLDivElement>) => {
         if (!player || !progressRef.current) return;
@@ -176,7 +177,7 @@ const PlayerControls = ({
         setHoverTime(null);
     };
 
-    const togglePiP = async () => {
+    const togglePiP = useCallback(async () => {
         if (!player) return;
         const videoEl = player.el()?.querySelector('video');
         if (!videoEl) return;
@@ -190,7 +191,7 @@ const PlayerControls = ({
         } catch (error) {
             console.error('Error toggling PiP:', error);
         }
-    };
+    }, [player]);
 
     const handleVolumeChange = (values: number[]) => {
         if (!player || values.length === 0) return;
@@ -201,25 +202,14 @@ const PlayerControls = ({
         player.volume(newVolume);
     };
 
-    const toggleMute = () => {
+    const toggleMute = useCallback(() => {
         if (!player) return;
         player.muted(!isMuted);
-    };
+    }, [player, isMuted]);
 
-    const toggleFullscreen = () => {
+    const toggleFullscreen = useCallback(() => {
         onFullscreen?.();
-    };
-
-    const formatTime = (seconds: number) => {
-        if (!seconds || isNaN(seconds)) return '0:00';
-        const hrs = Math.floor(seconds / 3600);
-        const mins = Math.floor((seconds % 3600) / 60);
-        const secs = Math.floor(seconds % 60);
-        if (hrs > 0) {
-            return `${hrs}:${mins.toString().padStart(2, '0')}:${secs.toString().padStart(2, '0')}`;
-        }
-        return `${mins}:${secs.toString().padStart(2, '0')}`;
-    };
+    }, [onFullscreen]);
 
     const handleAudioTrackChange = (value: string) => {
         const index = parseInt(value, 10);
@@ -239,6 +229,27 @@ const PlayerControls = ({
             player.currentTime(endSeconds);
         }
     };
+
+    const handleSeekBackward = useCallback(() => {
+        if (!player) return;
+        const newTime = Math.max(0, (player.currentTime() || 0) - 10);
+        player.currentTime(newTime);
+    }, [player]);
+
+    const handleSeekForward = useCallback(() => {
+        if (!player) return;
+        const newTime = Math.min(duration, (player.currentTime() || 0) + 10);
+        player.currentTime(newTime);
+    }, [player, duration]);
+
+    usePlayerKeyboardControls({
+        togglePlay,
+        toggleMute,
+        toggleFullscreen,
+        togglePiP,
+        handleSeekBackward,
+        handleSeekForward,
+    });
 
     const introSegment = getMediaSegment('Intro');
     const showSkipIntroButton =
@@ -359,7 +370,7 @@ const PlayerControls = ({
                             className="absolute bottom-4 -translate-x-1/2 bg-black/90 text-white px-3 py-2 rounded text-sm pointer-events-none z-40"
                             style={{ left: `${hoverPosition}px` }}
                         >
-                            <div className="text-center">{formatTime(hoverTime)}</div>
+                            <div className="text-center">{formatPlayTime(hoverTime)}</div>
                             <img
                                 src={`/Items/${item.Id}/Trickplay/320/${Math.floor(hoverTime)}.jpg`}
                                 alt="Preview"
@@ -384,7 +395,7 @@ const PlayerControls = ({
                             {isPlaying ? <Pause size={24} /> : <Play size={24} />}
                         </Button>
                         <div className="text-sm">
-                            {formatTime(clampedCurrentTime)} / {formatTime(duration)}
+                            {formatPlayTime(clampedCurrentTime)} / {formatPlayTime(duration)}
                         </div>
                     </div>
 
