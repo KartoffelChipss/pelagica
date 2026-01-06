@@ -23,6 +23,7 @@ import { type AppConfig } from '@/hooks/api/useConfig';
 import DetailBadges from './DetailBadges';
 import EpisodesDisplay from './EpisodesDisplay';
 import FavoriteButton from './FavoriteButton';
+import WatchListButton from './WatchListButton';
 
 interface SeriesPageProps {
     item: BaseItemDto;
@@ -99,6 +100,10 @@ const SeriesPage = ({ item, config }: SeriesPageProps) => {
                         <FavoriteButton
                             item={item}
                             favoriteButtonSetting={config.itemPage?.favoriteButton}
+                        />
+                        <WatchListButton
+                            item={item}
+                            showWatchlistButton={config.itemPage?.showWatchlistButton}
                         />
                     </div>
                     <p>{item.Overview}</p>

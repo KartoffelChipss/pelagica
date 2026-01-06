@@ -13,6 +13,7 @@ import DetailBadges from './DetailBadges';
 import { Link } from 'react-router';
 import MediaInfoDialog from './MediaInfoDialog';
 import FavoriteButton from './FavoriteButton';
+import WatchListButton from './WatchListButton';
 
 interface MoviePageProps {
     item: BaseItemDto;
@@ -61,6 +62,10 @@ const MoviePage = ({ item, config }: MoviePageProps) => {
                         <FavoriteButton
                             item={item}
                             favoriteButtonSetting={config.itemPage?.favoriteButton}
+                        />
+                        <WatchListButton
+                            item={item}
+                            showWatchlistButton={config.itemPage?.showWatchlistButton}
                         />
                         <MediaInfoDialog streams={item.MediaStreams || []} />
                     </div>

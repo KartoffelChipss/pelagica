@@ -296,6 +296,10 @@
             "$ref": "#/definitions/BaseItemKind"
           },
           "type": "array"
+        },
+        "showWatchlistButton": {
+          "description": "Whether to show the watchlist button to add items to the kefintweaks watchlist",
+          "type": "boolean"
         }
       },
       "type": "object"

@@ -114,6 +114,8 @@ export interface ItemPageSettings {
     detailBadges?: DetailBadge[];
     /** The item types to show the favorite button for. Empty array means no favorite button */
     favoriteButton?: BaseItemKind[];
+    /** Whether to show the watchlist button to add items to the kefintweaks watchlist */
+    showWatchlistButton?: boolean;
 }
 
 export interface AppConfig {
@@ -128,6 +130,7 @@ const DEFAULT_ITEM_PAGE_SETTINGS: ItemPageSettings = {
     episodeDisplay: 'row',
     detailBadges: ['ReleaseYear', 'CommunityRating', 'AgeRating', 'EpisodeNumber'],
     favoriteButton: ['Movie', 'Series'],
+    showWatchlistButton: true,
 };
 
 const DEFAULT_CONFIG: AppConfig = {
