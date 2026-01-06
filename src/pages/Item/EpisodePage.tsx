@@ -20,6 +20,7 @@ import PeopleRow from './PeopleRow';
 import { Link } from 'react-router';
 import JellyfinItemKindIcon from '@/components/JellyfinItemKindIcon';
 import MediaInfoDialog from './MediaInfoDialog';
+import FavoriteButton from './FavoriteButton';
 
 interface EpisodePageProps {
     item: BaseItemDto;
@@ -109,6 +110,10 @@ const EpisodePage = ({ item, config }: EpisodePageProps) => {
                                 {t(progress > 0 && progress < 100 ? 'resume' : 'play')}
                             </Link>
                         </Button>
+                        <FavoriteButton
+                            item={item}
+                            favoriteButtonSetting={config.itemPage?.favoriteButton}
+                        />
                         <MediaInfoDialog streams={item.MediaStreams || []} />
                     </div>
                     <p>{item.Overview}</p>

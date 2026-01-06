@@ -2,7 +2,7 @@ import { Button } from '@/components/ui/button';
 import { useSeasons } from '@/hooks/api/useSeasons';
 import { getPrimaryImageUrl } from '@/utils/jellyfinUrls';
 import type { BaseItemDto } from '@jellyfin/sdk/lib/generated-client/models';
-import { Heart, Play } from 'lucide-react';
+import { Play } from 'lucide-react';
 import { useState } from 'react';
 import { Link } from 'react-router';
 import {
@@ -20,9 +20,9 @@ import BaseMediaPage from './BaseMediaPage';
 import DescriptionItem from './DescriptionItem';
 import MoreLikeThisRow from './MoreLikeThisRow';
 import { type AppConfig } from '@/hooks/api/useConfig';
-import { useFavorite } from '@/hooks/api/useFavorite';
 import DetailBadges from './DetailBadges';
 import EpisodesDisplay from './EpisodesDisplay';
+import FavoriteButton from './FavoriteButton';
 
 interface SeriesPageProps {
     item: BaseItemDto;
@@ -33,7 +33,6 @@ const SeriesPage = ({ item, config }: SeriesPageProps) => {
     const { t } = useTranslation('item');
     const [selectedSeason, setSelectedSeason] = useState<string | null>(null);
     const { data: seasons, isLoading, error } = useSeasons(item.Id || '');
-    const { isFavorite, toggleFavorite, isLoading: isFavoriteLoading } = useFavorite(item.Id);
 
     const effectiveSelectedSeason =
         selectedSeason ||
@@ -97,14 +96,10 @@ const SeriesPage = ({ item, config }: SeriesPageProps) => {
                                 {t('loading')}
                             </Button>
                         )}
-                        <Button
-                            variant={'outline'}
-                            size={'icon'}
-                            onClick={() => toggleFavorite(!isFavorite)}
-                            disabled={isFavoriteLoading}
-                        >
-                            <Heart fill={isFavorite ? 'currentColor' : 'none'} />
-                        </Button>
+                        <FavoriteButton
+                            item={item}
+                            favoriteButtonSetting={config.itemPage?.favoriteButton}
+                        />
                     </div>
                     <p>{item.Overview}</p>
                     <DescriptionItem

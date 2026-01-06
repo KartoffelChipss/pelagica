@@ -21,6 +21,160 @@
       },
       "type": "object"
     },
+    "BaseItemKind": {
+      "anyOf": [
+        {
+          "const": "AggregateFolder",
+          "type": "string"
+        },
+        {
+          "const": "Audio",
+          "type": "string"
+        },
+        {
+          "const": "AudioBook",
+          "type": "string"
+        },
+        {
+          "const": "BasePluginFolder",
+          "type": "string"
+        },
+        {
+          "const": "Book",
+          "type": "string"
+        },
+        {
+          "const": "BoxSet",
+          "type": "string"
+        },
+        {
+          "const": "Channel",
+          "type": "string"
+        },
+        {
+          "const": "ChannelFolderItem",
+          "type": "string"
+        },
+        {
+          "const": "CollectionFolder",
+          "type": "string"
+        },
+        {
+          "const": "Episode",
+          "type": "string"
+        },
+        {
+          "const": "Folder",
+          "type": "string"
+        },
+        {
+          "const": "Genre",
+          "type": "string"
+        },
+        {
+          "const": "ManualPlaylistsFolder",
+          "type": "string"
+        },
+        {
+          "const": "Movie",
+          "type": "string"
+        },
+        {
+          "const": "LiveTvChannel",
+          "type": "string"
+        },
+        {
+          "const": "LiveTvProgram",
+          "type": "string"
+        },
+        {
+          "const": "MusicAlbum",
+          "type": "string"
+        },
+        {
+          "const": "MusicArtist",
+          "type": "string"
+        },
+        {
+          "const": "MusicGenre",
+          "type": "string"
+        },
+        {
+          "const": "MusicVideo",
+          "type": "string"
+        },
+        {
+          "const": "Person",
+          "type": "string"
+        },
+        {
+          "const": "Photo",
+          "type": "string"
+        },
+        {
+          "const": "PhotoAlbum",
+          "type": "string"
+        },
+        {
+          "const": "Playlist",
+          "type": "string"
+        },
+        {
+          "const": "PlaylistsFolder",
+          "type": "string"
+        },
+        {
+          "const": "Program",
+          "type": "string"
+        },
+        {
+          "const": "Recording",
+          "type": "string"
+        },
+        {
+          "const": "Season",
+          "type": "string"
+        },
+        {
+          "const": "Series",
+          "type": "string"
+        },
+        {
+          "const": "Studio",
+          "type": "string"
+        },
+        {
+          "const": "Trailer",
+          "type": "string"
+        },
+        {
+          "const": "TvChannel",
+          "type": "string"
+        },
+        {
+          "const": "TvProgram",
+          "type": "string"
+        },
+        {
+          "const": "UserRootFolder",
+          "type": "string"
+        },
+        {
+          "const": "UserView",
+          "type": "string"
+        },
+        {
+          "const": "Video",
+          "type": "string"
+        },
+        {
+          "const": "Year",
+          "type": "string"
+        },
+        {}
+      ],
+      "description": "The base item kind."
+    },
     "ContinueWatchingDetailLine": {
       "enum": [
         "ProgressPercentage",
@@ -135,6 +289,13 @@
         "episodeDisplay": {
           "$ref": "#/definitions/EpisodeDisplay",
           "description": "How to display episodes on series pages"
+        },
+        "favoriteButton": {
+          "description": "The item types to show the favorite button for. Empty array means no favorite button",
+          "items": {
+            "$ref": "#/definitions/BaseItemKind"
+          },
+          "type": "array"
         }
       },
       "type": "object"

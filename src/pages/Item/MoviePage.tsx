@@ -2,17 +2,17 @@ import type { BaseItemDto } from '@jellyfin/sdk/lib/generated-client/models';
 import BaseMediaPage from './BaseMediaPage';
 import DescriptionItem from './DescriptionItem';
 import { getPrimaryImageUrl } from '@/utils/jellyfinUrls';
-import { Heart, Play } from 'lucide-react';
+import { Play } from 'lucide-react';
 import PeopleRow from './PeopleRow';
 import { Button } from '@/components/ui/button';
 import { useTranslation } from 'react-i18next';
 import { Skeleton } from '@/components/ui/skeleton';
 import MoreLikeThisRow from './MoreLikeThisRow';
 import type { AppConfig } from '@/hooks/api/useConfig';
-import { useFavorite } from '@/hooks/api/useFavorite';
 import DetailBadges from './DetailBadges';
 import { Link } from 'react-router';
 import MediaInfoDialog from './MediaInfoDialog';
+import FavoriteButton from './FavoriteButton';
 
 interface MoviePageProps {
     item: BaseItemDto;
@@ -21,7 +21,6 @@ interface MoviePageProps {
 
 const MoviePage = ({ item, config }: MoviePageProps) => {
     const { t } = useTranslation('item');
-    const { isFavorite, toggleFavorite, isLoading: isFavoriteLoading } = useFavorite(item.Id);
 
     const writers =
         item.People?.filter((person) => person.Type === 'Writer').filter((person) => person.Name) ||
@@ -59,14 +58,10 @@ const MoviePage = ({ item, config }: MoviePageProps) => {
                                 {isCurrentlyPlaying ? t('resume') : t('play')}
                             </Link>
                         </Button>
-                        <Button
-                            variant={'outline'}
-                            size={'icon'}
-                            onClick={() => toggleFavorite(!isFavorite)}
-                            disabled={isFavoriteLoading}
-                        >
-                            <Heart fill={isFavorite ? 'currentColor' : 'none'} />
-                        </Button>
+                        <FavoriteButton
+                            item={item}
+                            favoriteButtonSetting={config.itemPage?.favoriteButton}
+                        />
                         <MediaInfoDialog streams={item.MediaStreams || []} />
                     </div>
                     <p>{item.Overview}</p>

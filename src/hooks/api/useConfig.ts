@@ -1,4 +1,4 @@
-import type { ItemSortBy } from '@jellyfin/sdk/lib/generated-client/models';
+import type { BaseItemKind, ItemSortBy } from '@jellyfin/sdk/lib/generated-client/models';
 import { useEffect, useState } from 'react';
 
 interface BaseHomeScreenSection {
@@ -112,6 +112,8 @@ export interface ItemPageSettings {
     episodeDisplay?: EpisodeDisplay;
     /** Which badges to show on item detail pages */
     detailBadges?: DetailBadge[];
+    /** The item types to show the favorite button for. Empty array means no favorite button */
+    favoriteButton?: BaseItemKind[];
 }
 
 export interface AppConfig {
@@ -125,13 +127,76 @@ export interface AppConfig {
 const DEFAULT_ITEM_PAGE_SETTINGS: ItemPageSettings = {
     episodeDisplay: 'row',
     detailBadges: ['ReleaseYear', 'CommunityRating', 'AgeRating', 'EpisodeNumber'],
+    favoriteButton: ['Movie', 'Series'],
 };
 
 const DEFAULT_CONFIG: AppConfig = {
     homeScreenSections: [
-        { type: 'mediaBar', enabled: true, size: 'medium' },
-        { type: 'continueWatching', enabled: true },
-        { type: 'recentlyAdded', enabled: true, title: 'Recently Added' },
+        {
+            type: 'mediaBar',
+            size: 'medium',
+            items: {
+                sortBy: ['Random'],
+                types: ['Movie', 'Series'],
+            },
+        },
+        {
+            type: 'continueWatching',
+            titleLine: 'ItemTitleWithEpisodeInfo',
+            detailLine: ['TimeRemaining'],
+        },
+        {
+            type: 'items',
+            title: 'Favorites',
+            items: {
+                isFavorite: true,
+                limit: 10,
+            },
+        },
+        {
+            type: 'items',
+            title: 'Watchlist',
+            items: {
+                isInKefinTweaksWatchlist: true,
+                limit: 10,
+            },
+        },
+        {
+            type: 'items',
+            title: 'Top Rated Anime',
+            items: {
+                sortBy: ['CommunityRating'],
+                sortOrder: 'Descending',
+                limit: 10,
+                tags: ['Anime', 'anime'],
+            },
+            detailFields: ['CommunityRating'],
+        },
+        {
+            type: 'items',
+            title: 'Recently Released Anime',
+            items: {
+                sortBy: ['PremiereDate'],
+                sortOrder: 'Descending',
+                limit: 10,
+                tags: ['Anime', 'anime'],
+            },
+            detailFields: ['ReleaseYearAndMonth'],
+        },
+        {
+            type: 'items',
+            title: 'Recently Released Movies',
+            items: {
+                sortBy: ['PremiereDate'],
+                sortOrder: 'Descending',
+                limit: 10,
+                types: ['Movie'],
+            },
+            detailFields: ['ReleaseYearAndMonth'],
+        },
+        {
+            type: 'recentlyAdded',
+        },
     ],
 };
 
