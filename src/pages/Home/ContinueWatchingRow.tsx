@@ -5,8 +5,8 @@ import { useContinueWatchingAndNextUp } from '@/hooks/api/useContinueWatchingAnd
 import { getThumbUrl, getPrimaryImageUrl } from '@/utils/jellyfinUrls';
 import { ticksToReadableTime } from '@/utils/timeConversion';
 import type { BaseItemDto } from '@jellyfin/sdk/lib/generated-client/models';
-import { Dot, ImageOff } from 'lucide-react';
-import { Link } from 'react-router';
+import { Dot, ImageOff, Play } from 'lucide-react';
+import { Link, useNavigate } from 'react-router';
 import { useState } from 'react';
 import { useTranslation } from 'react-i18next';
 import type { TFunction } from 'i18next';
@@ -84,6 +84,7 @@ function getDetailLineText(
 
 const ContinueWatchingRow = ({ title, titleLine, detailLine }: ContinueWatchingRowProps) => {
     const { t } = useTranslation('home');
+    const navigate = useNavigate();
     const {
         data: continueWatchingData,
         isLoading,
@@ -158,6 +159,18 @@ const ContinueWatchingRow = ({ title, titleLine, detailLine }: ContinueWatchingR
                                                       />
                                                   </div>
                                               )}
+                                              <div className="absolute inset-0 flex items-center justify-center opacity-0 group-hover:opacity-100 transition-opacity">
+                                                  <div
+                                                      className="bg-black/60 rounded-full p-4 cursor-pointer hover:bg-black/75"
+                                                      role="button"
+                                                      onClick={(e) => {
+                                                          e.preventDefault();
+                                                          navigate(`/play/${item.Id}`);
+                                                      }}
+                                                  >
+                                                      <Play className="w-6 h-6 text-white fill-white" />
+                                                  </div>
+                                              </div>
                                           </div>
                                           <p className="mt-2 text-sm line-clamp-1 text-ellipsis break-all">
                                               {getTitleLineText(item, titleLine, t)}
