@@ -15,7 +15,7 @@ const HomePage = () => {
         <Page title={'Pelagica'} requiresAuth={true}>
             <div className="flex flex-col gap-4">
                 {config.homeScreenSections?.map((section, index) => {
-                    if (!section.enabled) return null;
+                    if (section.enabled === false) return null;
 
                     switch (section.type) {
                         case 'continueWatching':

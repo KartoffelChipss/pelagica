@@ -3,7 +3,7 @@ import { useEffect, useState } from 'react';
 
 interface BaseHomeScreenSection {
     /** Whether the section is enabled. Mostly intended for testing purposes */
-    enabled: boolean;
+    enabled?: boolean;
     /** The title of the section */
     title?: string;
 }

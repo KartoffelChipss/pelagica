@@ -57,7 +57,6 @@
         }
       },
       "required": [
-        "enabled",
         "type"
       ],
       "type": "object"
@@ -298,7 +297,6 @@
         }
       },
       "required": [
-        "enabled",
         "type"
       ],
       "type": "object"
@@ -333,7 +331,6 @@
         }
       },
       "required": [
-        "enabled",
         "type"
       ],
       "type": "object"
@@ -359,7 +356,6 @@
         }
       },
       "required": [
-        "enabled",
         "type"
       ],
       "type": "object"

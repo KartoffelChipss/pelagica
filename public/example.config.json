@@ -7,7 +7,6 @@
     "homeScreenSections": [
         {
             "type": "mediaBar",
-            "enabled": true,
             "size": "medium",
             "items": {
                 "sortBy": ["Random"],
@@ -16,13 +15,11 @@
         },
         {
             "type": "continueWatching",
-            "enabled": true,
             "titleLine": "ItemTitleWithEpisodeInfo",
             "detailLine": ["TimeRemaining"]
         },
         {
             "type": "items",
-            "enabled": true,
             "title": "Favorites",
             "items": {
                 "isFavorite": true,
@@ -31,7 +28,6 @@
         },
         {
             "type": "items",
-            "enabled": true,
             "title": "Watchlist",
             "items": {
                 "isInKefinTweaksWatchlist": true,
@@ -40,7 +36,6 @@
         },
         {
             "type": "items",
-            "enabled": true,
             "title": "Top Rated Anime",
             "items": {
                 "sortBy": ["CommunityRating"],
@@ -52,7 +47,6 @@
         },
         {
             "type": "items",
-            "enabled": true,
             "title": "Recently Released Anime",
             "items": {
                 "sortBy": ["PremiereDate"],
@@ -64,7 +58,6 @@
         },
         {
             "type": "items",
-            "enabled": true,
             "title": "Recently Released Movies",
             "items": {
                 "sortBy": ["PremiereDate"],
@@ -75,8 +68,7 @@
             "detailFields": ["ReleaseYearAndMonth"]
         },
         {
-            "type": "recentlyAdded",
-            "enabled": true
+            "type": "recentlyAdded"
         }
     ]
 }
