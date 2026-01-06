@@ -39,6 +39,10 @@ export interface MediaBarSection extends BaseHomeScreenSection {
     size?: 'small' | 'medium' | 'large';
     /** Configuration for which items to display in the carousel */
     items?: SectionItemsConfig;
+    /** Whether to show the favorite button on the media bar items */
+    showFavoriteButton?: boolean;
+    /** Whether to show the watchlist button on the media bar items */
+    showWatchlistButton?: boolean;
 }
 
 /** A section showing recently added items */
@@ -142,6 +146,8 @@ const DEFAULT_CONFIG: AppConfig = {
                 sortBy: ['Random'],
                 types: ['Movie', 'Series'],
             },
+            showFavoriteButton: true,
+            showWatchlistButton: true,
         },
         {
             type: 'continueWatching',

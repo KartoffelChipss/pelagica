@@ -35,6 +35,8 @@ const HomePage = () => {
                                     size={section.size}
                                     itemsConfig={section.items}
                                     title={section.title}
+                                    showFavoriteButton={section.showFavoriteButton}
+                                    showWatchlistButton={section.showWatchlistButton}
                                 />
                             );
 

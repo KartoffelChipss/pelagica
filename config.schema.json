@@ -477,6 +477,14 @@
           "$ref": "#/definitions/SectionItemsConfig",
           "description": "Configuration for which items to display in the carousel"
         },
+        "showFavoriteButton": {
+          "description": "Whether to show the favorite button on the media bar items",
+          "type": "boolean"
+        },
+        "showWatchlistButton": {
+          "description": "Whether to show the watchlist button on the media bar items",
+          "type": "boolean"
+        },
         "size": {
           "description": "Size of the media bar carousel",
           "enum": [

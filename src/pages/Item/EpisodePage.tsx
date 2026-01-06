@@ -20,7 +20,7 @@ import PeopleRow from './PeopleRow';
 import { Link } from 'react-router';
 import JellyfinItemKindIcon from '@/components/JellyfinItemKindIcon';
 import MediaInfoDialog from './MediaInfoDialog';
-import FavoriteButton from './FavoriteButton';
+import FavoriteButton from '../../components/FavoriteButton';
 
 interface EpisodePageProps {
     item: BaseItemDto;
@@ -112,7 +112,9 @@ const EpisodePage = ({ item, config }: EpisodePageProps) => {
                         </Button>
                         <FavoriteButton
                             item={item}
-                            favoriteButtonSetting={config.itemPage?.favoriteButton}
+                            showFavoriteButton={
+                                item.Type && config.itemPage?.favoriteButton?.includes(item.Type)
+                            }
                         />
                         <MediaInfoDialog streams={item.MediaStreams || []} />
                     </div>

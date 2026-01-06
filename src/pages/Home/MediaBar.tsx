@@ -1,3 +1,4 @@
+import FavoriteButton from '@/components/FavoriteButton';
 import { Badge } from '@/components/ui/badge';
 import { Button } from '@/components/ui/button';
 import {
@@ -8,6 +9,7 @@ import {
     CarouselPrevious,
 } from '@/components/ui/carousel';
 import { Skeleton } from '@/components/ui/skeleton';
+import WatchListButton from '@/components/WatchlistButton';
 import type { SectionItemsConfig } from '@/hooks/api/useConfig';
 import { useMediaBarItems } from '@/hooks/api/useMediaBarItems';
 import { getBackdropUrl, getLogoUrl } from '@/utils/jellyfinUrls';
@@ -22,9 +24,18 @@ interface MediaBarProps {
     title?: string;
     size?: 'small' | 'medium' | 'large';
     itemsConfig?: SectionItemsConfig;
+    showFavoriteButton?: boolean;
+    showWatchlistButton?: boolean;
 }
 
-const MediaBar = ({ className, size = 'medium', itemsConfig, title }: MediaBarProps) => {
+const MediaBar = ({
+    className,
+    size = 'medium',
+    itemsConfig,
+    title,
+    showFavoriteButton,
+    showWatchlistButton,
+}: MediaBarProps) => {
     const { t } = useTranslation('home');
     const { data: mediabarItems, isLoading, isError } = useMediaBarItems(itemsConfig);
     const [logoErrors, setLogoErrors] = useState<Set<string>>(new Set());
@@ -32,8 +43,6 @@ const MediaBar = ({ className, size = 'medium', itemsConfig, title }: MediaBarPr
     const handleLogoError = (itemId: string) => {
         setLogoErrors((prev) => new Set([...prev, itemId]));
     };
-
-    console.log('MediaBar items:', mediabarItems);
 
     const outerSize =
         size === 'small'
@@ -175,13 +184,27 @@ const MediaBar = ({ className, size = 'medium', itemsConfig, title }: MediaBarPr
                                         <p className="text-sm line-clamp-2 text-gray-300">
                                             {item.Overview}
                                         </p>
-                                        <div className="flex items-center gap-4">
+                                        <div className="flex items-center gap-2">
                                             <Button variant="default" size="lg" asChild>
                                                 <Link to={`/item/${item.Id}`}>
                                                     <Play />
                                                     {t('play')}
                                                 </Link>
                                             </Button>
+                                            {showFavoriteButton !== false && (
+                                                <FavoriteButton
+                                                    item={item}
+                                                    size={'icon-lg'}
+                                                    variant={'outline'}
+                                                />
+                                            )}
+                                            {showWatchlistButton !== false && (
+                                                <WatchListButton
+                                                    item={item}
+                                                    size={'icon-lg'}
+                                                    variant={'outline'}
+                                                />
+                                            )}
                                         </div>
                                     </div>
                                 </div>

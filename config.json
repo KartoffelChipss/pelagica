@@ -13,7 +13,9 @@
             "items": {
                 "sortBy": ["Random"],
                 "types": ["Movie", "Series"]
-            }
+            },
+            "showFavoriteButton": true,
+            "showWatchlistButton": true
         },
         {
             "type": "continueWatching",

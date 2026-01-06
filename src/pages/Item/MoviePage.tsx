@@ -12,8 +12,8 @@ import type { AppConfig } from '@/hooks/api/useConfig';
 import DetailBadges from './DetailBadges';
 import { Link } from 'react-router';
 import MediaInfoDialog from './MediaInfoDialog';
-import FavoriteButton from './FavoriteButton';
-import WatchListButton from './WatchListButton';
+import FavoriteButton from '../../components/FavoriteButton';
+import WatchListButton from '../../components/WatchlistButton';
 
 interface MoviePageProps {
     item: BaseItemDto;
@@ -61,7 +61,9 @@ const MoviePage = ({ item, config }: MoviePageProps) => {
                         </Button>
                         <FavoriteButton
                             item={item}
-                            favoriteButtonSetting={config.itemPage?.favoriteButton}
+                            showFavoriteButton={
+                                item.Type && config.itemPage?.favoriteButton?.includes(item.Type)
+                            }
                         />
                         <WatchListButton
                             item={item}
