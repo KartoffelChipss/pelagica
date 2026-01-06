@@ -378,6 +378,14 @@
           "description": "Whether to only include favorite items",
           "type": "boolean"
         },
+        "isInKefinTweaksWatchlist": {
+          "description": "Whether to only include items in the Kefintweaks watchlist",
+          "type": "boolean"
+        },
+        "isUnplayed": {
+          "description": "Whether to only include unplayed items",
+          "type": "boolean"
+        },
         "libraryId": {
           "description": "Filter items from a specific library by its ID",
           "type": "string"

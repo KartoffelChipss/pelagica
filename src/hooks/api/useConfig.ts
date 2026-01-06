@@ -26,6 +26,10 @@ export interface SectionItemsConfig {
     limit?: number;
     /** Whether to only include favorite items */
     isFavorite?: boolean;
+    /** Whether to only include items in the Kefintweaks watchlist */
+    isInKefinTweaksWatchlist?: boolean;
+    /** Whether to only include unplayed items */
+    isUnplayed?: boolean;
 }
 
 /** A large carousel banner showcasing featured media with backdrop images */

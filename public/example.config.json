@@ -32,6 +32,15 @@
         {
             "type": "items",
             "enabled": true,
+            "title": "Watchlist",
+            "items": {
+                "isInKefinTweaksWatchlist": true,
+                "limit": 10
+            }
+        },
+        {
+            "type": "items",
+            "enabled": true,
             "title": "Top Rated Anime",
             "items": {
                 "sortBy": ["CommunityRating"],
