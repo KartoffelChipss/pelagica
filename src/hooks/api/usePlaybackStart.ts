@@ -3,11 +3,16 @@ import { useMutation } from '@tanstack/react-query';
 import { getPlaystateApi } from '@jellyfin/sdk/lib/utils/api/playstate-api';
 import { useCurrentSessionId } from './useCurrentSessionId';
 
+interface StartPlaybackPayload {
+    itemId: string;
+    positionTicks?: number;
+}
+
 export function usePlaybackStart() {
     const { data: sessionId } = useCurrentSessionId();
 
     const { mutate: startPlayback, isPending } = useMutation({
-        mutationFn: async (itemId: string) => {
+        mutationFn: async ({ itemId, positionTicks = 0 }: StartPlaybackPayload) => {
             if (!itemId) throw new Error('Item ID is required');
             if (!sessionId) throw new Error('Session ID is required');
 
@@ -18,11 +23,13 @@ export function usePlaybackStart() {
                 playbackStartInfo: {
                     ItemId: itemId,
                     SessionId: sessionId,
-                    PositionTicks: 0,
+                    PositionTicks: positionTicks,
                 },
             });
 
-            console.log(`Started playback for item ${itemId} in session ${sessionId}`);
+            console.log(
+                `Started playback for item ${itemId} in session ${sessionId} at position ${positionTicks}`
+            );
 
             return itemId;
         },

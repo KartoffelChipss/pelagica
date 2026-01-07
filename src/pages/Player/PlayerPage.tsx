@@ -11,6 +11,9 @@ import { getPrimaryImageUrl, getVideoStreamUrl } from '@/utils/jellyfinUrls';
 import { generateRandomId } from '@/utils/idGenerator';
 import { useMediaSegments } from '@/hooks/api/useMediaSegments';
 
+const PLAYBACK_PROGRESS_REPORT_MIN_PLAYTIME_SECONDS = 5;
+const PLAYBACK_PROGRESS_REPORT_INTERVAL_MS = 5000;
+
 type VideoJsPlayer = ReturnType<typeof import('video.js').default>;
 
 const PlayerPage = () => {
@@ -38,6 +41,8 @@ const PlayerPage = () => {
         return getPrimaryImageUrl(item?.Id);
     }, [item?.Id]);
 
+    const startTicks = item?.UserData?.PlaybackPositionTicks || 0;
+
     const handleFullscreen = () => {
         if (!containerRef.current) return;
         if (containerRef.current.requestFullscreen) {
@@ -55,14 +60,14 @@ const PlayerPage = () => {
         if (!itemId || !player) return;
 
         // Report playback start
-        startPlayback(itemId);
+        startPlayback({ itemId, positionTicks: startTicks });
 
-        // Report playback progress every 5 seconds
-        progressReportingIntervalRef.current = setInterval(() => {
+        const reportPlayerProgress = () => {
             if (!player || player.isDisposed?.()) return;
 
             try {
                 const currentTime = player.currentTime() || 0;
+                if (currentTime <= PLAYBACK_PROGRESS_REPORT_MIN_PLAYTIME_SECONDS) return;
                 const positionTicks = Math.floor(currentTime * 10000000); // Convert to ticks
                 const isPaused = player.paused();
 
@@ -76,7 +81,14 @@ const PlayerPage = () => {
             } catch (error) {
                 console.error('Error reporting progress:', error);
             }
-        }, 5000);
+        };
+
+        // Report playback progress every X seconds
+        reportPlayerProgress();
+        progressReportingIntervalRef.current = setInterval(
+            reportPlayerProgress,
+            PLAYBACK_PROGRESS_REPORT_INTERVAL_MS
+        );
 
         return () => {
             // Clear interval first
@@ -87,7 +99,11 @@ const PlayerPage = () => {
             // Here we need the last know position since the player might be already in the shadow realm
             stopPlayback({ itemId, positionTicks: lastPositionRef.current });
         };
-    }, [itemId, player, reportProgress, startPlayback, stopPlayback]);
+    }, [itemId, player, reportProgress, startPlayback, startTicks, stopPlayback]);
+
+    useEffect(() => {
+        lastPositionRef.current = startTicks;
+    }, [startTicks]);
 
     const handleAudioTrackChange = (index: number) => {
         setPlaySessionId(generateRandomId());
