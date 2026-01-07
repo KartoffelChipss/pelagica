@@ -239,7 +239,7 @@ const MediaInfoDialog = ({ streams }: MediaInfoDialogProps) => {
     return (
         <Dialog>
             <DialogTrigger asChild>
-                <Button variant={'outline'}>
+                <Button variant={'outline'} size={'icon'}>
                     <Info />
                 </Button>
             </DialogTrigger>
