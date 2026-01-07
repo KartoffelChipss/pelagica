@@ -125,6 +125,10 @@ For local development without Docker:
 
 3. **Access at:** http://localhost:3000
 
+## Localization
+
+Pelagica supports multiple languages and depends on community contributions for translations. If you'd like to help translate Pelagica into your language, you can contribute via [GitLocalize](https://gitlocalize.com/repo/10631).
+
 ## What does that name mean?
 
 You might be wondering about the name "Pelagica". Since I didn't want to call it the usual "\*fin" or "jelly\*" names, I looked for synonyms related to the sea. "Pelagic" refers to living in the deep ocean, which felt fitting for a Jellyfin frontend.
