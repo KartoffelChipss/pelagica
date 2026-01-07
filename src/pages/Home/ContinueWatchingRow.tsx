@@ -1,7 +1,6 @@
 import SectionScroller from '@/components/SectionScroller';
 import { Skeleton } from '@/components/ui/skeleton';
 import type { ContinueWatchingDetailLine, ContinueWatchingTitleLine } from '@/hooks/api/useConfig';
-import { useContinueWatchingAndNextUp } from '@/hooks/api/useContinueWatchingAndNextUp';
 import { getThumbUrl, getPrimaryImageUrl } from '@/utils/jellyfinUrls';
 import { ticksToReadableTime } from '@/utils/timeConversion';
 import type { BaseItemDto } from '@jellyfin/sdk/lib/generated-client/models';
@@ -10,6 +9,7 @@ import { Link, useNavigate } from 'react-router';
 import { useState } from 'react';
 import { useTranslation } from 'react-i18next';
 import type { TFunction } from 'i18next';
+import { useNextUp } from '@/hooks/api/useNextUp';
 
 interface ContinueWatchingRowProps {
     title: string;
@@ -89,7 +89,7 @@ const ContinueWatchingRow = ({ title, titleLine, detailLine }: ContinueWatchingR
         data: continueWatchingData,
         isLoading,
         error,
-    } = useContinueWatchingAndNextUp(localStorage.getItem('jf_user'));
+    } = useNextUp(localStorage.getItem('jf_user'));
 
     const [imageErrors, setImageErrors] = useState<Record<string, boolean>>({});
 
