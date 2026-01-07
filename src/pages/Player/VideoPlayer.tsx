@@ -4,14 +4,22 @@ import 'video.js/dist/video-js.css';
 
 type VideoJsPlayer = ReturnType<typeof videojs>;
 
+export interface SubtitleTrack {
+    src: string;
+    srclang: string;
+    label: string;
+    default?: boolean;
+}
+
 interface VideoPlayerProps {
     src: string;
     poster?: string;
     startTicks: number;
+    subtitles?: SubtitleTrack[];
     onReady?: (player: VideoJsPlayer) => void;
 }
 
-const VideoPlayer = ({ src, poster, startTicks, onReady }: VideoPlayerProps) => {
+const VideoPlayer = ({ src, poster, startTicks, subtitles, onReady }: VideoPlayerProps) => {
     const videoRef = useRef<HTMLVideoElement | null>(null);
     const playerRef = useRef<VideoJsPlayer | null>(null);
 
@@ -28,6 +36,7 @@ const VideoPlayer = ({ src, poster, startTicks, onReady }: VideoPlayerProps) => 
             html5: {
                 nativeControlsForTouch: true,
                 hls: { overrideNative: true },
+                nativeTextTracks: false, // Force video.js to render text tracks
             },
         });
 
@@ -65,6 +74,37 @@ const VideoPlayer = ({ src, poster, startTicks, onReady }: VideoPlayerProps) => 
             });
         }
     }, [src]);
+
+    useEffect(() => {
+        if (!playerRef.current) return;
+
+        const player = playerRef.current;
+
+        const addSubtitles = () => {
+            const tracks = player.remoteTextTracks();
+            while (tracks.tracks_.length > 0) {
+                const track = tracks.tracks_[0];
+                if (track) player.removeRemoteTextTrack(track);
+            }
+
+            if (subtitles && subtitles.length > 0) {
+                subtitles.forEach((subtitle) => {
+                    player.addRemoteTextTrack(
+                        {
+                            kind: 'subtitles',
+                            src: subtitle.src,
+                            srclang: subtitle.srclang,
+                            label: subtitle.label,
+                            default: subtitle.default,
+                        },
+                        false // Don't add to DOM manually
+                    );
+                });
+            }
+        };
+
+        addSubtitles();
+    }, [subtitles, src]);
 
     return (
         <div

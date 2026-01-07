@@ -148,6 +148,28 @@ export function getVideoStreamUrl(
     // &TranscodeReasons=ContainerNotSupported,VideoCodecTagNotSupported
 }
 
+export function getSubtitleUrl(
+    itemId: string,
+    mediaSourceId: string,
+    subtitleStreamIndex: number,
+    format: 'vtt' | 'srt' = 'vtt'
+) {
+    try {
+        const server = getServerUrl();
+        const token = getAccessToken();
+
+        if (!server || !token) return '';
+
+        const url = new URL(server);
+        url.pathname = `/Videos/${itemId}/${mediaSourceId}/Subtitles/${subtitleStreamIndex}/0/Stream.${format}`;
+        url.searchParams.append('api_key', token);
+
+        return url.toString();
+    } catch {
+        return '';
+    }
+}
+
 export function getPrimaryImageUrl(itemId: string, size?: { width?: number; height?: number }) {
     try {
         const server = getServerUrl();

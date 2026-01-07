@@ -9,6 +9,7 @@ import {
     PictureInPicture2,
     AudioLines,
     SkipForward,
+    Subtitles,
 } from 'lucide-react';
 import { Button } from '../../components/ui/button';
 import { Link } from 'react-router';
@@ -36,6 +37,8 @@ interface PlayerControlsProps {
     player: ReturnType<typeof import('video.js').default> | null;
     audioTrackIndex: number | null;
     onAudioTrackChange: (index: number) => void;
+    subtitleTrackIndex: number | null;
+    onSubtitleTrackChange: (index: number | null) => void;
     onFullscreen?: () => void;
     mediaSegments?: MediaSegmentDto[];
 }
@@ -45,6 +48,8 @@ const PlayerControls = ({
     player,
     audioTrackIndex,
     onAudioTrackChange,
+    subtitleTrackIndex,
+    onSubtitleTrackChange,
     onFullscreen,
     mediaSegments,
 }: PlayerControlsProps) => {
@@ -216,6 +221,15 @@ const PlayerControls = ({
         onAudioTrackChange(index);
     };
 
+    const handleSubtitleTrackChange = (value: string) => {
+        if (value === 'off') {
+            onSubtitleTrackChange(null);
+        } else {
+            const index = parseInt(value, 10);
+            onSubtitleTrackChange(index);
+        }
+    };
+
     const getMediaSegment = (type: MediaSegmentType) => {
         if (!mediaSegments || mediaSegments.length === 0) return null;
         return mediaSegments.find((segment) => segment.Type === type) || null;
@@ -280,6 +294,7 @@ const PlayerControls = ({
             : item.Name;
 
     const audioStreams = item.MediaStreams?.filter((s) => s.Type === 'Audio') || [];
+    const subtitleStreams = item.MediaStreams?.filter((s) => s.Type === 'Subtitle') || [];
 
     return (
         <>
@@ -401,6 +416,41 @@ const PlayerControls = ({
 
                     <div className="flex items-center gap-4">
                         <div className="flex items-center gap-2">
+                            {subtitleStreams.length > 0 && (
+                                <DropdownMenu>
+                                    <DropdownMenuTrigger asChild>
+                                        <Button
+                                            variant={'ghost'}
+                                            size={'icon-lg'}
+                                            className="cursor-pointer"
+                                        >
+                                            <Subtitles />
+                                        </Button>
+                                    </DropdownMenuTrigger>
+                                    <DropdownMenuContent>
+                                        <DropdownMenuLabel>{t('subtitles')}</DropdownMenuLabel>
+                                        <DropdownMenuSeparator />
+                                        <DropdownMenuRadioGroup
+                                            value={subtitleTrackIndex?.toString() || 'off'}
+                                            onValueChange={handleSubtitleTrackChange}
+                                        >
+                                            <DropdownMenuRadioItem value="off">
+                                                {t('off')}
+                                            </DropdownMenuRadioItem>
+                                            {subtitleStreams.map((stream, index) => (
+                                                <DropdownMenuRadioItem
+                                                    key={index}
+                                                    value={index.toString()}
+                                                >
+                                                    {stream.DisplayTitle ||
+                                                        stream.Language ||
+                                                        'Unknown'}
+                                                </DropdownMenuRadioItem>
+                                            ))}
+                                        </DropdownMenuRadioGroup>
+                                    </DropdownMenuContent>
+                                </DropdownMenu>
+                            )}
                             {audioStreams.length > 1 && (
                                 <DropdownMenu>
                                     <DropdownMenuTrigger asChild>

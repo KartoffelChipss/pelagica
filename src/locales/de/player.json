@@ -1,5 +1,7 @@
 {
-  "skipIntro": "Intro überspringen",
-  "skipOutro": "Abspann überspringen",
-  "audioTracks": "Audiospuren"
+    "skipIntro": "Intro überspringen",
+    "skipOutro": "Abspann überspringen",
+    "audioTracks": "Audiospuren",
+    "subtitles": "Untertitel",
+    "off": "Aus"
 }

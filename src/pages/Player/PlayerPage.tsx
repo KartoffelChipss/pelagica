@@ -4,10 +4,10 @@ import { useReportPlaybackProgress } from '@/hooks/api/usePlaybackProgress';
 import { usePlaybackStart } from '@/hooks/api/usePlaybackStart';
 import { usePlaybackStop } from '@/hooks/api/usePlaybackStop';
 import { useParams } from 'react-router';
-import VideoPlayer from '@/pages/Player/VideoPlayer';
+import VideoPlayer, { type SubtitleTrack } from '@/pages/Player/VideoPlayer';
 import PlayerControls from '@/pages/Player/PlayerControls';
 import { useEffect, useMemo, useRef, useState } from 'react';
-import { getPrimaryImageUrl, getVideoStreamUrl } from '@/utils/jellyfinUrls';
+import { getPrimaryImageUrl, getVideoStreamUrl, getSubtitleUrl } from '@/utils/jellyfinUrls';
 import { generateRandomId } from '@/utils/idGenerator';
 import { useMediaSegments } from '@/hooks/api/useMediaSegments';
 
@@ -21,6 +21,7 @@ const PlayerPage = () => {
     const itemId = params.itemId;
     const [player, setPlayer] = useState<VideoJsPlayer | null>(null);
     const [audioTrackIndex, setAudioTrackIndex] = useState<number>(1);
+    const [subtitleTrackIndex, setSubtitleTrackIndex] = useState<number | null>(null);
     const containerRef = useRef<HTMLDivElement>(null);
     const progressReportingIntervalRef = useRef<ReturnType<typeof setInterval> | null>(null);
     const lastPositionRef = useRef<number>(0);
@@ -110,6 +111,39 @@ const PlayerPage = () => {
         setAudioTrackIndex(index);
     };
 
+    const handleSubtitleTrackChange = (index: number | null) => {
+        setSubtitleTrackIndex(index);
+
+        if (!player) return;
+
+        const tracks = player.textTracks();
+        for (let i = 0; i < tracks.tracks_.length; i++) {
+            const track = tracks.tracks_[i];
+            if (index === null) {
+                track.mode = 'disabled';
+            } else if (i === index) {
+                track.mode = 'showing';
+            } else {
+                track.mode = 'disabled';
+            }
+        }
+    };
+
+    const subtitleTracks = useMemo(() => {
+        if (!item?.Id || !item?.MediaStreams) return [];
+
+        const subtitles = item.MediaStreams.filter((s) => s.Type === 'Subtitle');
+
+        return subtitles.map(
+            (subtitle): SubtitleTrack => ({
+                src: getSubtitleUrl(item.Id!, item.Id!, subtitle.Index || 0),
+                srclang: subtitle.Language || 'unknown',
+                label: subtitle.DisplayTitle || subtitle.Language || `Subtitle ${subtitle.Index}`,
+                default: subtitle.IsDefault || false,
+            })
+        );
+    }, [item]);
+
     if (isLoading || isLoadingMediaSegments) {
         return <p>Loading...</p>;
     }
@@ -132,12 +166,15 @@ const PlayerPage = () => {
                 poster={posterUrl}
                 onReady={setPlayer}
                 startTicks={item.UserData?.PlaybackPositionTicks || 0}
+                subtitles={subtitleTracks}
             />
             <PlayerControls
                 item={item}
                 player={player}
                 audioTrackIndex={audioTrackIndex}
                 onAudioTrackChange={handleAudioTrackChange}
+                subtitleTrackIndex={subtitleTrackIndex}
+                onSubtitleTrackChange={handleSubtitleTrackChange}
                 onFullscreen={handleFullscreen}
                 mediaSegments={mediaSegments}
             />
