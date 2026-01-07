@@ -10,11 +10,13 @@ import { useState } from 'react';
 import { useTranslation } from 'react-i18next';
 import type { TFunction } from 'i18next';
 import { useNextUp } from '@/hooks/api/useNextUp';
+import { getUserId } from '@/utils/localstorageCredentials';
 
 interface ContinueWatchingRowProps {
     title: string;
     titleLine?: ContinueWatchingTitleLine;
     detailLine?: ContinueWatchingDetailLine[];
+    limit?: number;
 }
 
 function getTitleLineText(
@@ -82,14 +84,10 @@ function getDetailLineText(
     }
 }
 
-const ContinueWatchingRow = ({ title, titleLine, detailLine }: ContinueWatchingRowProps) => {
+const ContinueWatchingRow = ({ title, titleLine, detailLine, limit }: ContinueWatchingRowProps) => {
     const { t } = useTranslation('home');
     const navigate = useNavigate();
-    const {
-        data: continueWatchingData,
-        isLoading,
-        error,
-    } = useNextUp(localStorage.getItem('jf_user'));
+    const { data: continueWatchingData, isLoading, error } = useNextUp(getUserId(), limit);
 
     const [imageErrors, setImageErrors] = useState<Record<string, boolean>>({});
 
@@ -128,7 +126,7 @@ const ContinueWatchingRow = ({ title, titleLine, detailLine }: ContinueWatchingR
                                       <Link
                                           to={`/item/${item.Id}`}
                                           key={item.Id}
-                                          className="group min-w-48 lg:min-w-64 2xl:min-w-80"
+                                          className="group w-min min-w-48 lg:min-w-64 2xl:min-w-80"
                                       >
                                           <div className="relative w-full aspect-video rounded-md overflow-hidden">
                                               {imageErrors[item.Id!] ? (

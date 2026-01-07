@@ -8,7 +8,7 @@ interface NextUpResult {
     items: BaseItemDto[];
 }
 
-export function useNextUp(userId: string | null | undefined) {
+export function useNextUp(userId: string | null | undefined, limit: number = 20) {
     return useQuery({
         queryKey: ['nextUp', userId],
         queryFn: async (): Promise<NextUpResult> => {
@@ -17,7 +17,7 @@ export function useNextUp(userId: string | null | undefined) {
 
             const res = await tvShowsApi.getNextUp({
                 userId: userId!,
-                limit: 20,
+                limit,
                 fields: ['PrimaryImageAspectRatio'],
                 enableUserData: true,
                 enableImages: true,

@@ -26,6 +26,7 @@ const HomePage = () => {
                                     title={section.title || t('continue_watching')}
                                     titleLine={section.titleLine}
                                     detailLine={section.detailLine}
+                                    limit={section.limit || 20}
                                 />
                             );
 

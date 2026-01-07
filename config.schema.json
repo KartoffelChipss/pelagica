@@ -203,6 +203,9 @@
           "description": "Whether the section is enabled. Mostly intended for testing purposes",
           "type": "boolean"
         },
+        "limit": {
+          "type": "number"
+        },
         "title": {
           "description": "The title of the section",
           "type": "string"

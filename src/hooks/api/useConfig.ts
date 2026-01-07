@@ -88,6 +88,7 @@ export interface ContinueWatchingSection extends BaseHomeScreenSection {
     type: 'continueWatching';
     titleLine?: ContinueWatchingTitleLine;
     detailLine?: ContinueWatchingDetailLine[];
+    limit?: number;
 }
 
 export interface RecommendedItemsSection extends BaseHomeScreenSection {
@@ -170,6 +171,7 @@ const DEFAULT_CONFIG: AppConfig = {
             type: 'continueWatching',
             titleLine: 'ItemTitleWithEpisodeInfo',
             detailLine: ['TimeRemaining'],
+            limit: 20,
         },
         {
             type: 'items',

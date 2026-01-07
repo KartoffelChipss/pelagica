@@ -20,7 +20,8 @@
         {
             "type": "continueWatching",
             "titleLine": "ItemTitleWithEpisodeInfo",
-            "detailLine": ["TimeRemaining"]
+            "detailLine": ["TimeRemaining"],
+            "limit": 20
         },
         {
             "type": "items",
