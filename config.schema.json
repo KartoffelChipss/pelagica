@@ -12,10 +12,15 @@
           "type": "array"
         },
         "itemPage": {
-          "$ref": "#/definitions/ItemPageSettings"
+          "$ref": "#/definitions/ItemPageSettings",
+          "description": "Settings for item detail pages"
         },
         "serverAddress": {
           "description": "Optional server address to automatically choose",
+          "type": "string"
+        },
+        "streamystatsUrl": {
+          "description": "Optional URL for Streamystats integration",
           "type": "string"
         }
       },
@@ -274,6 +279,9 @@
         },
         {
           "$ref": "#/definitions/ContinueWatchingSection"
+        },
+        {
+          "$ref": "#/definitions/RecommendedItemsSection"
         }
       ]
     },
@@ -525,6 +533,50 @@
         },
         "type": {
           "const": "recentlyAdded",
+          "type": "string"
+        }
+      },
+      "required": [
+        "type"
+      ],
+      "type": "object"
+    },
+    "RecommendationTypeFilter": {
+      "enum": [
+        "all",
+        "movies",
+        "series"
+      ],
+      "type": "string"
+    },
+    "RecommendedItemsSection": {
+      "properties": {
+        "enabled": {
+          "description": "Whether the section is enabled. Mostly intended for testing purposes",
+          "type": "boolean"
+        },
+        "limit": {
+          "description": "Maximum number of items to display",
+          "type": "number"
+        },
+        "recommendationType": {
+          "$ref": "#/definitions/RecommendationTypeFilter",
+          "description": "Type of recommendations to show"
+        },
+        "showBasedOn": {
+          "description": "Whether to show what items the recommendation is based on",
+          "type": "boolean"
+        },
+        "showSimilarity": {
+          "description": "Whether to show similarity scores",
+          "type": "boolean"
+        },
+        "title": {
+          "description": "The title of the section",
+          "type": "string"
+        },
+        "type": {
+          "const": "streamystatsRecommended",
           "type": "string"
         }
       },

@@ -5,6 +5,7 @@ import MediaBar from './MediaBar';
 import ItemsRow from './ItemsRow';
 import ContinueWatchingRow from './ContinueWatchingRow';
 import { useTranslation } from 'react-i18next';
+import RecommendedItemsRow from './RecommendedItemsRow';
 
 const HomePage = () => {
     const { t } = useTranslation('home');
@@ -82,6 +83,18 @@ const HomePage = () => {
                                             ? section.detailFields
                                             : ['ReleaseYear']
                                     }
+                                />
+                            );
+
+                        case 'streamystatsRecommended':
+                            return (
+                                <RecommendedItemsRow
+                                    key={index}
+                                    title={section.title || t('recommended_for_you')}
+                                    type={section.recommendationType}
+                                    limit={section.limit}
+                                    showSimilarity={section.showSimilarity}
+                                    showBasedOn={section.showBasedOn}
                                 />
                             );
 

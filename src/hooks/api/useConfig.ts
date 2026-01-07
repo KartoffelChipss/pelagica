@@ -1,5 +1,6 @@
 import type { BaseItemKind, ItemSortBy } from '@jellyfin/sdk/lib/generated-client/models';
 import { useEffect, useState } from 'react';
+import type { RecommendationTypeFilter } from './useRecommendedItems';
 
 interface BaseHomeScreenSection {
     /** Whether the section is enabled. Mostly intended for testing purposes */
@@ -89,11 +90,24 @@ export interface ContinueWatchingSection extends BaseHomeScreenSection {
     detailLine?: ContinueWatchingDetailLine[];
 }
 
+export interface RecommendedItemsSection extends BaseHomeScreenSection {
+    type: 'streamystatsRecommended';
+    /** Type of recommendations to show */
+    recommendationType?: RecommendationTypeFilter;
+    /** Maximum number of items to display */
+    limit?: number;
+    /** Whether to show similarity scores */
+    showSimilarity?: boolean;
+    /** Whether to show what items the recommendation is based on */
+    showBasedOn?: boolean;
+}
+
 export type HomeScreenSection =
     | MediaBarSection
     | RecentlyAddedSection
     | ItemsSection
-    | ContinueWatchingSection;
+    | ContinueWatchingSection
+    | RecommendedItemsSection;
 
 export type EpisodeDisplay = 'grid' | 'row';
 
@@ -125,6 +139,9 @@ export interface ItemPageSettings {
 export interface AppConfig {
     /** Optional server address to automatically choose */
     serverAddress?: string;
+    /** Optional URL for Streamystats integration */
+    streamystatsUrl?: string;
+    /** Settings for item detail pages */
     itemPage?: ItemPageSettings;
     /** Sections to display on the home screen, in order */
     homeScreenSections?: HomeScreenSection[];
