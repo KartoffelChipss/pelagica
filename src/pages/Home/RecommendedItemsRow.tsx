@@ -9,6 +9,7 @@ import {
 import { getPrimaryImageUrl } from '@/utils/jellyfinUrls';
 import { TrendingUp } from 'lucide-react';
 import { useMemo } from 'react';
+import { useTranslation } from 'react-i18next';
 import { Link } from 'react-router';
 
 interface RecommendedItemsRowProps {
@@ -26,6 +27,7 @@ const RecommendedItemsRow = ({
     showSimilarity = true,
     showBasedOn = false,
 }: RecommendedItemsRowProps) => {
+    const { t } = useTranslation('home');
     const { data: recommendedItems, isLoading, error } = useRecommendedItems({ type, limit });
 
     const posterUrls = useMemo(() => {
@@ -101,7 +103,7 @@ const RecommendedItemsRow = ({
                                   {showBasedOn && item.basedOn.length > 0 && (
                                       <>
                                           <p className="mb-1 text-xs text-muted-foreground">
-                                              Because you watched:
+                                              {t('because_you_watched')}
                                           </p>
                                           <div className="flex gap-3">
                                               {item.basedOn.map((basedOnItem) => (
