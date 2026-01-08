@@ -60,14 +60,14 @@ jobs:
           tags: |
             ${{ env.DOCKER_IMAGE }}:${{ github.ref_name }}-${{ env.PLATFORM_PAIR }}
             ${{ env.DOCKER_IMAGE }}:latest-${{ env.PLATFORM_PAIR }}
+          outputs: type=registry
           cache-from: type=gha,scope=${{ github.repository }}-${{ github.ref_name }}-${{ env.PLATFORM_PAIR }}
           cache-to: type=gha,scope=${{ github.repository }}-${{ github.ref_name }}-${{ env.PLATFORM_PAIR }}
 
       - name: Export digest
         run: |
           mkdir -p /tmp/digests
-          digest="${{ steps.build.outputs.digest }}"
-          touch "/tmp/digests/${digest#sha256:}"
+          echo "${{ steps.build.outputs.digest }}" > "/tmp/digests/${{ env.PLATFORM_PAIR }}"
 
       - name: Upload digest
         uses: actions/upload-artifact@v6
@@ -101,7 +101,7 @@ jobs:
           refs=()
           for digest_file in /tmp/digests/*; do
             digest=$(cat "$digest_file")
-            refs+=("${{ env.DOCKER_IMAGE }}@sha256:$digest")
+            refs+=("${{ env.DOCKER_IMAGE }}@${digest}")
           done
           
           docker buildx imagetools create \
