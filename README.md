@@ -171,6 +171,14 @@ Pelagica supports multiple languages and depends on community contributions for 
 
 You might be wondering about the name "Pelagica". Since I didn't want to call it the usual "\*fin" or "jelly\*" names, I looked for synonyms related to the sea. "Pelagic" refers to living in the deep ocean, which felt fitting for a Jellyfin frontend.
 
+## Disclaimer
+
+This project is a third-party frontend for Jellyfin and is not affiliated with the Jellyfin project.
+
+Jellyfin is a media server designed to organize and stream legally obtained media. This project does not provide, host, or encourage access to pirated content.
+
+The movie posters and images shown in the examples are not owned by me and are only used for demonstration purposes. All rights belong to their respective owners.
+
 ## License
 
 This project is licensed under the GNU General Public License v3.0 - see the [LICENSE](./LICENSE) file for details.
