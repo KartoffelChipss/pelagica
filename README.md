@@ -1,6 +1,6 @@
 # Pelagica
 
-Pelagica is an alternative web frontend for Jellyfin built using React.
+Pelagica is an alternative web frontend for [Jellyfin](https://jellyfin.org) built using React. It aims to provide a fast, modern, and customizable user experience for browsing and watching your media library.
 
 ![Home](./.github/assets/home.webp)
 
@@ -39,6 +39,8 @@ Pelagica is an alternative web frontend for Jellyfin built using React.
     </td>
   </tr>
 </table>
+
+> Screenshots may include media artwork used for demonstration purposes only.
 
 ## Docker Installation
 
@@ -166,6 +168,11 @@ For local development without Docker:
 ## Localization
 
 Pelagica supports multiple languages and depends on community contributions for translations. If you'd like to help translate Pelagica into your language, you can contribute via [GitLocalize](https://gitlocalize.com/repo/10631).
+
+## Contributing
+
+Issues and pull requests are welcome.
+Please open an issue to discuss larger changes before submitting a PR.
 
 ## What does that name mean?
 
