@@ -1,7 +1,5 @@
 # Pelagica
 
-[![Discord](https://discord.com/api/guilds/1458924414375694522/widget.png)](https://discord.gg/yCe4unuVGQ)
-
 Pelagica is an alternative web frontend for [Jellyfin](https://jellyfin.org) built using React. It aims to provide a fast, modern, and customizable user experience for browsing and watching your media library.
 
 ![Home](./.github/assets/home.webp)
@@ -176,6 +174,10 @@ For local development without Docker:
     ```
 
 3. **Access at:** http://localhost:3000
+
+## Community Discord
+
+Join the Pelagica community on Discord for support, discussions, and updates: https://discord.gg/yCe4unuVGQ
 
 ## Localization
 
