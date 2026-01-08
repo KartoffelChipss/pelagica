@@ -42,6 +42,16 @@ Pelagica is an alternative web frontend for [Jellyfin](https://jellyfin.org) bui
 
 > Screenshots may include media artwork used for demonstration purposes only.
 
+## Demo
+
+You can find a live demo of Pelagica at:
+
+https://pelagica.jan.run/
+
+You can use the `demo.jellyfin.org/stable` server with the `demo` user to test, or use your own Jellyfin server if it is publicly accessible. If you are experiencing issues with the Jellyfin demo server, this is because of cors restrictions on that server.
+
+For production use, it is highly recommended to self-host Pelagica using Docker or another method.
+
 ## Docker Installation
 
 The easiest way to run Pelagica is using Docker. This provides a production-ready setup with nginx web server.
