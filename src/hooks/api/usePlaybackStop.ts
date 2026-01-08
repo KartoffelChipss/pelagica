@@ -27,9 +27,9 @@ export function usePlaybackStop() {
                 },
             });
 
-            console.log(
-                `Stopped playback for item ${itemId} at position ${positionTicks} in session ${sessionId}`
-            );
+            // console.log(
+            //     `Stopped playback for item ${itemId} at position ${positionTicks} in session ${sessionId}`
+            // );
 
             return itemId;
         },

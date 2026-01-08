@@ -14,15 +14,15 @@ export function useReportViewingItem() {
             const api = getApi();
             const sessionApi = getSessionApi(api);
 
-            const response = await sessionApi.reportViewing({
+            await sessionApi.reportViewing({
                 itemId,
                 sessionId,
             });
 
-            console.log(
-                `Reported viewing for item ${itemId} in session ${sessionId} with response:`,
-                response
-            );
+            // console.log(
+            //     `Reported viewing for item ${itemId} in session ${sessionId} with response:`,
+            //     response
+            // );
 
             return itemId;
         },

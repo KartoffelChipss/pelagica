@@ -10,7 +10,6 @@ export function useCurrentSessionId() {
             const sessionApi = getSessionApi(api);
             const sessions = await sessionApi.getSessions();
             const currentSession = sessions.data?.[0];
-            console.log('Fetched current session:', currentSession);
             if (!currentSession?.Id) {
                 throw new Error('No active session found');
             }

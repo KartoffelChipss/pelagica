@@ -27,9 +27,9 @@ export function usePlaybackStart() {
                 },
             });
 
-            console.log(
-                `Started playback for item ${itemId} in session ${sessionId} at position ${positionTicks}`
-            );
+            // console.log(
+            //     `Started playback for item ${itemId} in session ${sessionId} at position ${positionTicks}`
+            // );
 
             return itemId;
         },

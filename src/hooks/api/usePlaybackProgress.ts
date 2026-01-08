@@ -20,7 +20,7 @@ export function useReportPlaybackProgress() {
             const api = getApi();
             const playstateApi = getPlaystateApi(api);
 
-            const response = await playstateApi.reportPlaybackProgress({
+            await playstateApi.reportPlaybackProgress({
                 playbackProgressInfo: {
                     ItemId: itemId,
                     SessionId: sessionId,
@@ -29,10 +29,10 @@ export function useReportPlaybackProgress() {
                 },
             });
 
-            console.log(
-                `Reported progress for item ${itemId}: ${positionTicks} ticks, paused: ${isPaused} with response:`,
-                response
-            );
+            // console.log(
+            //     `Reported progress for item ${itemId}: ${positionTicks} ticks, paused: ${isPaused} with response:`,
+            //     response
+            // );
 
             return { itemId, positionTicks };
         },
