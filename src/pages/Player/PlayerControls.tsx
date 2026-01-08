@@ -77,6 +77,7 @@ const PlayerControls = ({
     const hideTimeoutRef = useRef<ReturnType<typeof setTimeout> | null>(null);
     const navigate = useNavigate();
     const { reportProgress } = useReportPlaybackProgress();
+    const [dismissedNextItemPrompt, setDismissedNextItemPrompt] = useState(false);
 
     const resetHideTimeout = () => {
         setShowControls(true);
@@ -317,6 +318,7 @@ const PlayerControls = ({
     const showNextItemPrompt =
         nextItem &&
         duration > 0 &&
+        !dismissedNextItemPrompt &&
         (timeRemaining <= 30 || // 30 sec remaining
             (duration > 0 && currentTime / duration >= 0.95)); // or 95% complete
 
@@ -416,7 +418,7 @@ const PlayerControls = ({
                                     variant={'outline'}
                                     className="flex-1"
                                     onClick={() => {
-                                        setShowControls(true);
+                                        setDismissedNextItemPrompt(true);
                                     }}
                                 >
                                     {t('dismiss')}
