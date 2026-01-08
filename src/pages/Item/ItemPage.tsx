@@ -9,6 +9,7 @@ import { useTranslation } from 'react-i18next';
 import { useConfig } from '@/hooks/api/useConfig';
 import EpisodePage from './EpisodePage';
 import SeasonPage from './SeasonPage';
+import { getUserId } from '@/utils/localstorageCredentials';
 
 const ItemPageSkeleton = memo(() => {
     return (
@@ -95,7 +96,7 @@ const ItemPage = () => {
     const itemId = params.itemId;
 
     const { config, loading: configLoading } = useConfig();
-    const { data: item, isLoading, error } = useItem(itemId);
+    const { data: item, isLoading, error } = useItem(itemId, true, getUserId() || undefined);
 
     return (
         <Page

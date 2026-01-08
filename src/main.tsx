@@ -14,6 +14,7 @@ import { KeyboardShortcuts } from './components/KeyboardShortcuts.tsx';
 import ItemPage from './pages/Item/ItemPage.tsx';
 import NotFoundPage from './pages/NotFound/NotFoundPage.tsx';
 import PlayerPage from './pages/Player/PlayerPage.tsx';
+import PersonPage from './pages/Person/PersonPage.tsx';
 
 const queryClient = new QueryClient();
 
@@ -28,6 +29,7 @@ createRoot(document.getElementById('root')!).render(
                         <Route path="/" element={<HomePage />} />
                         <Route path="/library" element={<LibraryPage />} />
                         <Route path="/item/:itemId" element={<ItemPage />} />
+                        <Route path="/person/:itemId" element={<PersonPage />} />
                         <Route path="/login" element={<LoginPage />} />
                         <Route path="/play/:itemId" element={<PlayerPage />} />
                         <Route path="*" element={<NotFoundPage />} />
