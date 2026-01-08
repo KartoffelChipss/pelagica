@@ -5,10 +5,6 @@ on:
     types: [published]
   workflow_dispatch:
 
-concurrency:
-  group: "pages"
-  cancel-in-progress: true
-
 jobs:
   build:
     name: Build
