@@ -16,7 +16,7 @@ Pelagica is an alternative web frontend for [Jellyfin](https://jellyfin.org) bui
 
 ### Integrated Services
 
-- **Streamystats:** Get your streamystats recommendations directly on your home page. 
+- **Streamystats:** Get your streamystats recommendations directly on your home page.
 - **kefintweaks Watchlist:** View and manage your kefintweaks watchlist within Pelagica.
 
 ### Screenshots
