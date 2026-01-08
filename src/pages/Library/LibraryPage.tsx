@@ -42,9 +42,14 @@ import {
     SelectTrigger,
     SelectValue,
 } from '@/components/ui/select';
-import type { ItemSortBy, SortOrder } from '@jellyfin/sdk/lib/generated-client/models';
+import type {
+    CollectionType,
+    ItemSortBy,
+    SortOrder,
+} from '@jellyfin/sdk/lib/generated-client/models';
 import { ButtonGroup } from '@/components/ui/button-group';
 
+const SUPPORTED_COLLECTION_TYPES: CollectionType[] = ['movies', 'tvshows'];
 const ITEM_ROWS = 5;
 
 function getColumnCount(width: number): number {
@@ -250,6 +255,10 @@ const LibraryPage = () => {
         setSearchParams({ library: libraryId });
     };
 
+    const libraryItems = libraries?.Items?.filter((library) =>
+        SUPPORTED_COLLECTION_TYPES.includes(library.CollectionType!)
+    );
+
     return (
         <Page title={t('title')} requiresAuth>
             <Tabs
@@ -260,7 +269,7 @@ const LibraryPage = () => {
             >
                 <div className="flex items-center justify-between">
                     <TabsList>
-                        {libraries?.Items?.map((library) => (
+                        {libraryItems?.map((library) => (
                             <TabsTrigger key={library.Id} value={library.Id ?? ''}>
                                 <JellyfinLibraryIcon libraryType={library.CollectionType} />
                                 {library.Name}
@@ -318,7 +327,7 @@ const LibraryPage = () => {
                         </Select>
                     </ButtonGroup>
                 </div>
-                {libraries?.Items?.map((library) => (
+                {libraryItems?.map((library) => (
                     <TabsContent key={library.Id} value={library.Id ?? ''}>
                         {library.Id && (
                             <LibraryContent

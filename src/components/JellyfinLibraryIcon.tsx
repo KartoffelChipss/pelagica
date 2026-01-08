@@ -1,5 +1,5 @@
 import type { CollectionType } from '@jellyfin/sdk/lib/generated-client/models';
-import { Clapperboard, Folder, MonitorPlay } from 'lucide-react';
+import { Clapperboard, Folder, MonitorPlay, Music } from 'lucide-react';
 
 const JellyfinLibraryIcon = ({ libraryType }: { libraryType: CollectionType | undefined }) => {
     switch (libraryType) {
@@ -7,6 +7,8 @@ const JellyfinLibraryIcon = ({ libraryType }: { libraryType: CollectionType | un
             return <Clapperboard />;
         case 'tvshows':
             return <MonitorPlay />;
+        case 'music':
+            return <Music />;
         default:
             return <Folder />;
     }
