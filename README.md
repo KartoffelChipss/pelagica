@@ -171,6 +171,11 @@ Pelagica supports multiple languages and depends on community contributions for 
 
 You might be wondering about the name "Pelagica". Since I didn't want to call it the usual "\*fin" or "jelly\*" names, I looked for synonyms related to the sea. "Pelagic" refers to living in the deep ocean, which felt fitting for a Jellyfin frontend.
 
+## Acknowledgements
+
+Pelagica’s design was inspired by the [finetic](https://github.com/AyaanZaveri/finetic) Jellyfin frontend.  
+No code was used; this project is an independent implementation.
+
 ## Disclaimer
 
 This project is a third-party frontend for Jellyfin and is not affiliated with the Jellyfin project.
