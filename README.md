@@ -2,6 +2,44 @@
 
 Pelagica is an alternative web frontend for Jellyfin built using React.
 
+![Home](./.github/assets/home.webp)
+
+## Features
+
+- **Customizable Sections:** Tailor your homepage with sections like "Continue Watching", "Recently Added", or completely custom queries.
+- **Media Bars:** Add custom media bars to feature specific content.
+- **Search:** Quickly find media across your library from anywhere using `Cmd+K` / `Ctrl+K`.
+- **Video Player:** Integrated video player for movies and TV shows.
+- **Responsive Design:** Works seamlessly on both desktop and mobile devices.
+- **Theming:** Light and dark mode support.
+- **Localization:** Supports multiple languages through [community contributions](https://gitlocalize.com/repo/10631).
+
+### Integrated Services
+
+- **Streamystats:** Get your streamystats recommendations directly on your home page. 
+- **kefintweaks Watchlist:** View and manage your kefintweaks watchlist within Pelagica.
+
+### Screenshots
+
+<table>
+  <tr>
+    <td>
+      <img src="./.github/assets/custom_sections.webp" />
+    </td>
+    <td>
+      <img src="./.github/assets/series_page.webp" />
+    </td>
+  </tr>
+  <tr>
+    <td>
+      <img src="./.github/assets/episode_page.webp" />
+    </td>
+    <td>
+      <img src="./.github/assets/search.webp" />
+    </td>
+  </tr>
+</table>
+
 ## Docker Installation
 
 The easiest way to run Pelagica is using Docker. This provides a production-ready setup with nginx web server.
