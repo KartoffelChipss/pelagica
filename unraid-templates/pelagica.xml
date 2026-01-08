@@ -11,7 +11,7 @@
     Pelagica is an alternative web frontend for Jellyfin built using React. It aims to provide a fast, modern, and customizable user experience for browsing and watching your media library.
   </Overview>
 
-  <WebUI>http://[IP]:[PORT:8080]</WebUI>
+  <WebUI>http://[IP]:[PORT:80]</WebUI>
 
   <TemplateURL>
     https://raw.githubusercontent.com/KartoffelChipss/unraid-templates/main/pelagica.xml
