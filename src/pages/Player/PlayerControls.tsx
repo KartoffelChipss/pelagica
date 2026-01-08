@@ -10,9 +10,10 @@ import {
     AudioLines,
     SkipForward,
     Subtitles,
+    Dot,
 } from 'lucide-react';
 import { Button } from '../../components/ui/button';
-import { Link } from 'react-router';
+import { Link, useNavigate } from 'react-router';
 import type {
     BaseItemDto,
     MediaSegmentDto,
@@ -28,9 +29,12 @@ import {
     DropdownMenuSeparator,
     DropdownMenuTrigger,
 } from '@/components/ui/dropdown-menu';
-import { formatPlayTime, ticksToSeconds } from '@/utils/timeConversion';
+import { formatPlayTime, ticksToReadableTime, ticksToSeconds } from '@/utils/timeConversion';
 import { useTranslation } from 'react-i18next';
 import { usePlayerKeyboardControls } from '@/hooks/usePlayerKeyboardControls';
+import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
+import { getPrimaryImageUrl } from '@/utils/jellyfinUrls';
+import { useReportPlaybackProgress } from '@/hooks/api/usePlaybackProgress';
 
 interface PlayerControlsProps {
     item: BaseItemDto;
@@ -41,6 +45,7 @@ interface PlayerControlsProps {
     onSubtitleTrackChange: (index: number | null) => void;
     onFullscreen?: () => void;
     mediaSegments?: MediaSegmentDto[];
+    nextItem?: BaseItemDto | null;
 }
 
 const PlayerControls = ({
@@ -52,6 +57,7 @@ const PlayerControls = ({
     onSubtitleTrackChange,
     onFullscreen,
     mediaSegments,
+    nextItem,
 }: PlayerControlsProps) => {
     const { t } = useTranslation('player');
     const [isPlaying, setIsPlaying] = useState(false);
@@ -69,6 +75,8 @@ const PlayerControls = ({
     const [isPiP, setIsPiP] = useState(false);
     const progressRef = useRef<HTMLDivElement>(null);
     const hideTimeoutRef = useRef<ReturnType<typeof setTimeout> | null>(null);
+    const navigate = useNavigate();
+    const { reportProgress } = useReportPlaybackProgress();
 
     const resetHideTimeout = () => {
         setShowControls(true);
@@ -104,7 +112,7 @@ const PlayerControls = ({
     }, [volume]);
 
     useEffect(() => {
-        if (!player) return;
+        if (!player || player.isDisposed?.()) return;
 
         player.volume(volume);
 
@@ -265,6 +273,15 @@ const PlayerControls = ({
         handleSeekForward,
     });
 
+    const markItemAsCompleted = (itemId: string | undefined) => {
+        if (!itemId) return;
+        reportProgress({
+            itemId,
+            positionTicks: item.RunTimeTicks || 0,
+            isPaused: true,
+        });
+    };
+
     const introSegment = getMediaSegment('Intro');
     const showSkipIntroButton =
         introSegment &&
@@ -296,6 +313,13 @@ const PlayerControls = ({
     const audioStreams = item.MediaStreams?.filter((s) => s.Type === 'Audio') || [];
     const subtitleStreams = item.MediaStreams?.filter((s) => s.Type === 'Subtitle') || [];
 
+    const timeRemaining = duration - currentTime;
+    const showNextItemPrompt =
+        nextItem &&
+        duration > 0 &&
+        (timeRemaining <= 30 || // 30 sec remaining
+            (duration > 0 && currentTime / duration >= 0.95)); // or 95% complete
+
     return (
         <>
             <div
@@ -320,7 +344,7 @@ const PlayerControls = ({
                 onMouseLeave={handleMouseLeave}
             />
             <div className="absolute bottom-28 right-8 z-30 flex gap-2">
-                {showSkipIntroButton && (
+                {showSkipIntroButton && !showNextItemPrompt && (
                     <Button
                         variant={'default'}
                         onClick={() => handleSkipSegment('Intro')}
@@ -331,7 +355,7 @@ const PlayerControls = ({
                         {t('skipIntro')}
                     </Button>
                 )}
-                {showSkipOutroButton && (
+                {showSkipOutroButton && !showNextItemPrompt && (
                     <Button
                         variant={'default'}
                         onClick={() => handleSkipSegment('Outro')}
@@ -341,6 +365,65 @@ const PlayerControls = ({
                         <SkipForward />
                         {t('skipOutro')}
                     </Button>
+                )}
+                {showNextItemPrompt && (
+                    <Card className="gap-2 w-60 md:w-80">
+                        <CardHeader>
+                            <CardTitle className="text-xl sm:text-2xl">
+                                {t('upNext', {
+                                    seconds: timeRemaining.toFixed(0),
+                                })}
+                            </CardTitle>
+                        </CardHeader>
+                        <CardContent className="flex flex-col">
+                            <img
+                                src={getPrimaryImageUrl(nextItem.Id!, {
+                                    height: 180,
+                                    width: 320,
+                                })}
+                                alt={nextItem.Name || 'Next item poster'}
+                                className="w-full h-auto rounded mb-3 hidden sm:block"
+                            />
+                            <div className="flex items-center">
+                                <p>
+                                    {t('seasonEpisode', {
+                                        season: nextItem.ParentIndexNumber,
+                                        episode: nextItem.IndexNumber,
+                                    })}{' '}
+                                    ⋅ {nextItem.Name}
+                                </p>
+                            </div>
+                            <div className="flex items-center text-muted-foreground text-xs mb-3">
+                                <p>{ticksToReadableTime(nextItem.RunTimeTicks || 0)}</p>
+                                <Dot />
+                                <p>Ends at {formatPlayTime(duration)}</p>
+                            </div>
+                            <div className="flex items-center gap-2 w-full">
+                                <Button
+                                    variant={'default'}
+                                    className="flex-1"
+                                    onClick={() => {
+                                        if (!player || !nextItem) return;
+                                        player.pause();
+                                        markItemAsCompleted(item.Id);
+                                        navigate(`/play/${nextItem.Id}`);
+                                    }}
+                                >
+                                    <SkipForward />
+                                    {t('startNow')}
+                                </Button>
+                                <Button
+                                    variant={'outline'}
+                                    className="flex-1"
+                                    onClick={() => {
+                                        setShowControls(true);
+                                    }}
+                                >
+                                    {t('dismiss')}
+                                </Button>
+                            </div>
+                        </CardContent>
+                    </Card>
                 )}
             </div>
             <div

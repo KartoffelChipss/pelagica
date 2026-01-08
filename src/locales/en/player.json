@@ -3,5 +3,10 @@
     "skipOutro": "Skip Outro",
     "audioTracks": "Audio Tracks",
     "subtitles": "Subtitles",
-    "off": "Off"
+    "off": "Off",
+    "playNextItem": "Play Next Item",
+    "upNext": "Next episode in {{seconds}} seconds",
+    "startNow": "Start Now",
+    "dismiss": "Dismiss",
+    "seasonEpisode": "S{{season}} E{{episode}}"
 }

@@ -10,6 +10,8 @@ import { useEffect, useMemo, useRef, useState } from 'react';
 import { getPrimaryImageUrl, getVideoStreamUrl, getSubtitleUrl } from '@/utils/jellyfinUrls';
 import { generateRandomId } from '@/utils/idGenerator';
 import { useMediaSegments } from '@/hooks/api/useMediaSegments';
+import { useNextItem } from '@/hooks/api/useNextItem';
+import { getUserId } from '@/utils/localstorageCredentials';
 
 const PLAYBACK_PROGRESS_REPORT_MIN_PLAYTIME_SECONDS = 5;
 const PLAYBACK_PROGRESS_REPORT_INTERVAL_MS = 5000;
@@ -29,6 +31,11 @@ const PlayerPage = () => {
 
     const { data: item, isLoading, error } = useItem(itemId, true);
     const {
+        data: nextItem,
+        isLoading: isLoadingNextItem,
+        error: nextItemError,
+    } = useNextItem(item, getUserId());
+    const {
         data: mediaSegments,
         isLoading: isLoadingMediaSegments,
         error: mediaSegmentsError,
@@ -36,6 +43,16 @@ const PlayerPage = () => {
     const { reportProgress } = useReportPlaybackProgress();
     const { startPlayback } = usePlaybackStart();
     const { stopPlayback } = usePlaybackStop();
+
+    // Reset everything when navigating to a new item
+    useEffect(() => {
+        queueMicrotask(() => {
+            setPlayer(null);
+            setSubtitleTrackIndex(null);
+            setAudioTrackIndex(1);
+            setPlaySessionId(generateRandomId());
+        });
+    }, [itemId]);
 
     const posterUrl = useMemo(() => {
         if (!item?.Id) return undefined;
@@ -144,12 +161,17 @@ const PlayerPage = () => {
         );
     }, [item]);
 
-    if (isLoading || isLoadingMediaSegments) {
+    if (isLoading || isLoadingMediaSegments || isLoadingNextItem) {
         return <p>Loading...</p>;
     }
 
-    if (error || mediaSegmentsError) {
-        return <p>Error loading item: {error?.message || mediaSegmentsError?.message}</p>;
+    if (error || mediaSegmentsError || nextItemError) {
+        return (
+            <p>
+                Error loading item:{' '}
+                {error?.message || mediaSegmentsError?.message || nextItemError?.message}
+            </p>
+        );
     }
 
     if (!item) {
@@ -159,6 +181,7 @@ const PlayerPage = () => {
     return (
         <div ref={containerRef} className="relative w-full h-screen bg-black flex overflow-hidden">
             <VideoPlayer
+                key={itemId}
                 src={getVideoStreamUrl(itemId!, {
                     audioStreamIndex: audioTrackIndex,
                     playSessionId: playSessionId,
@@ -177,6 +200,7 @@ const PlayerPage = () => {
                 onSubtitleTrackChange={handleSubtitleTrackChange}
                 onFullscreen={handleFullscreen}
                 mediaSegments={mediaSegments}
+                nextItem={nextItem}
             />
         </div>
     );
