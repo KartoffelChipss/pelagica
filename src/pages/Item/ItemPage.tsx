@@ -8,6 +8,7 @@ import { memo } from 'react';
 import { useTranslation } from 'react-i18next';
 import { useConfig } from '@/hooks/api/useConfig';
 import EpisodePage from './EpisodePage';
+import SeasonPage from './SeasonPage';
 
 const ItemPageSkeleton = memo(() => {
     return (
@@ -112,6 +113,8 @@ const ItemPage = () => {
                             return <SeriesPage item={item} config={config} />;
                         case 'Episode':
                             return <EpisodePage item={item} config={config} />;
+                        case 'Season':
+                            return <SeasonPage item={item} config={config} />;
                         default:
                             return (
                                 <p>
