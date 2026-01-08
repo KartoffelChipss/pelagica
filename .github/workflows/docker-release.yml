@@ -1,25 +1,41 @@
-name: Build and Publish Docker Image
+name: Build and Publish Multi-Arch Docker Image
 
 on:
   release:
     types: [published]
 
-jobs:
-  build-and-push:
-    runs-on: ubuntu-latest
-    permissions:
-      contents: read
+env:
+  DOCKER_IMAGE: ${{ secrets.DOCKERHUB_USERNAME }}/pelagica
 
+permissions:
+  contents: read
+
+concurrency:
+  group: ${{ github.workflow }}-${{ github.ref }}
+  cancel-in-progress: true
+
+jobs:
+  build:
     strategy:
+      fail-fast: false
       matrix:
-        platform: [linux/amd64, linux/arm64]
+        platform:
+          - linux/amd64
+          - linux/arm64
+
+    runs-on: ${{ matrix.platform == 'linux/amd64' && 'ubuntu-latest' || matrix.platform == 'linux/arm64' && 'ubuntu-22.04-arm64' }}
+
+    name: Build Docker image for ${{ matrix.platform }}
 
     steps:
+      - name: Set PLATFORM_PAIR
+        id: prepare
+        run: |
+          platform=${{ matrix.platform }}
+          echo "PLATFORM_PAIR=${platform//\//-}" >> $GITHUB_ENV
+
       - name: Checkout repository
         uses: actions/checkout@v4
-
-      - name: Set up Docker Buildx
-        uses: docker/setup-buildx-action@v3
 
       - name: Log in to Docker Hub
         uses: docker/login-action@v3
@@ -27,17 +43,66 @@ jobs:
           username: ${{ secrets.DOCKERHUB_USERNAME }}
           password: ${{ secrets.DOCKERHUB_TOKEN }}
 
-      - name: Extract release tag
-        id: vars
-        run: |
-          echo "TAG=${GITHUB_REF_NAME}" >> $GITHUB_OUTPUT
+      - name: Set up Docker Buildx
+        uses: docker/setup-buildx-action@v3
+        with:
+          platforms: ${{ matrix.platform }}
 
-      - name: Build and push Docker image
+      - name: Build and push image
+        id: build
         uses: docker/build-push-action@v6
+        env:
+          DOCKER_BUILDKIT: 1
         with:
           context: .
           push: true
           platforms: ${{ matrix.platform }}
           tags: |
-            ${{ secrets.DOCKERHUB_USERNAME }}/pelagica:${{ steps.vars.outputs.TAG }}
-            ${{ secrets.DOCKERHUB_USERNAME }}/pelagica:latest
+            ${{ env.DOCKER_IMAGE }}:${{ github.ref_name }}-${{ env.PLATFORM_PAIR }}
+            ${{ env.DOCKER_IMAGE }}:latest-${{ env.PLATFORM_PAIR }}
+          cache-from: type=gha,scope=${{ github.repository }}-${{ github.ref_name }}-${{ env.PLATFORM_PAIR }}
+          cache-to: type=gha,scope=${{ github.repository }}-${{ github.ref_name }}-${{ env.PLATFORM_PAIR }}
+
+      - name: Export digest
+        run: |
+          mkdir -p /tmp/digests
+          digest="${{ steps.build.outputs.digest }}"
+          touch "/tmp/digests/${digest#sha256:}"
+
+      - name: Upload digest
+        uses: actions/upload-artifact@v6
+        with:
+          name: digests-${{ env.PLATFORM_PAIR }}
+          path: /tmp/digests/*
+          if-no-files-found: error
+          retention-days: 1
+
+  merge:
+    name: Create Multi-Arch Manifest
+    runs-on: ubuntu-latest
+    needs: build
+
+    steps:
+      - name: Log in to Docker Hub
+        uses: docker/login-action@v3
+        with:
+          username: ${{ secrets.DOCKERHUB_USERNAME }}
+          password: ${{ secrets.DOCKERHUB_TOKEN }}
+
+      - name: Download digests
+        uses: actions/download-artifact@v7
+        with:
+          path: /tmp/digests
+          pattern: digests-*
+          merge-multiple: true
+
+      - name: Create multi-arch manifest
+        run: |
+          docker buildx imagetools create \
+            -t ${{ env.DOCKER_IMAGE }}:${{ github.ref_name }} \
+            -t ${{ env.DOCKER_IMAGE }}:latest \
+            $(printf "${{ env.DOCKER_IMAGE }}@sha256:%s " /tmp/digests/*)
+
+      - name: Inspect manifest
+        run: |
+          docker buildx imagetools inspect ${{ env.DOCKER_IMAGE }}:${{ github.ref_name }}
