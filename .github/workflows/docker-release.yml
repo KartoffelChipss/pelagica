@@ -98,10 +98,16 @@ jobs:
 
       - name: Create multi-arch manifest
         run: |
+          refs=()
+          for digest_file in /tmp/digests/*; do
+            digest=$(cat "$digest_file")
+            refs+=("${{ env.DOCKER_IMAGE }}@sha256:$digest")
+          done
+          
           docker buildx imagetools create \
             -t ${{ env.DOCKER_IMAGE }}:${{ github.ref_name }} \
             -t ${{ env.DOCKER_IMAGE }}:latest \
-            $(printf "${{ env.DOCKER_IMAGE }}@sha256:%s " /tmp/digests/*)
+            "${refs[@]}"
 
       - name: Inspect manifest
         run: |
