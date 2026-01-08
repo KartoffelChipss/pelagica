@@ -547,8 +547,8 @@
     "RecommendationTypeFilter": {
       "enum": [
         "all",
-        "movies",
-        "series"
+        "Movie",
+        "Series"
       ],
       "type": "string"
     },

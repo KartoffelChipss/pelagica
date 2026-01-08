@@ -7,7 +7,7 @@ import {
     type RecommendationTypeFilter,
 } from '@/hooks/api/useRecommendedItems';
 import { getPrimaryImageUrl } from '@/utils/jellyfinUrls';
-import { TrendingUp } from 'lucide-react';
+import { Star, TrendingUp } from 'lucide-react';
 import { useMemo } from 'react';
 import { useTranslation } from 'react-i18next';
 import { Link } from 'react-router';
@@ -100,7 +100,7 @@ const RecommendedItemsRow = ({
                                           {(item.similarity * 100).toFixed(0)}%
                                       </Badge>
                                   )}
-                                  {showBasedOn && item.basedOn.length > 0 && (
+                                  {showBasedOn && item.basedOn.length > 0 ? (
                                       <>
                                           <p className="mb-1 text-xs text-muted-foreground">
                                               {t('because_you_watched')}
@@ -123,6 +123,15 @@ const RecommendedItemsRow = ({
                                               ))}
                                           </div>
                                       </>
+                                  ) : (
+                                      <div>
+                                          {item.item.communityRating && (
+                                              <span className="text-xs text-muted-foreground mr-3 flex items-center gap-1">
+                                                  <Star size={14} />
+                                                  {item.item.communityRating.toFixed(1)}
+                                              </span>
+                                          )}
+                                      </div>
                                   )}
                               </ScrollableSectionPoster>
                           ))

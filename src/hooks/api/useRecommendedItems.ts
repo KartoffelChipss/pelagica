@@ -64,14 +64,14 @@ export interface MediaItem {
     parentThumbImageTag: string | null;
 }
 
-export type RecommendationTypeFilter = 'all' | 'movies' | 'series';
+export type RecommendationTypeFilter = 'all' | 'Movie' | 'Series';
 
 export function useRecommendedItems(options: { type?: RecommendationTypeFilter; limit?: number }) {
     const { config } = useConfig();
     const streamystatsUrl = config.streamystatsUrl;
 
     return useQuery<RecommendationResponse | null>({
-        queryKey: ['useRecommendedItems'],
+        queryKey: ['useRecommendedItems', options.type, options.limit],
         queryFn: async () => {
             if (!streamystatsUrl) return null;
 
@@ -87,8 +87,6 @@ export function useRecommendedItems(options: { type?: RecommendationTypeFilter; 
             if (options.limit !== undefined)
                 url.searchParams.append('limit', options.limit.toString());
 
-            console.log('Fetching recommended items from Streamystats:', url.toString());
-
             const response = await fetch(url.toString(), {
                 method: 'GET',
                 headers: {
@@ -97,7 +95,6 @@ export function useRecommendedItems(options: { type?: RecommendationTypeFilter; 
                     Authorization: `MediaBrowser Token="${jellyToken}"`,
                 },
             });
-            console.log('Streamystats response status:', response.status);
             if (!response.ok) {
                 throw new Error('Network response was not ok');
             }
