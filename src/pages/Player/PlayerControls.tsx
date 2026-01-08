@@ -100,6 +100,18 @@ const PlayerControls = ({
         }
     };
 
+    const markItemAsCompleted = useCallback(
+        (itemId: string | undefined) => {
+            if (!itemId) return;
+            reportProgress({
+                itemId,
+                positionTicks: item.RunTimeTicks || 0,
+                isPaused: true,
+            });
+        },
+        [item.RunTimeTicks, reportProgress]
+    );
+
     useEffect(() => {
         return () => {
             if (hideTimeoutRef.current) {
@@ -128,6 +140,12 @@ const PlayerControls = ({
             }
         };
 
+        const handleEnded = () => {
+            if (!nextItem) return;
+            markItemAsCompleted(item.Id);
+            navigate(`/play/${nextItem.Id}`);
+        };
+
         // PiP event listeners
         const videoEl = player.el()?.querySelector('video');
         const handleEnterPiP = () => setIsPiP(true);
@@ -144,6 +162,7 @@ const PlayerControls = ({
         player.on('loadedmetadata', updateDuration);
         player.on('progress', updateBuffered);
         player.on('volumechange', updateMuted);
+        player.on('ended', handleEnded);
 
         return () => {
             player.off('play', updatePlayState);
@@ -153,13 +172,14 @@ const PlayerControls = ({
             player.off('loadedmetadata', updateDuration);
             player.off('progress', updateBuffered);
             player.off('volumechange', updateMuted);
+            player.off('ended', handleEnded);
 
             if (videoEl) {
                 videoEl.removeEventListener('enterpictureinpicture', handleEnterPiP);
                 videoEl.removeEventListener('leavepictureinpicture', handleLeavePiP);
             }
         };
-    }, [player, volume]);
+    }, [player, volume, nextItem, dismissedNextItemPrompt, item.Id, navigate, markItemAsCompleted]);
 
     const togglePlay = useCallback(() => {
         if (!player) return;
@@ -273,15 +293,6 @@ const PlayerControls = ({
         handleSeekBackward,
         handleSeekForward,
     });
-
-    const markItemAsCompleted = (itemId: string | undefined) => {
-        if (!itemId) return;
-        reportProgress({
-            itemId,
-            positionTicks: item.RunTimeTicks || 0,
-            isPaused: true,
-        });
-    };
 
     const introSegment = getMediaSegment('Intro');
     const showSkipIntroButton =
