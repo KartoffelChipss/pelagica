@@ -16,7 +16,7 @@ import { getUserId } from '@/utils/localstorageCredentials';
 const PLAYBACK_PROGRESS_REPORT_MIN_PLAYTIME_SECONDS = 5;
 const PLAYBACK_PROGRESS_REPORT_INTERVAL_MS = 5000;
 
-type VideoJsPlayer = ReturnType<typeof import('video.js').default>;
+export type VideoJsPlayer = ReturnType<typeof import('video.js').default>;
 
 const PlayerPage = () => {
     const params = useParams<{ itemId: string }>();
@@ -201,6 +201,10 @@ const PlayerPage = () => {
                 onFullscreen={handleFullscreen}
                 mediaSegments={mediaSegments}
                 nextItem={nextItem}
+                srcUrl={getVideoStreamUrl(itemId!, {
+                    audioStreamIndex: audioTrackIndex,
+                    playSessionId: playSessionId,
+                })}
             />
         </div>
     );

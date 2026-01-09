@@ -11,6 +11,7 @@ import {
     SkipForward,
     Subtitles,
     Dot,
+    Info,
 } from 'lucide-react';
 import { Button } from '../../components/ui/button';
 import { Link, useNavigate } from 'react-router';
@@ -35,6 +36,8 @@ import { usePlayerKeyboardControls } from '@/hooks/usePlayerKeyboardControls';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { getPrimaryImageUrl } from '@/utils/jellyfinUrls';
 import { useReportPlaybackProgress } from '@/hooks/api/usePlaybackProgress';
+import { getRuntimePlaybackStats, type RuntimePlaybackStats } from '@/utils/playbackStats';
+import { useSession } from '@/hooks/api/useSession';
 
 interface PlayerControlsProps {
     item: BaseItemDto;
@@ -46,6 +49,7 @@ interface PlayerControlsProps {
     onFullscreen?: () => void;
     mediaSegments?: MediaSegmentDto[];
     nextItem?: BaseItemDto | null;
+    srcUrl: string;
 }
 
 const PlayerControls = ({
@@ -58,6 +62,7 @@ const PlayerControls = ({
     onFullscreen,
     mediaSegments,
     nextItem,
+    srcUrl,
 }: PlayerControlsProps) => {
     const { t } = useTranslation('player');
     const [isPlaying, setIsPlaying] = useState(false);
@@ -78,6 +83,18 @@ const PlayerControls = ({
     const navigate = useNavigate();
     const { reportProgress } = useReportPlaybackProgress();
     const [dismissedNextItemPrompt, setDismissedNextItemPrompt] = useState(false);
+    const [stats, setStats] = useState<RuntimePlaybackStats | null>(null);
+    const [showStats, setShowStats] = useState(false);
+    const { data: session } = useSession(item.Id, showStats);
+
+    useEffect(() => {
+        if (!player) return;
+        const update = () =>
+            setStats(getRuntimePlaybackStats(player, item, session, audioTrackIndex, srcUrl));
+        update();
+        const interval = setInterval(update, 2000);
+        return () => clearInterval(interval);
+    }, [player, item, session, audioTrackIndex, srcUrl, showStats]);
 
     const resetHideTimeout = () => {
         setShowControls(true);
@@ -440,6 +457,120 @@ const PlayerControls = ({
                 )}
             </div>
             <div
+                className={`absolute top-18 left-8 z-30 p-4 bg-black/70 text-white text-sm rounded-md max-w-sm ${showStats && stats ? '' : 'hidden'}`}
+                style={{
+                    pointerEvents: showStats && stats ? 'auto' : 'none',
+                }}
+                onMouseEnter={handleMouseMove}
+                onMouseMove={handleMouseMove}
+            >
+                {stats && (
+                    <div>
+                        <h4 className="mb-1">Playback Info</h4>
+                        <div className="ml-2">
+                            <p>
+                                <span>Player</span>{' '}
+                                <span className="text-muted-foreground">
+                                    {stats.playbackInfo.player}
+                                </span>
+                            </p>
+                            <p>
+                                <span>Play method</span>{' '}
+                                <span className="text-muted-foreground">
+                                    {stats.playbackInfo.transcoding ? 'Transcoded' : 'Direct'}
+                                </span>
+                            </p>
+                            <p>
+                                <span>Protocol</span>{' '}
+                                <span className="text-muted-foreground">
+                                    {stats.playbackInfo.protocol}
+                                </span>
+                            </p>
+                        </div>
+                        <h4 className="mb-1 mt-3">Video Info</h4>
+                        <div className="ml-2">
+                            <p>
+                                <span>Video Resolution</span>{' '}
+                                <span className="text-muted-foreground">
+                                    {stats.videoInfo.videoResolution.width}x
+                                    {stats.videoInfo.videoResolution.height}
+                                </span>
+                            </p>
+                            <p>
+                                <span>Player Dimensions</span>{' '}
+                                <span className="text-muted-foreground">
+                                    {stats.videoInfo.playerDimensions.width}x
+                                    {stats.videoInfo.playerDimensions.height}
+                                </span>
+                            </p>
+                            <p>
+                                <span>Dropped Frames</span>{' '}
+                                <span className="text-muted-foreground">
+                                    {stats.videoInfo.droppedFrames}
+                                </span>
+                            </p>
+                            <p>
+                                <span>Corrupted Frames</span>{' '}
+                                <span className="text-muted-foreground">
+                                    {stats.videoInfo.corruptedFrames}
+                                </span>
+                            </p>
+                            <p>
+                                <span>Total Frames</span>{' '}
+                                <span className="text-muted-foreground">
+                                    {stats.videoInfo.totalFrames}
+                                </span>
+                            </p>
+                        </div>
+                        <h4 className="mb-1 mt-3">Media Info</h4>
+                        <div className="ml-2">
+                            <p>
+                                <span>Video Codec</span>{' '}
+                                <span className="text-muted-foreground">
+                                    {stats.mediaInfo.videoCodec}
+                                </span>
+                            </p>
+                            <p>
+                                <span>Video Bitrate</span>{' '}
+                                <span className="text-muted-foreground">
+                                    {stats.mediaInfo.videoBitrateKbps ?? 'N/A'} kbps
+                                </span>
+                            </p>
+                            <p>
+                                <span>Video Range Type</span>{' '}
+                                <span className="text-muted-foreground">
+                                    {stats.mediaInfo.videoRangeType || 'N/A'}
+                                </span>
+                            </p>
+                            <p>
+                                <span>Audio Codec</span>{' '}
+                                <span className="text-muted-foreground">
+                                    {stats.mediaInfo.audioCodec}
+                                </span>
+                            </p>
+                            <p>
+                                <span>Audio Bitrate</span>{' '}
+                                <span className="text-muted-foreground">
+                                    {stats.mediaInfo.audioBitrateKbps ?? 'N/A'} kbps
+                                </span>
+                            </p>
+                            <p>
+                                <span>Audio Channels</span>{' '}
+                                <span className="text-muted-foreground">
+                                    {stats.mediaInfo.audioChannels}
+                                </span>
+                            </p>
+                            <p>
+                                <span>Audio Sample Rate</span>{' '}
+                                <span className="text-muted-foreground">
+                                    {stats.mediaInfo.audioSampleRate} Hz
+                                </span>
+                            </p>
+                        </div>
+                    </div>
+                )}
+            </div>
+            <div
                 className="absolute bottom-0 left-0 right-0 z-20 bg-linear-to-t from-black/80 to-transparent p-4 transition-opacity duration-300"
                 style={{
                     opacity: showControls ? 1 : 0,
@@ -510,91 +641,98 @@ const PlayerControls = ({
                         </div>
                     </div>
 
-                    <div className="flex items-center gap-4">
-                        <div className="flex items-center gap-2">
-                            {subtitleStreams.length > 0 && (
-                                <DropdownMenu>
-                                    <DropdownMenuTrigger asChild>
-                                        <Button
-                                            variant={'ghost'}
-                                            size={'icon-lg'}
-                                            className="cursor-pointer"
-                                        >
-                                            <Subtitles />
-                                        </Button>
-                                    </DropdownMenuTrigger>
-                                    <DropdownMenuContent>
-                                        <DropdownMenuLabel>{t('subtitles')}</DropdownMenuLabel>
-                                        <DropdownMenuSeparator />
-                                        <DropdownMenuRadioGroup
-                                            value={subtitleTrackIndex?.toString() || 'off'}
-                                            onValueChange={handleSubtitleTrackChange}
-                                        >
-                                            <DropdownMenuRadioItem value="off">
-                                                {t('off')}
+                    <div className="flex items-center gap-2">
+                        <Button
+                            variant={'ghost'}
+                            size={'icon-lg'}
+                            onClick={() => setShowStats(!showStats)}
+                            className="cursor-pointer"
+                            title="Toggle Stats"
+                        >
+                            <Info />
+                        </Button>
+                        {subtitleStreams.length > 0 && (
+                            <DropdownMenu>
+                                <DropdownMenuTrigger asChild>
+                                    <Button
+                                        variant={'ghost'}
+                                        size={'icon-lg'}
+                                        className="cursor-pointer"
+                                    >
+                                        <Subtitles />
+                                    </Button>
+                                </DropdownMenuTrigger>
+                                <DropdownMenuContent>
+                                    <DropdownMenuLabel>{t('subtitles')}</DropdownMenuLabel>
+                                    <DropdownMenuSeparator />
+                                    <DropdownMenuRadioGroup
+                                        value={subtitleTrackIndex?.toString() || 'off'}
+                                        onValueChange={handleSubtitleTrackChange}
+                                    >
+                                        <DropdownMenuRadioItem value="off">
+                                            {t('off')}
+                                        </DropdownMenuRadioItem>
+                                        {subtitleStreams.map((stream, index) => (
+                                            <DropdownMenuRadioItem
+                                                key={index}
+                                                value={index.toString()}
+                                            >
+                                                {stream.DisplayTitle ||
+                                                    stream.Language ||
+                                                    'Unknown'}
                                             </DropdownMenuRadioItem>
-                                            {subtitleStreams.map((stream, index) => (
-                                                <DropdownMenuRadioItem
-                                                    key={index}
-                                                    value={index.toString()}
-                                                >
-                                                    {stream.DisplayTitle ||
-                                                        stream.Language ||
-                                                        'Unknown'}
-                                                </DropdownMenuRadioItem>
-                                            ))}
-                                        </DropdownMenuRadioGroup>
-                                    </DropdownMenuContent>
-                                </DropdownMenu>
-                            )}
-                            {audioStreams.length > 1 && (
-                                <DropdownMenu>
-                                    <DropdownMenuTrigger asChild>
-                                        <Button
-                                            variant={'ghost'}
-                                            size={'icon-lg'}
-                                            className="cursor-pointer"
-                                        >
-                                            <AudioLines />
-                                        </Button>
-                                    </DropdownMenuTrigger>
-                                    <DropdownMenuContent>
-                                        <DropdownMenuLabel>{t('audioTracks')}</DropdownMenuLabel>
-                                        <DropdownMenuSeparator />
-                                        <DropdownMenuRadioGroup
-                                            value={audioTrackIndex?.toString() || ''}
-                                            onValueChange={handleAudioTrackChange}
-                                        >
-                                            {audioStreams.map((stream, index) => (
-                                                <DropdownMenuRadioItem
-                                                    key={index}
-                                                    value={stream.Index!.toString()}
-                                                >
-                                                    {stream.Language || 'Unknown Language'} -{' '}
-                                                    {stream.Codec}
-                                                </DropdownMenuRadioItem>
-                                            ))}
-                                        </DropdownMenuRadioGroup>
-                                    </DropdownMenuContent>
-                                </DropdownMenu>
-                            )}
-                            <Button
-                                variant={'ghost'}
-                                size={'icon-lg'}
-                                onClick={toggleMute}
-                                className="cursor-pointer"
-                            >
-                                {isMuted ? <VolumeX /> : <Volume2 />}
-                            </Button>
-                            <Slider
-                                min={0}
-                                max={1}
-                                step={0.1}
-                                value={isMuted ? [0] : [volume]}
-                                onValueChange={handleVolumeChange}
-                                className="w-25 cursor-pointer"
-                            />
-                        </div>
+                                        ))}
+                                    </DropdownMenuRadioGroup>
+                                </DropdownMenuContent>
+                            </DropdownMenu>
+                        )}
+                        {audioStreams.length > 1 && (
+                            <DropdownMenu>
+                                <DropdownMenuTrigger asChild>
+                                    <Button
+                                        variant={'ghost'}
+                                        size={'icon-lg'}
+                                        className="cursor-pointer"
+                                    >
+                                        <AudioLines />
+                                    </Button>
+                                </DropdownMenuTrigger>
+                                <DropdownMenuContent>
+                                    <DropdownMenuLabel>{t('audioTracks')}</DropdownMenuLabel>
+                                    <DropdownMenuSeparator />
+                                    <DropdownMenuRadioGroup
+                                        value={audioTrackIndex?.toString() || ''}
+                                        onValueChange={handleAudioTrackChange}
+                                    >
+                                        {audioStreams.map((stream, index) => (
+                                            <DropdownMenuRadioItem
+                                                key={index}
+                                                value={stream.Index!.toString()}
+                                            >
+                                                {stream.Language || 'Unknown Language'} -{' '}
+                                                {stream.Codec}
+                                            </DropdownMenuRadioItem>
+                                        ))}
+                                    </DropdownMenuRadioGroup>
+                                </DropdownMenuContent>
+                            </DropdownMenu>
+                        )}
+                        <Button
+                            variant={'ghost'}
+                            size={'icon-lg'}
+                            onClick={toggleMute}
+                            className="cursor-pointer"
+                        >
+                            {isMuted ? <VolumeX /> : <Volume2 />}
+                        </Button>
+                        <Slider
+                            min={0}
+                            max={1}
+                            step={0.1}
+                            value={isMuted ? [0] : [volume]}
+                            onValueChange={handleVolumeChange}
+                            className="w-25 cursor-pointer mr-2"
+                        />
                         {document.pictureInPictureEnabled && (
                             <Button
                                 variant={'ghost'}
