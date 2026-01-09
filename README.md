@@ -67,8 +67,8 @@ The easiest way to run Pelagica is using Docker. This provides a production-read
 2. **Download default config files:**
 
     ```bash
-    curl -o config.json https://raw.githubusercontent.com/KartoffelChipss/pelagica/main/public/config.json
-    curl -o config.schema.json https://raw.githubusercontent.com/KartoffelChipss/pelagica/main/public/config.schema.json
+    curl -o config.json https://raw.githubusercontent.com/KartoffelChipss/pelagica/main/config.json
+    curl -o config.schema.json https://raw.githubusercontent.com/KartoffelChipss/pelagica/main/config.schema.json
     ```
 
 3. **Run the container:**
