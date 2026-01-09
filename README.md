@@ -12,7 +12,7 @@ Pelagica is an alternative web frontend for [Jellyfin](https://jellyfin.org) bui
 - **Video Player:** Integrated video player for movies and TV shows.
 - **Responsive Design:** Works seamlessly on both desktop and mobile devices.
 - **Theming:** Light and dark mode support.
-- **Localization:** Supports multiple languages through [community contributions](https://gitlocalize.com/repo/10631).
+- **Localization:** Supports multiple languages through [community contributions](https://gitlocalize.com/repo/10635).
 
 ### Integrated Services
 
@@ -181,7 +181,7 @@ Join the Pelagica community on Discord for support, discussions, and updates: ht
 
 ## Localization
 
-Pelagica supports multiple languages and depends on community contributions for translations. If you'd like to help translate Pelagica into your language, you can contribute via [GitLocalize](https://gitlocalize.com/repo/10631).
+Pelagica supports multiple languages and depends on community contributions for translations. If you'd like to help translate Pelagica into your language, you can contribute via [GitLocalize](https://gitlocalize.com/repo/10635).
 
 ## Contributing
 
