@@ -21,6 +21,7 @@
             "type": "continueWatching",
             "titleLine": "ItemTitleWithEpisodeInfo",
             "detailLine": ["TimeRemaining"],
+            "accurateSorting": true,
             "limit": 20
         },
         {

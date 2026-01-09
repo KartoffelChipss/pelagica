@@ -9,7 +9,7 @@ import { Link, useNavigate } from 'react-router';
 import { useState } from 'react';
 import { useTranslation } from 'react-i18next';
 import type { TFunction } from 'i18next';
-import { useNextUp } from '@/hooks/api/useNextUp';
+import { useContinueWatchingAndNextUp } from '@/hooks/api/useContinueWatchingAndNextUp';
 import { getUserId } from '@/utils/localstorageCredentials';
 
 interface ContinueWatchingRowProps {
@@ -17,6 +17,7 @@ interface ContinueWatchingRowProps {
     titleLine?: ContinueWatchingTitleLine;
     detailLine?: ContinueWatchingDetailLine[];
     limit?: number;
+    accurateSorting?: boolean;
 }
 
 function getTitleLineText(
@@ -84,10 +85,20 @@ function getDetailLineText(
     }
 }
 
-const ContinueWatchingRow = ({ title, titleLine, detailLine, limit }: ContinueWatchingRowProps) => {
+const ContinueWatchingRow = ({
+    title,
+    titleLine,
+    detailLine,
+    limit,
+    accurateSorting = true,
+}: ContinueWatchingRowProps) => {
     const { t } = useTranslation('home');
     const navigate = useNavigate();
-    const { data: continueWatchingData, isLoading, error } = useNextUp(getUserId(), limit);
+    const {
+        data: continueWatchingData,
+        isLoading,
+        error,
+    } = useContinueWatchingAndNextUp(getUserId(), limit, accurateSorting);
 
     const [imageErrors, setImageErrors] = useState<Record<string, boolean>>({});
 

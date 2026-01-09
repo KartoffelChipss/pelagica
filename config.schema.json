@@ -197,6 +197,10 @@
     },
     "ContinueWatchingSection": {
       "properties": {
+        "accurateSorting": {
+          "description": "Whether to use more accurate sorting that may involve additional API calls",
+          "type": "boolean"
+        },
         "detailLine": {
           "items": {
             "$ref": "#/definitions/ContinueWatchingDetailLine"

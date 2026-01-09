@@ -27,6 +27,7 @@ const HomePage = () => {
                                     titleLine={section.titleLine}
                                     detailLine={section.detailLine}
                                     limit={section.limit || 20}
+                                    accurateSorting={section.accurateSorting}
                                 />
                             );
 

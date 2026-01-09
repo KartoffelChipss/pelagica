@@ -89,6 +89,8 @@ export interface ContinueWatchingSection extends BaseHomeScreenSection {
     titleLine?: ContinueWatchingTitleLine;
     detailLine?: ContinueWatchingDetailLine[];
     limit?: number;
+    /** Whether to use more accurate sorting that may involve additional API calls */
+    accurateSorting?: boolean;
 }
 
 export interface RecommendedItemsSection extends BaseHomeScreenSection {
@@ -174,6 +176,7 @@ const DEFAULT_CONFIG: AppConfig = {
             type: 'continueWatching',
             titleLine: 'ItemTitleWithEpisodeInfo',
             detailLine: ['TimeRemaining'],
+            accurateSorting: true,
             limit: 20,
         },
         {
