@@ -49,5 +49,7 @@
     "audio": "オーディオ",
     "subtitle": "字幕",
     "other": "その他",
-    "image": "画像"
+    "image": "画像",
+    "mark_as_played": "再生済みにする",
+    "mark_as_unplayed": "未再生にする"
 }

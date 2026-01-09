@@ -24,6 +24,8 @@ import DetailBadges from './DetailBadges';
 import EpisodesDisplay from './EpisodesDisplay';
 import FavoriteButton from '../../components/FavoriteButton';
 import WatchListButton from '../../components/WatchlistButton';
+import PlayStateButton from '../../components/PlayStateButton';
+import { getUserId } from '@/utils/localstorageCredentials';
 
 interface SeriesPageProps {
     item: BaseItemDto;
@@ -107,6 +109,7 @@ const SeriesPage = ({ item, config }: SeriesPageProps) => {
                             item={item}
                             showWatchlistButton={config.itemPage?.showWatchlistButton}
                         />
+                        <PlayStateButton itemId={item.Id || ''} userId={getUserId() || ''} />
                     </div>
                     <p>{item.Overview}</p>
                     <DescriptionItem

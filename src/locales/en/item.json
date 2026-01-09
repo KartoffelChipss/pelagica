@@ -62,5 +62,7 @@
     "died": "Died",
     "birth_place": "Birth Place",
     "show_more": "Show More",
-    "show_less": "Show Less"
+    "show_less": "Show Less",
+    "mark_as_played": "Mark as Played",
+    "mark_as_unplayed": "Mark as Unplayed"
 }

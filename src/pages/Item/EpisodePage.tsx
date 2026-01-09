@@ -21,6 +21,8 @@ import { Link } from 'react-router';
 import JellyfinItemKindIcon from '@/components/JellyfinItemKindIcon';
 import MediaInfoDialog from './MediaInfoDialog';
 import FavoriteButton from '../../components/FavoriteButton';
+import { getUserId } from '@/utils/localstorageCredentials';
+import PlayStateButton from '../../components/PlayStateButton';
 
 interface EpisodePageProps {
     item: BaseItemDto;
@@ -116,6 +118,7 @@ const EpisodePage = ({ item, config }: EpisodePageProps) => {
                                 item.Type && config.itemPage?.favoriteButton?.includes(item.Type)
                             }
                         />
+                        <PlayStateButton itemId={item.Id || ''} userId={getUserId() || ''} />
                         <MediaInfoDialog streams={item.MediaStreams || []} />
                     </div>
                     <p>{item.Overview}</p>

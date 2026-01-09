@@ -14,6 +14,8 @@ import { Link } from 'react-router';
 import MediaInfoDialog from './MediaInfoDialog';
 import FavoriteButton from '../../components/FavoriteButton';
 import WatchListButton from '../../components/WatchlistButton';
+import PlayStateButton from '../../components/PlayStateButton';
+import { getUserId } from '@/utils/localstorageCredentials';
 
 interface MoviePageProps {
     item: BaseItemDto;
@@ -69,6 +71,7 @@ const MoviePage = ({ item, config }: MoviePageProps) => {
                             item={item}
                             showWatchlistButton={config.itemPage?.showWatchlistButton}
                         />
+                        <PlayStateButton itemId={item.Id || ''} userId={getUserId() || ''} />
                         <MediaInfoDialog streams={item.MediaStreams || []} />
                     </div>
                     <p>{item.Overview}</p>
