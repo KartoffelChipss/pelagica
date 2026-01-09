@@ -12,6 +12,7 @@ import {
     Subtitles,
     Dot,
     Info,
+    Minimize,
 } from 'lucide-react';
 import { Button } from '../../components/ui/button';
 import { Link, useNavigate } from 'react-router';
@@ -46,7 +47,8 @@ interface PlayerControlsProps {
     onAudioTrackChange: (index: number) => void;
     subtitleTrackIndex: number | null;
     onSubtitleTrackChange: (index: number | null) => void;
-    onFullscreen?: () => void;
+    isFullscreen: boolean;
+    onFullscreenToggle?: () => void;
     mediaSegments?: MediaSegmentDto[];
     nextItem?: BaseItemDto | null;
     srcUrl: string;
@@ -60,7 +62,8 @@ const PlayerControls = ({
     onAudioTrackChange,
     subtitleTrackIndex,
     onSubtitleTrackChange,
-    onFullscreen,
+    isFullscreen,
+    onFullscreenToggle,
     mediaSegments,
     nextItem,
     srcUrl,
@@ -266,8 +269,8 @@ const PlayerControls = ({
     }, [player, isMuted]);
 
     const toggleFullscreen = useCallback(() => {
-        onFullscreen?.();
-    }, [onFullscreen]);
+        onFullscreenToggle?.();
+    }, [onFullscreenToggle]);
 
     const handleAudioTrackChange = (value: string) => {
         const index = parseInt(value, 10);
@@ -760,7 +763,7 @@ const PlayerControls = ({
                             onClick={toggleFullscreen}
                             className="cursor-pointer"
                         >
-                            <Maximize size={20} />
+                            {isFullscreen ? <Minimize /> : <Maximize />}
                         </Button>
                     </div>
                 </div>

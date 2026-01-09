@@ -29,6 +29,18 @@ const PlayerPage = () => {
     const lastPositionRef = useRef<number>(0);
     const [playSessionId, setPlaySessionId] = useState<string>(generateRandomId());
     const isAudioSwitchRef = useRef(false);
+    const [isFullscreen, setIsFullscreen] = useState(false);
+
+    useEffect(() => {
+        const handleFullscreenChange = () => {
+            setIsFullscreen(!!document.fullscreenElement);
+        };
+
+        document.addEventListener('fullscreenchange', handleFullscreenChange);
+        return () => {
+            document.removeEventListener('fullscreenchange', handleFullscreenChange);
+        };
+    }, []);
 
     const { data: item, isLoading, error } = useItem(itemId, true);
     const {
@@ -62,16 +74,20 @@ const PlayerPage = () => {
 
     const startTicks = item?.UserData?.PlaybackPositionTicks || 0;
 
-    const handleFullscreen = () => {
+    const handleToggleFullscreen = () => {
         if (!containerRef.current) return;
-        if (containerRef.current.requestFullscreen) {
-            containerRef.current.requestFullscreen();
-        } else if ((containerRef.current as any).webkitRequestFullscreen) {
-            (containerRef.current as any).webkitRequestFullscreen();
-        } else if ((containerRef.current as any).mozRequestFullScreen) {
-            (containerRef.current as any).mozRequestFullScreen();
-        } else if ((containerRef.current as any).msRequestFullscreen) {
-            (containerRef.current as any).msRequestFullscreen();
+        if (document.fullscreenElement) {
+            document.exitFullscreen();
+        } else {
+            if (containerRef.current.requestFullscreen) {
+                containerRef.current.requestFullscreen();
+            } else if ((containerRef.current as any).webkitRequestFullscreen) {
+                (containerRef.current as any).webkitRequestFullscreen();
+            } else if ((containerRef.current as any).mozRequestFullScreen) {
+                (containerRef.current as any).mozRequestFullScreen();
+            } else if ((containerRef.current as any).msRequestFullscreen) {
+                (containerRef.current as any).msRequestFullscreen();
+            }
         }
     };
 
@@ -201,7 +217,8 @@ const PlayerPage = () => {
                 onAudioTrackChange={handleAudioTrackChange}
                 subtitleTrackIndex={subtitleTrackIndex}
                 onSubtitleTrackChange={handleSubtitleTrackChange}
-                onFullscreen={handleFullscreen}
+                isFullscreen={isFullscreen}
+                onFullscreenToggle={handleToggleFullscreen}
                 mediaSegments={mediaSegments}
                 nextItem={nextItem}
                 srcUrl={getVideoStreamUrl(itemId!, {
