@@ -1,0 +1,13 @@
+{
+  "navigation": "Menu",
+  "home": "Início",
+  "library": "Biblioteca",
+  "search": "Pesquisar",
+  "language": "Idioma",
+  "theme": "Tema",
+  "light": "Claro",
+  "dark": "Escuro",
+  "system": "Sistema",
+  "logout": "Sair",
+  "unknown_user": "Usuário desconhecido"
+}
