@@ -1,4 +1,13 @@
-import { ChevronsUpDown, Globe, Laptop, LogOut, Moon, Sun } from 'lucide-react';
+import {
+    ChartLine,
+    ChevronsUpDown,
+    ExternalLink,
+    Globe,
+    Laptop,
+    LogOut,
+    Moon,
+    Sun,
+} from 'lucide-react';
 import { Avatar, AvatarFallback, AvatarImage } from '@/components/ui/avatar';
 import {
     DropdownMenu,
@@ -22,6 +31,7 @@ import { getApi } from '@/api/getApi';
 import { useTheme } from './theme-provider';
 import i18n from 'i18next';
 import { useTranslation } from 'react-i18next';
+import { useConfig } from '@/hooks/api/useConfig';
 
 const FlagIcon = ({ countryCode }: { countryCode: string }) => {
     const flagUrl = `https://flagcdn.com/${countryCode.toLowerCase()}.svg`;
@@ -36,6 +46,7 @@ export function NavUser() {
     const { isMobile } = useSidebar();
     const { theme, setTheme } = useTheme();
     const { data: user } = useCurrentUser();
+    const { config } = useConfig();
 
     if (!user?.Id) return null;
 
@@ -96,6 +107,23 @@ export function NavUser() {
                                 </div>
                             </div>
                         </DropdownMenuLabel>
+                        {config && config.streamystatsUrl && config.showStreamystatsButton && (
+                            <>
+                                <DropdownMenuSeparator />
+                                <DropdownMenuItem
+                                    asChild
+                                    onClick={() => {
+                                        window.open(config.streamystatsUrl, '_blank');
+                                    }}
+                                >
+                                    <div>
+                                        <ChartLine className="text-muted-foreground" />
+                                        Streamystats
+                                        <ExternalLink className="ml-auto inline size-4 text-muted-foreground" />
+                                    </div>
+                                </DropdownMenuItem>
+                            </>
+                        )}
                         <DropdownMenuSeparator />
                         <DropdownMenu>
                             <DropdownMenuTrigger asChild>

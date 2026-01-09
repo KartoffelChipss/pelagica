@@ -142,6 +142,8 @@ export interface AppConfig {
     serverAddress?: string;
     /** Optional URL for Streamystats integration */
     streamystatsUrl?: string;
+    /** Whether to show the Streamystats button in the user menu */
+    showStreamystatsButton?: boolean;
     /** Settings for item detail pages */
     itemPage?: ItemPageSettings;
     /** Sections to display on the home screen, in order */
@@ -156,6 +158,7 @@ const DEFAULT_ITEM_PAGE_SETTINGS: ItemPageSettings = {
 };
 
 const DEFAULT_CONFIG: AppConfig = {
+    showStreamystatsButton: false,
     homeScreenSections: [
         {
             type: 'mediaBar',
