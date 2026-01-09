@@ -28,6 +28,7 @@ const PlayerPage = () => {
     const progressReportingIntervalRef = useRef<ReturnType<typeof setInterval> | null>(null);
     const lastPositionRef = useRef<number>(0);
     const [playSessionId, setPlaySessionId] = useState<string>(generateRandomId());
+    const isAudioSwitchRef = useRef(false);
 
     const { data: item, isLoading, error } = useItem(itemId, true);
     const {
@@ -124,6 +125,7 @@ const PlayerPage = () => {
     }, [startTicks]);
 
     const handleAudioTrackChange = (index: number) => {
+        isAudioSwitchRef.current = true;
         setPlaySessionId(generateRandomId());
         setAudioTrackIndex(index);
     };
@@ -190,6 +192,7 @@ const PlayerPage = () => {
                 onReady={setPlayer}
                 startTicks={item.UserData?.PlaybackPositionTicks || 0}
                 subtitles={subtitleTracks}
+                isAudioSwitchRef={isAudioSwitchRef}
             />
             <PlayerControls
                 item={item}

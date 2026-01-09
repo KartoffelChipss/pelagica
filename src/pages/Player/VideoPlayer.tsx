@@ -17,11 +17,20 @@ interface VideoPlayerProps {
     startTicks: number;
     subtitles?: SubtitleTrack[];
     onReady?: (player: VideoJsPlayer) => void;
+    isAudioSwitchRef: React.MutableRefObject<boolean>;
 }
 
-const VideoPlayer = ({ src, poster, startTicks, subtitles, onReady }: VideoPlayerProps) => {
+const VideoPlayer = ({
+    src,
+    poster,
+    startTicks,
+    subtitles,
+    onReady,
+    isAudioSwitchRef,
+}: VideoPlayerProps) => {
     const videoRef = useRef<HTMLVideoElement | null>(null);
     const playerRef = useRef<VideoJsPlayer | null>(null);
+    const hasSeekedRef = useRef(false);
 
     useEffect(() => {
         if (!videoRef.current) return;
@@ -44,8 +53,6 @@ const VideoPlayer = ({ src, poster, startTicks, subtitles, onReady }: VideoPlaye
 
         player.ready(() => {
             onReady?.(player);
-            const startSeconds = startTicks / 10000000;
-            player.currentTime(startSeconds);
             player.play()?.catch((error) => {
                 console.error('Error attempting to play:', error);
             });
@@ -57,23 +64,45 @@ const VideoPlayer = ({ src, poster, startTicks, subtitles, onReady }: VideoPlaye
                 playerRef.current = null;
             }
         };
-    }, [onReady, poster, startTicks]);
+    }, [onReady, poster]);
 
     useEffect(() => {
-        if (playerRef.current && src) {
-            const prevPos = playerRef.current.currentTime();
-            playerRef.current.pause();
-            playerRef.current.src({
-                src,
-                type: 'application/x-mpegURL',
-            });
-            playerRef.current.load();
-            playerRef.current.currentTime(prevPos);
-            playerRef.current.play()?.catch((error) => {
-                console.error('Error attempting to play after source change:', error);
-            });
-        }
+        if (!playerRef.current) return;
+        if (!startTicks || startTicks <= 0) return;
+        if (hasSeekedRef.current) return;
+
+        const seconds = startTicks / 10_000_000;
+
+        playerRef.current.currentTime(seconds);
+        hasSeekedRef.current = true;
+    }, [startTicks]);
+
+    useEffect(() => {
+        hasSeekedRef.current = false;
     }, [src]);
+
+    useEffect(() => {
+        if (!playerRef.current || !src) return;
+
+        const player = playerRef.current;
+
+        let seekTo: number | null = null;
+
+        if (isAudioSwitchRef.current) {
+            seekTo = player.currentTime() || null;
+            isAudioSwitchRef.current = false;
+        }
+
+        player.pause();
+        player.src({ src, type: 'application/x-mpegURL' });
+        player.load();
+
+        if (seekTo !== null) {
+            player.currentTime(seekTo);
+        }
+
+        player.play()?.catch(console.error);
+    }, [src, isAudioSwitchRef]);
 
     useEffect(() => {
         if (!playerRef.current) return;
