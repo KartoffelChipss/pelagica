@@ -179,6 +179,10 @@ export function NavUser() {
                                     <FlagIcon countryCode="de" />
                                     Deutsch
                                 </DropdownMenuItem>
+                                <DropdownMenuItem onClick={() => i18n.changeLanguage('pt')}>
+                                    <FlagIcon countryCode="pt" />
+                                    Português
+                                </DropdownMenuItem>
                                 <DropdownMenuItem onClick={() => i18n.changeLanguage('ja')}>
                                     <FlagIcon countryCode="jp" />
                                     日本語
