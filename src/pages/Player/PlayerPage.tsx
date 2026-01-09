@@ -205,6 +205,7 @@ const PlayerPage = () => {
                     audioStreamIndex: audioTrackIndex,
                     playSessionId: playSessionId,
                 })}
+                containerRef={containerRef}
             />
         </div>
     );

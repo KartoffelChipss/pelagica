@@ -50,6 +50,7 @@ interface PlayerControlsProps {
     mediaSegments?: MediaSegmentDto[];
     nextItem?: BaseItemDto | null;
     srcUrl: string;
+    containerRef: React.RefObject<HTMLDivElement | null>;
 }
 
 const PlayerControls = ({
@@ -63,6 +64,7 @@ const PlayerControls = ({
     mediaSegments,
     nextItem,
     srcUrl,
+    containerRef,
 }: PlayerControlsProps) => {
     const { t } = useTranslation('player');
     const [isPlaying, setIsPlaying] = useState(false);
@@ -85,7 +87,12 @@ const PlayerControls = ({
     const [dismissedNextItemPrompt, setDismissedNextItemPrompt] = useState(false);
     const [stats, setStats] = useState<RuntimePlaybackStats | null>(null);
     const [showStats, setShowStats] = useState(false);
+    const [container, setContainer] = useState<HTMLElement | null>(null);
     const { data: session } = useSession(item.Id, showStats);
+
+    useEffect(() => {
+        setContainer(containerRef.current);
+    }, [containerRef]);
 
     useEffect(() => {
         if (!player) return;
@@ -662,7 +669,7 @@ const PlayerControls = ({
                                         <Subtitles />
                                     </Button>
                                 </DropdownMenuTrigger>
-                                <DropdownMenuContent>
+                                <DropdownMenuContent container={container}>
                                     <DropdownMenuLabel>{t('subtitles')}</DropdownMenuLabel>
                                     <DropdownMenuSeparator />
                                     <DropdownMenuRadioGroup
@@ -697,7 +704,7 @@ const PlayerControls = ({
                                         <AudioLines />
                                     </Button>
                                 </DropdownMenuTrigger>
-                                <DropdownMenuContent>
+                                <DropdownMenuContent container={container}>
                                     <DropdownMenuLabel>{t('audioTracks')}</DropdownMenuLabel>
                                     <DropdownMenuSeparator />
                                     <DropdownMenuRadioGroup
