@@ -12,6 +12,7 @@ import { generateRandomId } from '@/utils/idGenerator';
 import { useMediaSegments } from '@/hooks/api/useMediaSegments';
 import { useNextItem } from '@/hooks/api/useNextItem';
 import { getUserId } from '@/utils/localstorageCredentials';
+import { getLastAudioLanguage, getLastSubtitleLanguage } from '@/utils/localstorageLastlanguage';
 
 const PLAYBACK_PROGRESS_REPORT_MIN_PLAYTIME_SECONDS = 5;
 const PLAYBACK_PROGRESS_REPORT_INTERVAL_MS = 5000;
@@ -22,8 +23,12 @@ const PlayerPage = () => {
     const params = useParams<{ itemId: string }>();
     const itemId = params.itemId;
     const [player, setPlayer] = useState<VideoJsPlayer | null>(null);
-    const [audioTrackIndex, setAudioTrackIndex] = useState<number>(1);
-    const [subtitleTrackIndex, setSubtitleTrackIndex] = useState<number | null>(null);
+    const [audioTrackIndex, setAudioTrackIndex] = useState<number>(
+        getLastAudioLanguage(itemId || null) ?? 1
+    );
+    const [subtitleTrackIndex, setSubtitleTrackIndex] = useState<number | null>(
+        getLastSubtitleLanguage(itemId || null)
+    );
     const containerRef = useRef<HTMLDivElement>(null);
     const progressReportingIntervalRef = useRef<ReturnType<typeof setInterval> | null>(null);
     const lastPositionRef = useRef<number>(0);
@@ -61,8 +66,8 @@ const PlayerPage = () => {
     useEffect(() => {
         queueMicrotask(() => {
             setPlayer(null);
-            setSubtitleTrackIndex(null);
-            setAudioTrackIndex(1);
+            setSubtitleTrackIndex(getLastSubtitleLanguage(itemId || null));
+            setAudioTrackIndex(getLastAudioLanguage(itemId || null) ?? 1);
             setPlaySessionId(generateRandomId());
         });
     }, [itemId]);
@@ -149,20 +154,36 @@ const PlayerPage = () => {
     const handleSubtitleTrackChange = (index: number | null) => {
         setSubtitleTrackIndex(index);
 
+        // if (!player) return;
+
+        // const tracks = player.textTracks();
+        // for (let i = 0; i < tracks.tracks_.length; i++) {
+        //     const track = tracks.tracks_[i];
+        //     if (index === null) {
+        //         track.mode = 'disabled';
+        //     } else if (i === index) {
+        //         track.mode = 'showing';
+        //     } else {
+        //         track.mode = 'disabled';
+        //     }
+        // }
+    };
+
+    useEffect(() => {
         if (!player) return;
 
         const tracks = player.textTracks();
         for (let i = 0; i < tracks.tracks_.length; i++) {
             const track = tracks.tracks_[i];
-            if (index === null) {
+            if (subtitleTrackIndex === null) {
                 track.mode = 'disabled';
-            } else if (i === index) {
+            } else if (i === subtitleTrackIndex) {
                 track.mode = 'showing';
             } else {
                 track.mode = 'disabled';
             }
         }
-    };
+    }, [player, subtitleTrackIndex]);
 
     const subtitleTracks = useMemo(() => {
         if (!item?.Id || !item?.MediaStreams) return [];

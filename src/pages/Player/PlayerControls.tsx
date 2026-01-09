@@ -39,6 +39,11 @@ import { getPrimaryImageUrl } from '@/utils/jellyfinUrls';
 import { useReportPlaybackProgress } from '@/hooks/api/usePlaybackProgress';
 import { getRuntimePlaybackStats, type RuntimePlaybackStats } from '@/utils/playbackStats';
 import { useSession } from '@/hooks/api/useSession';
+import {
+    removeLastSubtitleLanguage,
+    setLastAudioLanguage,
+    setLastSubtitleLanguage,
+} from '@/utils/localstorageLastlanguage';
 
 interface PlayerControlsProps {
     item: BaseItemDto;
@@ -275,14 +280,17 @@ const PlayerControls = ({
     const handleAudioTrackChange = (value: string) => {
         const index = parseInt(value, 10);
         onAudioTrackChange(index);
+        setLastAudioLanguage(item.Id || '', index);
     };
 
     const handleSubtitleTrackChange = (value: string) => {
         if (value === 'off') {
             onSubtitleTrackChange(null);
+            removeLastSubtitleLanguage(item.Id || '');
         } else {
             const index = parseInt(value, 10);
             onSubtitleTrackChange(index);
+            setLastSubtitleLanguage(item.Id || '', index);
         }
     };
 
