@@ -13,6 +13,7 @@ import { useMediaSegments } from '@/hooks/api/useMediaSegments';
 import { useNextItem } from '@/hooks/api/useNextItem';
 import { getUserId } from '@/utils/localstorageCredentials';
 import { getLastAudioLanguage, getLastSubtitleLanguage } from '@/utils/localstorageLastlanguage';
+import { useUserConfiguration } from '@/hooks/api/playbackPreferences/useUserConfiguration';
 
 const PLAYBACK_PROGRESS_REPORT_MIN_PLAYTIME_SECONDS = 5;
 const PLAYBACK_PROGRESS_REPORT_INTERVAL_MS = 5000;
@@ -22,12 +23,62 @@ export type VideoJsPlayer = ReturnType<typeof import('video.js').default>;
 const PlayerPage = () => {
     const params = useParams<{ itemId: string }>();
     const itemId = params.itemId;
+    const hasUserSelectedSubtitleRef = useRef(false);
+    const hasUserSelectedAudioRef = useRef(false);
     const [player, setPlayer] = useState<VideoJsPlayer | null>(null);
-    const [audioTrackIndex, setAudioTrackIndex] = useState<number>(
-        getLastAudioLanguage(itemId || null) ?? 1
-    );
+    const {
+        data: userConfiguration,
+        isLoading: isLoadingUserConfiguration,
+        error: userConfigurationError,
+    } = useUserConfiguration(getUserId());
+    const { data: item, isLoading, error } = useItem(itemId, true);
+
+    const resolvedAudio = useMemo(() => {
+        if (!item || !userConfiguration) {
+            return { index: 1, matchedPreferred: false };
+        }
+
+        const lastAudio = getLastAudioLanguage(item.Id!);
+        if (lastAudio !== null) {
+            return { index: lastAudio, matchedPreferred: false };
+        }
+
+        const preferred = userConfiguration.AudioLanguagePreference;
+        if (!preferred) {
+            return { index: 1, matchedPreferred: false };
+        }
+
+        const audioStreams = item.MediaStreams?.filter((s) => s.Type === 'Audio');
+
+        const match = audioStreams?.find((s) => s.Language === preferred);
+
+        if (match?.Index != null) {
+            return { index: match.Index, matchedPreferred: true };
+        }
+
+        return { index: 1, matchedPreferred: false };
+    }, [item, userConfiguration]);
+
+    const resolvedSubtitleTrackIndex = useMemo(() => {
+        if (!item || !userConfiguration) return null;
+
+        const lastSubtitle = getLastSubtitleLanguage(item.Id!);
+        if (lastSubtitle !== null) return lastSubtitle;
+
+        const preferred = userConfiguration.SubtitleLanguagePreference;
+        if (!preferred) return null;
+
+        const subtitleStreams = item.MediaStreams?.filter((s) => s.Type === 'Subtitle');
+
+        const match = subtitleStreams?.findIndex((s) => s.Language === preferred);
+
+        if (match !== undefined && match >= 0) return match;
+        return null;
+    }, [item, userConfiguration]);
+
+    const [audioTrackIndex, setAudioTrackIndex] = useState<number>(resolvedAudio.index);
     const [subtitleTrackIndex, setSubtitleTrackIndex] = useState<number | null>(
-        getLastSubtitleLanguage(itemId || null)
+        resolvedSubtitleTrackIndex
     );
     const containerRef = useRef<HTMLDivElement>(null);
     const progressReportingIntervalRef = useRef<ReturnType<typeof setInterval> | null>(null);
@@ -35,19 +86,6 @@ const PlayerPage = () => {
     const [playSessionId, setPlaySessionId] = useState<string>(generateRandomId());
     const isAudioSwitchRef = useRef(false);
     const [isFullscreen, setIsFullscreen] = useState(false);
-
-    useEffect(() => {
-        const handleFullscreenChange = () => {
-            setIsFullscreen(!!document.fullscreenElement);
-        };
-
-        document.addEventListener('fullscreenchange', handleFullscreenChange);
-        return () => {
-            document.removeEventListener('fullscreenchange', handleFullscreenChange);
-        };
-    }, []);
-
-    const { data: item, isLoading, error } = useItem(itemId, true);
     const {
         data: nextItem,
         isLoading: isLoadingNextItem,
@@ -62,15 +100,52 @@ const PlayerPage = () => {
     const { startPlayback } = usePlaybackStart();
     const { stopPlayback } = usePlaybackStop();
 
+    useEffect(() => {
+        const handleFullscreenChange = () => {
+            setIsFullscreen(!!document.fullscreenElement);
+        };
+
+        document.addEventListener('fullscreenchange', handleFullscreenChange);
+        return () => {
+            document.removeEventListener('fullscreenchange', handleFullscreenChange);
+        };
+    }, []);
+
+    useEffect(() => {
+        console.log('Subtitle track index:', subtitleTrackIndex);
+    }, [subtitleTrackIndex]);
+
     // Reset everything when navigating to a new item
     useEffect(() => {
         queueMicrotask(() => {
+            hasUserSelectedAudioRef.current = false;
+            hasUserSelectedSubtitleRef.current = false;
+            isAudioSwitchRef.current = false;
+
             setPlayer(null);
-            setSubtitleTrackIndex(getLastSubtitleLanguage(itemId || null));
-            setAudioTrackIndex(getLastAudioLanguage(itemId || null) ?? 1);
+            setAudioTrackIndex(resolvedAudio.index);
+            setSubtitleTrackIndex(resolvedSubtitleTrackIndex);
             setPlaySessionId(generateRandomId());
         });
+        // eslint-disable-next-line react-hooks/exhaustive-deps
     }, [itemId]);
+
+    useEffect(() => {
+        if (resolvedSubtitleTrackIndex === null) return;
+        if (hasUserSelectedSubtitleRef.current) return;
+
+        // Don't enable subtitles if the audio matched preferred language
+        if (resolvedAudio.matchedPreferred) return;
+
+        setSubtitleTrackIndex(resolvedSubtitleTrackIndex);
+    }, [resolvedSubtitleTrackIndex, resolvedAudio.matchedPreferred]);
+
+    useEffect(() => {
+        if (resolvedAudio.index === null) return;
+        if (hasUserSelectedAudioRef.current) return;
+
+        setAudioTrackIndex(resolvedAudio.index);
+    }, [resolvedAudio.index]);
 
     const posterUrl = useMemo(() => {
         if (!item?.Id) return undefined;
@@ -147,26 +222,14 @@ const PlayerPage = () => {
 
     const handleAudioTrackChange = (index: number) => {
         isAudioSwitchRef.current = true;
+        hasUserSelectedAudioRef.current = true;
         setPlaySessionId(generateRandomId());
         setAudioTrackIndex(index);
     };
 
     const handleSubtitleTrackChange = (index: number | null) => {
+        hasUserSelectedSubtitleRef.current = true;
         setSubtitleTrackIndex(index);
-
-        // if (!player) return;
-
-        // const tracks = player.textTracks();
-        // for (let i = 0; i < tracks.tracks_.length; i++) {
-        //     const track = tracks.tracks_[i];
-        //     if (index === null) {
-        //         track.mode = 'disabled';
-        //     } else if (i === index) {
-        //         track.mode = 'showing';
-        //     } else {
-        //         track.mode = 'disabled';
-        //     }
-        // }
     };
 
     useEffect(() => {
@@ -200,15 +263,18 @@ const PlayerPage = () => {
         );
     }, [item]);
 
-    if (isLoading || isLoadingMediaSegments || isLoadingNextItem) {
+    if (isLoading || isLoadingMediaSegments || isLoadingNextItem || isLoadingUserConfiguration) {
         return <p>Loading...</p>;
     }
 
-    if (error || mediaSegmentsError || nextItemError) {
+    if (error || mediaSegmentsError || nextItemError || userConfigurationError) {
         return (
             <p>
                 Error loading item:{' '}
-                {error?.message || mediaSegmentsError?.message || nextItemError?.message}
+                {error?.message ||
+                    mediaSegmentsError?.message ||
+                    nextItemError?.message ||
+                    userConfigurationError?.message}
             </p>
         );
     }
