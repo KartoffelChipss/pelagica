@@ -9,5 +9,9 @@
     "dark": "Dunkel",
     "system": "System",
     "logout": "Abmelden",
-    "unknown_user": "Unbekannter Benutzer"
+    "unknown_user": "Unbekannter Benutzer",
+    "preferences": "Einstellungen",
+    "audio_language_preference": "Bevorzugte Audiosprache",
+    "subtitle_language_preference": "Bevorzugte Untertitelsprache",
+    "select_language": "Sprache auswählen"
 }

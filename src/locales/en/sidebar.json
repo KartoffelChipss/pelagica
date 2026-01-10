@@ -9,5 +9,9 @@
     "dark": "Dark",
     "system": "System",
     "logout": "Logout",
-    "unknown_user": "Unknown User"
+    "unknown_user": "Unknown User",
+    "preferences": "Preferences",
+    "audio_language_preference": "Audio Language Preference",
+    "subtitle_language_preference": "Subtitle Language Preference",
+    "select_language": "Select language"
 }

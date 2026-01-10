@@ -40,6 +40,9 @@ export function useUpdateUserConfiguration() {
             queryClient.invalidateQueries({
                 queryKey: ['userConfiguration', variables.userId],
             });
+            queryClient.invalidateQueries({
+                queryKey: ['currentUser'],
+            });
         },
     });
 }
