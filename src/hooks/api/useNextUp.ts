@@ -4,14 +4,10 @@ import { getTvShowsApi } from '@jellyfin/sdk/lib/utils/api/tv-shows-api';
 import type { BaseItemDto } from '@jellyfin/sdk/lib/generated-client/models';
 import { getRetryConfig } from '@/utils/authErrorHandler';
 
-interface NextUpResult {
-    items: BaseItemDto[];
-}
-
 export function useNextUp(userId: string | null | undefined, limit: number = 20) {
     return useQuery({
         queryKey: ['nextUp', userId],
-        queryFn: async (): Promise<NextUpResult> => {
+        queryFn: async (): Promise<BaseItemDto[]> => {
             const api = getApi();
             const tvShowsApi = getTvShowsApi(api);
 
@@ -21,9 +17,10 @@ export function useNextUp(userId: string | null | undefined, limit: number = 20)
                 fields: ['PrimaryImageAspectRatio'],
                 enableUserData: true,
                 enableImages: true,
+                enableResumable: false,
             });
 
-            return { items: res.data.Items || [] };
+            return res.data.Items || [];
         },
         enabled: !!userId,
         ...getRetryConfig(),

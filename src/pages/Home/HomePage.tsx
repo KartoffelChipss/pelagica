@@ -6,6 +6,7 @@ import ItemsRow from './ItemsRow';
 import ContinueWatchingRow from './ContinueWatchingRow';
 import { useTranslation } from 'react-i18next';
 import RecommendedItemsRow from './RecommendedItemsRow';
+import NextUpRow from './NextUpRow';
 
 const HomePage = () => {
     const { t } = useTranslation('home');
@@ -25,9 +26,28 @@ const HomePage = () => {
                                     key={index}
                                     title={section.title || t('continue_watching')}
                                     titleLine={section.titleLine}
-                                    detailLine={section.detailLine}
+                                    detailLine={
+                                        section.detailLine !== undefined
+                                            ? section.detailLine
+                                            : ['TimeRemaining']
+                                    }
                                     limit={section.limit || 20}
                                     accurateSorting={section.accurateSorting}
+                                />
+                            );
+
+                        case 'nextUp':
+                            return (
+                                <NextUpRow
+                                    key={index}
+                                    title={section.title || t('next_up')}
+                                    titleLine={section.titleLine}
+                                    detailLine={
+                                        section.detailLine !== undefined
+                                            ? section.detailLine
+                                            : ['TimeRemaining']
+                                    }
+                                    limit={section.limit || 20}
                                 />
                             );
 

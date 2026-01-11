@@ -1,39 +1,28 @@
 import type { ContinueWatchingDetailLine, ContinueWatchingTitleLine } from '@/hooks/api/useConfig';
-import { useContinueWatchingAndNextUp } from '@/hooks/api/useContinueWatchingAndNextUp';
+import { useNextUp } from '@/hooks/api/useNextUp';
 import { getUserId } from '@/utils/localstorageCredentials';
 import BaseContinueRow from './BaseContinueRow';
 
-interface ContinueWatchingRowProps {
+interface NextUpRowProps {
     title: string;
     titleLine?: ContinueWatchingTitleLine;
     detailLine?: ContinueWatchingDetailLine[];
     limit?: number;
-    accurateSorting?: boolean;
 }
 
-const ContinueWatchingRow = ({
-    title,
-    titleLine,
-    detailLine,
-    limit,
-    accurateSorting = true,
-}: ContinueWatchingRowProps) => {
-    const {
-        data: continueWatchingData,
-        isLoading,
-        error,
-    } = useContinueWatchingAndNextUp(getUserId(), limit, accurateSorting);
+export function NextUpRow({ title, titleLine, detailLine, limit }: NextUpRowProps) {
+    const { data: nextUpData, isLoading, error } = useNextUp(getUserId(), limit);
 
     return (
         <BaseContinueRow
             title={title}
             titleLine={titleLine}
             detailLine={detailLine}
-            items={continueWatchingData?.items || []}
+            items={nextUpData || []}
             isLoading={isLoading}
             error={error}
         />
     );
-};
+}
 
-export default ContinueWatchingRow;
+export default NextUpRow;

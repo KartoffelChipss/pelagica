@@ -293,6 +293,9 @@
         },
         {
           "$ref": "#/definitions/RecommendedItemsSection"
+        },
+        {
+          "$ref": "#/definitions/NextUpSection"
         }
       ]
     },
@@ -519,6 +522,38 @@
         },
         "type": {
           "const": "mediaBar",
+          "type": "string"
+        }
+      },
+      "required": [
+        "type"
+      ],
+      "type": "object"
+    },
+    "NextUpSection": {
+      "properties": {
+        "detailLine": {
+          "items": {
+            "$ref": "#/definitions/ContinueWatchingDetailLine"
+          },
+          "type": "array"
+        },
+        "enabled": {
+          "description": "Whether the section is enabled. Mostly intended for testing purposes",
+          "type": "boolean"
+        },
+        "limit": {
+          "type": "number"
+        },
+        "title": {
+          "description": "The title of the section",
+          "type": "string"
+        },
+        "titleLine": {
+          "$ref": "#/definitions/ContinueWatchingTitleLine"
+        },
+        "type": {
+          "const": "nextUp",
           "type": "string"
         }
       },

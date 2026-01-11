@@ -105,12 +105,20 @@ export interface RecommendedItemsSection extends BaseHomeScreenSection {
     showBasedOn?: boolean;
 }
 
+export interface NextUpSection extends BaseHomeScreenSection {
+    type: 'nextUp';
+    titleLine?: ContinueWatchingTitleLine;
+    detailLine?: ContinueWatchingDetailLine[];
+    limit?: number;
+}
+
 export type HomeScreenSection =
     | MediaBarSection
     | RecentlyAddedSection
     | ItemsSection
     | ContinueWatchingSection
-    | RecommendedItemsSection;
+    | RecommendedItemsSection
+    | NextUpSection;
 
 export type EpisodeDisplay = 'grid' | 'row';
 
