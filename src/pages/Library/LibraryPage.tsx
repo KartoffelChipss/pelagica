@@ -49,7 +49,7 @@ import type {
 } from '@jellyfin/sdk/lib/generated-client/models';
 import { ButtonGroup } from '@/components/ui/button-group';
 
-const SUPPORTED_COLLECTION_TYPES: CollectionType[] = ['movies', 'tvshows'];
+const SUPPORTED_COLLECTION_TYPES: CollectionType[] = ['movies', 'tvshows', 'boxsets'];
 const ITEM_ROWS = 5;
 
 function getColumnCount(width: number): number {
@@ -92,7 +92,7 @@ const LibraryContent = ({
     const { data: libraryData, isLoading } = useLibraryItems(libraryId, {
         limit: pageSize,
         startIndex: page * pageSize,
-        includeItemTypes: ['Series', 'Movie'],
+        includeItemTypes: ['Series', 'Movie', 'BoxSet'],
         sortBy: [sortBy],
         sortOrder,
     });

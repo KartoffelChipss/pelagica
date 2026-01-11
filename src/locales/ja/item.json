@@ -51,5 +51,6 @@
     "other": "その他",
     "image": "画像",
     "mark_as_played": "再生済みにする",
-    "mark_as_unplayed": "未再生にする"
+    "mark_as_unplayed": "未再生にする",
+    "boxSetItems": "ボックスセットアイテム"
 }

@@ -10,6 +10,7 @@ import { useConfig } from '@/hooks/api/useConfig';
 import EpisodePage from './EpisodePage';
 import SeasonPage from './SeasonPage';
 import { getUserId } from '@/utils/localstorageCredentials';
+import BoxSetPage from './BoxSetPage';
 
 const ItemPageSkeleton = memo(() => {
     return (
@@ -116,6 +117,8 @@ const ItemPage = () => {
                             return <EpisodePage item={item} config={config} />;
                         case 'Season':
                             return <SeasonPage item={item} config={config} />;
+                        case 'BoxSet':
+                            return <BoxSetPage item={item} config={config} />;
                         default:
                             return (
                                 <p>
