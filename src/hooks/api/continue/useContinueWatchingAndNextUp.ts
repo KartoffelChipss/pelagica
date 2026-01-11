@@ -38,7 +38,7 @@ export function useContinueWatchingAndNextUp(
                     limit: resumeLimit,
                     startIndex: 0,
                     fields: ['PrimaryImageAspectRatio'],
-                    includeItemTypes: ['Movie'],
+                    includeItemTypes: ['Movie', 'Episode'],
                     enableUserData: true,
                     enableImages: true,
                 }),
@@ -55,6 +55,14 @@ export function useContinueWatchingAndNextUp(
             const resumeItems = resumeResponse.data.Items || [];
             const nextUpItems = nextUpResponse.data.Items || [];
             const continueWatchingItems = [...resumeItems, ...nextUpItems];
+            console.log(
+                'Continue Watching & Next Up Items:',
+                continueWatchingItems.map((i) => ({
+                    id: i.Id,
+                    name: i.Name,
+                    lastPlayed: i.UserData?.LastPlayedDate,
+                }))
+            );
 
             if (accurateSorting) {
                 // For episodes without LastPlayedDate, try to infer it from the previous episode
