@@ -96,6 +96,7 @@ const HomePage = () => {
                                                                 sortBy: ['DateCreated'],
                                                                 sortOrder: 'Descending',
                                                                 limit: section.limit || 10,
+                                                                types: ['Movie', 'Series'],
                                                             }}
                                                             detailFields={['ReleaseYear']}
                                                         />
