@@ -22,6 +22,10 @@ interface MoviePageProps {
     config: AppConfig;
 }
 
+const [mediaSourceId, setMediaSourceId] = useState<string | null>(null);
+const [showPicker, setShowPicker] = useState(false);
+
+
 const MoviePage = ({ item, config }: MoviePageProps) => {
     const { t } = useTranslation('item');
 
