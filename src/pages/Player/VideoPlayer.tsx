@@ -34,7 +34,7 @@ const VideoPlayer = ({
 
     useEffect(() => {
         if (!videoRef.current) return;
-
+        const src = getVideoStreamUrl(itemId, mediaSourceId);
         const player = videojs(videoRef.current, {
             controls: false,
             autoplay: false,
