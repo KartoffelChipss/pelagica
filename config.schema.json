@@ -296,6 +296,9 @@
         },
         {
           "$ref": "#/definitions/NextUpSection"
+        },
+        {
+          "$ref": "#/definitions/ResumeSection"
         }
       ]
     },
@@ -623,6 +626,38 @@
         },
         "type": {
           "const": "streamystatsRecommended",
+          "type": "string"
+        }
+      },
+      "required": [
+        "type"
+      ],
+      "type": "object"
+    },
+    "ResumeSection": {
+      "properties": {
+        "detailLine": {
+          "items": {
+            "$ref": "#/definitions/ContinueWatchingDetailLine"
+          },
+          "type": "array"
+        },
+        "enabled": {
+          "description": "Whether the section is enabled. Mostly intended for testing purposes",
+          "type": "boolean"
+        },
+        "limit": {
+          "type": "number"
+        },
+        "title": {
+          "description": "The title of the section",
+          "type": "string"
+        },
+        "titleLine": {
+          "$ref": "#/definitions/ContinueWatchingTitleLine"
+        },
+        "type": {
+          "const": "resume",
           "type": "string"
         }
       },

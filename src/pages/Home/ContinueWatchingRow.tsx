@@ -1,5 +1,5 @@
 import type { ContinueWatchingDetailLine, ContinueWatchingTitleLine } from '@/hooks/api/useConfig';
-import { useContinueWatchingAndNextUp } from '@/hooks/api/useContinueWatchingAndNextUp';
+import { useContinueWatchingAndNextUp } from '@/hooks/api/continue/useContinueWatchingAndNextUp';
 import { getUserId } from '@/utils/localstorageCredentials';
 import BaseContinueRow from './BaseContinueRow';
 

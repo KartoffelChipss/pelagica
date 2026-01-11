@@ -112,13 +112,21 @@ export interface NextUpSection extends BaseHomeScreenSection {
     limit?: number;
 }
 
+export interface ResumeSection extends BaseHomeScreenSection {
+    type: 'resume';
+    titleLine?: ContinueWatchingTitleLine;
+    detailLine?: ContinueWatchingDetailLine[];
+    limit?: number;
+}
+
 export type HomeScreenSection =
     | MediaBarSection
     | RecentlyAddedSection
     | ItemsSection
     | ContinueWatchingSection
     | RecommendedItemsSection
-    | NextUpSection;
+    | NextUpSection
+    | ResumeSection;
 
 export type EpisodeDisplay = 'grid' | 'row';
 
