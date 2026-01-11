@@ -27,7 +27,6 @@ import {
     useSidebar,
 } from '@/components/ui/sidebar';
 import { useCurrentUser } from '@/hooks/api/useCurrentUser';
-import { getUserProfileImage } from '@/api/getUserProfileImage';
 import { useNavigate } from 'react-router';
 import { logout } from '@/api/logout';
 import { getApi } from '@/api/getApi';
@@ -50,6 +49,7 @@ import { Button } from '@/components/ui/button';
 import { Popover, PopoverContent, PopoverTrigger } from '@/components/ui/popover';
 import { cn } from '@/lib/utils';
 import { Label } from '@radix-ui/react-dropdown-menu';
+import { getUserProfileImageUrl } from '@/utils/jellyfinUrls';
 
 const FlagIcon = ({ countryCode }: { countryCode: string }) => {
     const flagUrl = `https://flagcdn.com/${countryCode.toLowerCase()}.svg`;
@@ -140,7 +140,7 @@ export function NavUser() {
 
     if (!user?.Id) return null;
 
-    const profileImageUrl = getUserProfileImage(user.Id);
+    const profileImageUrl = getUserProfileImageUrl(user.Id);
     const userName = user?.Name || t('unknown_user');
 
     return (
