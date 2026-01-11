@@ -1,5 +1,4 @@
 /* eslint-disable @typescript-eslint/no-explicit-any */
-import { useItem } from '@/hooks/api/useItem';
 import { useReportPlaybackProgress } from '@/hooks/api/usePlaybackProgress';
 import { usePlaybackStart } from '@/hooks/api/usePlaybackStart';
 import { usePlaybackStop } from '@/hooks/api/usePlaybackStop';
@@ -14,6 +13,7 @@ import { useAdjacentItems } from '@/hooks/api/useAdjacentItems';
 import { getUserId } from '@/utils/localstorageCredentials';
 import { getLastAudioLanguage, getLastSubtitleLanguage } from '@/utils/localstorageLastlanguage';
 import { useUserConfiguration } from '@/hooks/api/playbackPreferences/useUserConfiguration';
+import { usePlayerItem } from '@/hooks/api/usePlayerItem';
 
 const PLAYBACK_PROGRESS_REPORT_MIN_PLAYTIME_SECONDS = 5;
 const PLAYBACK_PROGRESS_REPORT_INTERVAL_MS = 5000;
@@ -31,7 +31,7 @@ const PlayerPage = () => {
         isLoading: isLoadingUserConfiguration,
         error: userConfigurationError,
     } = useUserConfiguration(getUserId());
-    const { data: item, isLoading, error } = useItem(itemId, true);
+    const { data: item, isLoading, error } = usePlayerItem(itemId, true);
 
     const resolvedAudio = useMemo(() => {
         if (!item || !userConfiguration) {

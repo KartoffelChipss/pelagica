@@ -21,6 +21,7 @@ import type {
     BaseItemDto,
     MediaSegmentDto,
     MediaSegmentType,
+    TrickplayInfoDto,
 } from '@jellyfin/sdk/lib/generated-client/models';
 import { Slider } from '../../components/ui/slider';
 import {
@@ -36,7 +37,7 @@ import { formatPlayTime, ticksToReadableTime, ticksToSeconds } from '@/utils/tim
 import { useTranslation } from 'react-i18next';
 import { usePlayerKeyboardControls } from '@/hooks/usePlayerKeyboardControls';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
-import { getPrimaryImageUrl } from '@/utils/jellyfinUrls';
+import { getPrimaryImageUrl, getTrickplayImageUrl } from '@/utils/jellyfinUrls';
 import { useReportPlaybackProgress } from '@/hooks/api/usePlaybackProgress';
 import { getRuntimePlaybackStats, type RuntimePlaybackStats } from '@/utils/playbackStats';
 import { useSession } from '@/hooks/api/useSession';
@@ -45,6 +46,49 @@ import {
     setLastAudioLanguage,
     setLastSubtitleLanguage,
 } from '@/utils/localstorageLastlanguage';
+
+function getPrimaryTrickplayInfo(trickplay?: BaseItemDto['Trickplay']) {
+    if (!trickplay) return null;
+
+    const entries = Object.values(trickplay);
+    if (entries.length === 0) return null;
+    const subEntries = Object.values(entries[0]);
+    return subEntries[0] || null;
+}
+
+function getTrickplayTile(time: number, trickplay: TrickplayInfoDto) {
+    const interval = trickplay.Interval ?? 1;
+    const tileWidth = trickplay.TileWidth ?? 1;
+    const tileHeight = trickplay.TileHeight ?? 1;
+
+    const timeMs = time * 1000;
+    const thumbnailIndex = Math.floor(timeMs / interval);
+    const tilesPerImage = tileWidth * tileHeight;
+
+    const imageIndex = Math.floor(thumbnailIndex / tilesPerImage);
+    const tileIndex = thumbnailIndex % tilesPerImage;
+
+    const x = tileIndex % tileWidth;
+    const y = Math.floor(tileIndex / tileWidth);
+
+    console.log({
+        time,
+        interval: trickplay.Interval,
+        thumbnailIndex,
+        tilesPerImage,
+        imageIndex,
+        totalImages: Math.ceil((trickplay.ThumbnailCount ?? 0) / tilesPerImage),
+    });
+
+    return {
+        thumbnailIndex,
+        imageIndex,
+        x,
+        y,
+        width: trickplay.Width,
+        height: trickplay.Height,
+    };
+}
 
 interface PlayerControlsProps {
     item: BaseItemDto;
@@ -628,22 +672,57 @@ const PlayerControls = ({
                         style={{ width: `${progressPercentage}%` }}
                     />
                     {/* Hover preview */}
-                    {hoverTime !== null && (
-                        <div
-                            className="absolute bottom-4 -translate-x-1/2 bg-black/90 text-white px-3 py-2 rounded text-sm pointer-events-none z-40"
-                            style={{ left: `${hoverPosition}px` }}
-                        >
-                            <div className="text-center">{formatPlayTime(hoverTime)}</div>
-                            <img
-                                src={`/Items/${item.Id}/Trickplay/320/${Math.floor(hoverTime)}.jpg`}
-                                alt="Preview"
-                                className="w-40 h-auto rounded mt-1"
-                                onError={(e) => {
-                                    e.currentTarget.style.display = 'none';
-                                }}
-                            />
-                        </div>
-                    )}
+                    {hoverTime !== null &&
+                        item.Trickplay &&
+                        (() => {
+                            const trickplayInfo = getPrimaryTrickplayInfo(item.Trickplay);
+                            if (!trickplayInfo || hoverTime === null) return null;
+
+                            const { imageIndex, x, y, width, height } = getTrickplayTile(
+                                hoverTime,
+                                trickplayInfo
+                            );
+
+                            const previewWidth = width || 320;
+                            const halfWidth = previewWidth / 2;
+                            const clampedPosition = Math.max(
+                                halfWidth,
+                                Math.min(hoverPosition, window.innerWidth - halfWidth)
+                            );
+
+                            return (
+                                <div
+                                    className="absolute bottom-4 -translate-x-1/2 text-white pointer-events-none z-40 flex flex-col items-center"
+                                    style={{ left: `${clampedPosition}px` }}
+                                >
+                                    <div
+                                        className="relative overflow-hidden rounded-md mb-1"
+                                        style={{
+                                            width: width,
+                                            height: height,
+                                        }}
+                                    >
+                                        <img
+                                            src={getTrickplayImageUrl(
+                                                item.Id!,
+                                                width || 320,
+                                                imageIndex
+                                            )}
+                                            style={{
+                                                position: 'absolute',
+                                                left: -x * (width || 0),
+                                                top: -y * (height || 0),
+                                                maxWidth: 'none',
+                                            }}
+                                            draggable={false}
+                                        />
+                                    </div>
+                                    <div className="text-center bg-black/90 p-1 px-2 rounded-md w-min">
+                                        {formatPlayTime(hoverTime)}
+                                    </div>
+                                </div>
+                            );
+                        })()}
                 </div>
 
                 {/* Controls */}

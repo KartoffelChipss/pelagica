@@ -194,3 +194,21 @@ export function getPrimaryImageUrl(itemId: string, size?: { width?: number; heig
         return '/default-thumb.jpg';
     }
 }
+
+export function getTrickplayImageUrl(itemId: string, width: number, imageIndex: number) {
+    try {
+        const server = getServerUrl();
+        const token = getAccessToken();
+
+        if (!server || !token) return '';
+
+        const url = new URL(server);
+        url.pathname = `/Videos/${itemId}/Trickplay/${width}/${imageIndex}.jpg`;
+        url.searchParams.append('ApiKey', token);
+        url.searchParams.append('MediaSourceId', itemId);
+
+        return url.toString();
+    } catch {
+        return '';
+    }
+}
