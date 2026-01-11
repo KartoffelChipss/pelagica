@@ -27,7 +27,7 @@ const EpisodeComponent = memo(
         const watched = episode.UserData?.PlaybackPositionTicks ?? 0;
         const runtime = episode.RunTimeTicks ?? 0;
         const progress =
-            episode.UserData?.PlayCount && episode.UserData?.PlayCount >= 1 && watched <= 0
+            episode.UserData?.Played && watched <= 0
                 ? 100
                 : runtime > 0
                   ? (watched / runtime) * 100
