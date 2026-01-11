@@ -13,6 +13,7 @@ import {
     Dot,
     Info,
     Minimize,
+    SkipBack,
 } from 'lucide-react';
 import { Button } from '../../components/ui/button';
 import { Link, useNavigate } from 'react-router';
@@ -55,6 +56,7 @@ interface PlayerControlsProps {
     isFullscreen: boolean;
     onFullscreenToggle?: () => void;
     mediaSegments?: MediaSegmentDto[];
+    previousItem?: BaseItemDto | null;
     nextItem?: BaseItemDto | null;
     srcUrl: string;
     containerRef: React.RefObject<HTMLDivElement | null>;
@@ -70,6 +72,7 @@ const PlayerControls = ({
     isFullscreen,
     onFullscreenToggle,
     mediaSegments,
+    previousItem,
     nextItem,
     srcUrl,
     containerRef,
@@ -645,7 +648,20 @@ const PlayerControls = ({
 
                 {/* Controls */}
                 <div className="flex items-center justify-between text-white gap-4">
-                    <div className="flex items-center gap-4">
+                    <div className="flex items-center gap-2">
+                        {previousItem && (
+                            <Button
+                                variant={'ghost'}
+                                size={'icon-lg'}
+                                className="cursor-pointer"
+                                title={t('previousItem')}
+                                asChild
+                            >
+                                <Link to={`/play/${previousItem.Id}`}>
+                                    <SkipBack size={24} />
+                                </Link>
+                            </Button>
+                        )}
                         <Button
                             variant={'ghost'}
                             size={'icon-lg'}
@@ -654,7 +670,20 @@ const PlayerControls = ({
                         >
                             {isPlaying ? <Pause size={24} /> : <Play size={24} />}
                         </Button>
-                        <div className="text-sm">
+                        {nextItem && (
+                            <Button
+                                variant={'ghost'}
+                                size={'icon-lg'}
+                                className="cursor-pointer"
+                                title={t('nextItem')}
+                                asChild
+                            >
+                                <Link to={`/play/${nextItem.Id}`}>
+                                    <SkipForward size={24} />
+                                </Link>
+                            </Button>
+                        )}
+                        <div className="text-sm ml-2">
                             {formatPlayTime(clampedCurrentTime)} / {formatPlayTime(duration)}
                         </div>
                     </div>

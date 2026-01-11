@@ -10,7 +10,7 @@ import { useEffect, useMemo, useRef, useState } from 'react';
 import { getPrimaryImageUrl, getVideoStreamUrl, getSubtitleUrl } from '@/utils/jellyfinUrls';
 import { generateRandomId } from '@/utils/idGenerator';
 import { useMediaSegments } from '@/hooks/api/useMediaSegments';
-import { useNextItem } from '@/hooks/api/useNextItem';
+import { useAdjacentItems } from '@/hooks/api/useAdjacentItems';
 import { getUserId } from '@/utils/localstorageCredentials';
 import { getLastAudioLanguage, getLastSubtitleLanguage } from '@/utils/localstorageLastlanguage';
 import { useUserConfiguration } from '@/hooks/api/playbackPreferences/useUserConfiguration';
@@ -87,10 +87,10 @@ const PlayerPage = () => {
     const isAudioSwitchRef = useRef(false);
     const [isFullscreen, setIsFullscreen] = useState(false);
     const {
-        data: nextItem,
-        isLoading: isLoadingNextItem,
-        error: nextItemError,
-    } = useNextItem(item, getUserId());
+        data: adjacentItems,
+        isLoading: isLoadingAdjacentItems,
+        error: adjacentItemsError,
+    } = useAdjacentItems(item, getUserId());
     const {
         data: mediaSegments,
         isLoading: isLoadingMediaSegments,
@@ -263,17 +263,22 @@ const PlayerPage = () => {
         );
     }, [item]);
 
-    if (isLoading || isLoadingMediaSegments || isLoadingNextItem || isLoadingUserConfiguration) {
+    if (
+        isLoading ||
+        isLoadingMediaSegments ||
+        isLoadingAdjacentItems ||
+        isLoadingUserConfiguration
+    ) {
         return <p>Loading...</p>;
     }
 
-    if (error || mediaSegmentsError || nextItemError || userConfigurationError) {
+    if (error || mediaSegmentsError || adjacentItemsError || userConfigurationError) {
         return (
             <p>
                 Error loading item:{' '}
                 {error?.message ||
                     mediaSegmentsError?.message ||
-                    nextItemError?.message ||
+                    adjacentItemsError?.message ||
                     userConfigurationError?.message}
             </p>
         );
@@ -307,7 +312,8 @@ const PlayerPage = () => {
                 isFullscreen={isFullscreen}
                 onFullscreenToggle={handleToggleFullscreen}
                 mediaSegments={mediaSegments}
-                nextItem={nextItem}
+                previousItem={adjacentItems?.previousItem}
+                nextItem={adjacentItems?.nextItem}
                 srcUrl={getVideoStreamUrl(itemId!, {
                     audioStreamIndex: audioTrackIndex,
                     playSessionId: playSessionId,
