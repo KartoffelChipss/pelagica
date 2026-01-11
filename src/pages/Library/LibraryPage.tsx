@@ -115,14 +115,17 @@ const LibraryContent = ({
     pageRef,
     sortBy,
     sortOrder,
+    page,
+    onPageChange,
 }: {
     libraryId: string;
     pageRef: React.RefObject<HTMLDivElement | null>;
     sortBy: ItemSortBy;
     sortOrder: SortOrder;
+    page: number;
+    onPageChange: (p: number) => void;
 }) => {
     const { t } = useTranslation(['library', 'common']);
-    const [page, setPage] = useState(0);
     const [pageSize, setPageSize] = useState(
         () => getColumnCount(typeof window !== 'undefined' ? window.innerWidth : 640) * ITEM_ROWS
     );
@@ -131,12 +134,12 @@ const LibraryContent = ({
         const handleResize = () => {
             const newPageSize = getColumnCount(window.innerWidth) * ITEM_ROWS;
             setPageSize(newPageSize);
-            setPage(0);
+            onPageChange(0);
         };
 
         window.addEventListener('resize', handleResize);
         return () => window.removeEventListener('resize', handleResize);
-    }, []);
+    }, [onPageChange]);
 
     const { data: libraryData, isLoading } = useLibraryItems(libraryId, {
         limit: pageSize,
@@ -210,7 +213,7 @@ const LibraryContent = ({
                                 <PaginationItem>
                                     <PaginationPrevious
                                         text={t('common:previous')}
-                                        onClick={() => setPage((p) => Math.max(0, p - 1))}
+                                        onClick={() => onPageChange(Math.max(0, page - 1))}
                                         className={
                                             page === 0
                                                 ? 'pointer-events-none opacity-50'
@@ -227,7 +230,7 @@ const LibraryContent = ({
                                         return (
                                             <PaginationItem key={i}>
                                                 <PaginationLink
-                                                    onClick={() => setPage(i)}
+                                                    onClick={() => onPageChange(i)}
                                                     isActive={i === page}
                                                     className="cursor-pointer"
                                                 >
@@ -251,7 +254,7 @@ const LibraryContent = ({
                                     <PaginationNext
                                         text={t('common:next')}
                                         onClick={() =>
-                                            setPage((p) => Math.min(totalPages - 1, p + 1))
+                                            onPageChange(Math.min(totalPages - 1, page + 1))
                                         }
                                         className={
                                             page >= totalPages - 1
@@ -274,8 +277,12 @@ const LibraryPage = () => {
     const { t } = useTranslation('library');
     const { data: libraries } = useUserViews();
     const [searchParams, setSearchParams] = useSearchParams();
-    const [sortBy, setSortBy] = useState<ItemSortBy>('Name');
-    const [sortOrder, setSortOrder] = useState<SortOrder>('Ascending');
+    const sortByParam = (searchParams.get('sortBy') as ItemSortBy) || 'Name';
+    const sortOrderParam = (searchParams.get('sortOrder') as SortOrder) || 'Ascending';
+    const [sortBy, setSortBy] = useState<ItemSortBy>(sortByParam);
+    const [sortOrder, setSortOrder] = useState<SortOrder>(sortOrderParam);
+    const pageParam = parseInt(searchParams.get('page') ?? '0', 10);
+    const [page, setPage] = useState<number>(Number.isNaN(pageParam) ? 0 : pageParam);
 
     const firstLibraryId = libraries?.Items?.[0]?.Id ?? '';
     const libraryIdFromUrl = searchParams.get('library') || '';
@@ -285,12 +292,27 @@ const LibraryPage = () => {
             : firstLibraryId;
 
     const handleLibraryChange = (libraryId: string) => {
-        setSearchParams({ library: libraryId });
+        setPage(0);
+        setSearchParams({
+            library: libraryId,
+            page: '0',
+            sortBy,
+            sortOrder,
+        });
     };
 
     const libraryItems = libraries?.Items?.filter((library) =>
         SUPPORTED_COLLECTION_TYPES.includes(library.CollectionType!)
     );
+
+    useEffect(() => {
+        setSearchParams({
+            library: activeLibraryId,
+            page: String(page),
+            sortBy,
+            sortOrder,
+        });
+    }, [activeLibraryId, page, sortBy, sortOrder, setSearchParams]);
 
     return (
         <Page title={t('title')} requiresAuth>
@@ -369,6 +391,8 @@ const LibraryPage = () => {
                                 pageRef={pageRef}
                                 sortBy={sortBy}
                                 sortOrder={sortOrder}
+                                page={page}
+                                onPageChange={setPage}
                             />
                         )}
                     </TabsContent>
