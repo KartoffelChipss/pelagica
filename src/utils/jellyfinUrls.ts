@@ -76,11 +76,17 @@ export function getThumbUrl(itemId: string, size?: { width?: number; height?: nu
 }
 
 export function getVideoStreamUrl(
-    itemId: string,
-    options: {
-        playSessionId?: string;
-        audioStreamIndex?: number;
-    }
+  itemId: string,
+  mediaSourceId?: string | null
+) {
+  const params = new URLSearchParams();
+
+  if (mediaSourceId) {
+    params.append("mediaSourceId", mediaSourceId);
+  }
+
+  return `/Videos/${itemId}/stream?${params.toString()}`;
+}
 ) {
     try {
         const server = getServerUrl();
