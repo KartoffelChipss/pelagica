@@ -100,6 +100,7 @@ const PageContent = ({
                     </div>
                 )}
                 <main className={`w-full ${className ?? ''}`}>{children}</main>
+                {/* <MusicPlayerBar /> */}
             </div>
         </SidebarProvider>
     );
