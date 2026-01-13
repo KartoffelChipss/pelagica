@@ -3,7 +3,7 @@ import Page from '../Page';
 import { useUserViews } from '@/hooks/api/useMediaFolders';
 import { useMemo, useState, useEffect, useRef } from 'react';
 import { useLibraryItems } from '@/hooks/api/useLibraryItems';
-import { Link, useSearchParams } from 'react-router';
+import { useSearchParams } from 'react-router';
 import { getImageApi } from '@jellyfin/sdk/lib/utils/api/image-api';
 import { getApi } from '@/api/getApi';
 import { useTranslation } from 'react-i18next';
@@ -32,7 +32,6 @@ import {
     CaseSensitive,
     Clock,
     FolderOpen,
-    ImageOff,
     Star,
 } from 'lucide-react';
 import JellyfinLibraryIcon from '@/components/JellyfinLibraryIcon';
@@ -44,15 +43,14 @@ import {
     SelectValue,
 } from '@/components/ui/select';
 import type {
-    BaseItemDto,
     CollectionType,
     ItemSortBy,
     SortOrder,
 } from '@jellyfin/sdk/lib/generated-client/models';
 import { ButtonGroup } from '@/components/ui/button-group';
-import type { TFunction } from 'i18next';
+import LibraryItem from './LibraryItem';
 
-const SUPPORTED_COLLECTION_TYPES: CollectionType[] = ['movies', 'tvshows', 'boxsets'];
+const SUPPORTED_COLLECTION_TYPES: CollectionType[] = ['movies', 'tvshows', 'boxsets', 'music'];
 const ITEM_ROWS = 5;
 
 function getColumnCount(width: number): number {
@@ -63,52 +61,6 @@ function getColumnCount(width: number): number {
     if (width >= 640) return 3; // sm
     return 2;
 }
-
-const LibraryItem = ({
-    item,
-    posterUrl,
-    t,
-}: {
-    item: BaseItemDto;
-    posterUrl: string;
-    t: TFunction;
-}) => {
-    const [posterError, setPosterError] = useState(false);
-
-    return (
-        <Link to={`/item/${item.Id}`} key={item.Id} className="p-0 m-0">
-            <div className="relative w-full aspect-2/3 overflow-hidden rounded-md group">
-                {!posterError ? (
-                    <>
-                        <img
-                            key={item.Id}
-                            src={`${posterUrl}?maxWidth=416&maxHeight=640&quality=85`}
-                            alt={item.Name || t('library:no_title')}
-                            className="w-full h-full object-cover rounded-md group-hover:opacity-75 transition-all group-hover:scale-105 z-10"
-                            loading="lazy"
-                            onError={() => setPosterError(true)}
-                        />
-                        <Skeleton className="absolute bottom-0 left-0 right-0 top-0 -z-1" />
-                    </>
-                ) : (
-                    <div className="w-full h-full bg-muted flex items-center justify-center rounded-md">
-                        <ImageOff className="text-4xl text-muted-foreground" />
-                    </div>
-                )}
-            </div>
-            <p className="mt-2 text-sm line-clamp-1 text-ellipsis break-all">
-                {item.Name || t('library:no_title')}
-            </p>
-            <div className="flex flex-wrap items-center mt-1">
-                {item.PremiereDate && (
-                    <span className="text-xs text-muted-foreground mr-3">
-                        {new Date(item.PremiereDate).getFullYear()}
-                    </span>
-                )}
-            </div>
-        </Link>
-    );
-};
 
 const LibraryContent = ({
     libraryId,
@@ -144,7 +96,7 @@ const LibraryContent = ({
     const { data: libraryData, isLoading } = useLibraryItems(libraryId, {
         limit: pageSize,
         startIndex: page * pageSize,
-        includeItemTypes: ['Series', 'Movie', 'BoxSet'],
+        includeItemTypes: ['Series', 'Movie', 'BoxSet', 'MusicAlbum'],
         sortBy: [sortBy],
         sortOrder,
     });
@@ -204,6 +156,16 @@ const LibraryContent = ({
                                 item={item}
                                 posterUrl={posterUrls[item.Id!]}
                                 t={t}
+                                posterAspectRatio={item.Type === 'MusicAlbum' ? 'square' : '2/3'}
+                                detailLine={
+                                    item.Type === 'MusicAlbum'
+                                        ? item.AlbumArtist
+                                            ? item.AlbumArtist
+                                            : undefined
+                                        : item.PremiereDate
+                                          ? new Date(item.PremiereDate).getFullYear()
+                                          : undefined
+                                }
                             />
                         ))}
                     </div>
@@ -382,9 +344,11 @@ const LibraryPage = () => {
                         </Select>
                     </ButtonGroup>
                 </div>
-                {libraryItems?.map((library) => (
-                    <TabsContent key={library.Id} value={library.Id ?? ''}>
-                        {library.Id && (
+                {libraryItems?.map((library) => {
+                    if (!library.Id) return null;
+
+                    return (
+                        <TabsContent key={library.Id} value={library.Id ?? ''}>
                             <LibraryContent
                                 key={`${library.Id}-${sortBy}-${sortOrder}`}
                                 libraryId={library.Id}
@@ -394,9 +358,9 @@ const LibraryPage = () => {
                                 page={page}
                                 onPageChange={setPage}
                             />
-                        )}
-                    </TabsContent>
-                ))}
+                        </TabsContent>
+                    );
+                })}
             </Tabs>
         </Page>
     );
