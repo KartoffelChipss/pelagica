@@ -13,6 +13,14 @@ export function ticksToReadableTime(ticks: number): string {
     }
 }
 
+export function ticksToReadableMusicTime(ticks: number): string {
+    const totalSeconds = Math.floor(ticks / 10000000);
+    const minutes = Math.floor((totalSeconds % 3600) / 60);
+    const seconds = totalSeconds % 60;
+
+    return `${minutes}:${seconds.toString().padStart(2, '0')}`;
+}
+
 export function ticksToSeconds(ticks: number): number {
     return ticks / 10000000;
 }

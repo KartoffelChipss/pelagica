@@ -8,6 +8,7 @@ interface BaseMediaPageProps {
     children?: React.ReactNode;
     showLogo?: boolean;
     topPadding?: boolean;
+    logo?: React.ReactNode;
 }
 
 const BaseMediaPage = ({
@@ -16,6 +17,7 @@ const BaseMediaPage = ({
     children,
     showLogo = true,
     topPadding = true,
+    logo,
 }: BaseMediaPageProps) => {
     const { setBackground } = usePageBackground();
     const [failedBackdrop, setFailedBackdrop] = useState(false);
@@ -59,11 +61,15 @@ const BaseMediaPage = ({
             {topPadding && (
                 <div className="h-2/5 flex items-center justify-center">
                     {showLogo && (
-                        <img
-                            src={getLogoUrl(itemId || '')}
-                            alt={name + ' Logo'}
-                            className="relative mx-auto px-4 h-32 object-contain"
-                        />
+                        <>
+                            {logo || (
+                                <img
+                                    src={getLogoUrl(itemId || '')}
+                                    alt={name + ' Logo'}
+                                    className="relative mx-auto px-4 h-32 object-contain"
+                                />
+                            )}
+                        </>
                     )}
                 </div>
             )}

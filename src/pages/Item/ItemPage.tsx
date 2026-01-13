@@ -11,6 +11,7 @@ import EpisodePage from './EpisodePage';
 import SeasonPage from './SeasonPage';
 import { getUserId } from '@/utils/localstorageCredentials';
 import BoxSetPage from './BoxSetPage';
+import MusicAlbumPage from './MusicAlbumPage';
 
 const ItemPageSkeleton = memo(() => {
     return (
@@ -119,6 +120,8 @@ const ItemPage = () => {
                             return <SeasonPage item={item} config={config} />;
                         case 'BoxSet':
                             return <BoxSetPage item={item} config={config} />;
+                        case 'MusicAlbum':
+                            return <MusicAlbumPage item={item} config={config} />;
                         default:
                             return (
                                 <p>
