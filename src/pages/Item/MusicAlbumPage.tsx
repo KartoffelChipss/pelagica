@@ -9,6 +9,7 @@ import { Play, Shuffle } from 'lucide-react';
 import FavoriteButton from '@/components/FavoriteButton';
 import type { AppConfig } from '@/hooks/api/useConfig';
 import { useAlbumTracks } from '@/hooks/api/useAlbumTracks';
+import { useMusicPlayback } from '@/hooks/useMusicPlayback';
 
 const MAX_ARTISTS_DISPLAYED = 5;
 
@@ -19,6 +20,7 @@ interface MusicAlbumPageProps {
 
 const MusicAlbumPage = ({ item, config }: MusicAlbumPageProps) => {
     const { setBackground } = usePageBackground();
+    const { loadQueue } = useMusicPlayback();
     const {
         data: albumTracks,
         isLoading: isLoadingAlbumTracks,
@@ -56,6 +58,32 @@ const MusicAlbumPage = ({ item, config }: MusicAlbumPageProps) => {
     if (item.RunTimeTicks !== undefined && item.RunTimeTicks !== null) {
         detailItems.push(ticksToReadableTime(item.RunTimeTicks));
     }
+
+    const handlePlayAlbum = () => {
+        if (albumTracks && albumTracks.length > 0) {
+            const trackQueue = albumTracks.map((track) => ({
+                id: track.Id || '',
+                title: track.Name || '',
+                artist: track.ArtistItems?.[0]?.Name || item.ArtistItems?.[0]?.Name || 'Unknown',
+                albumId: item.Id || '',
+                albumName: item.Name || '',
+            }));
+            loadQueue(trackQueue, 0, true);
+        }
+    };
+
+    const handleTrackClick = (_: BaseItemDto, index: number) => {
+        if (albumTracks && albumTracks.length > 0) {
+            const trackQueue = albumTracks.map((t) => ({
+                id: t.Id || '',
+                title: t.Name || '',
+                artist: t.ArtistItems?.[0]?.Name || item.ArtistItems?.[0]?.Name || 'Unknown',
+                albumId: item.Id || '',
+                albumName: item.Name || '',
+            }));
+            loadQueue(trackQueue, index, true);
+        }
+    };
 
     return (
         <div className="relative h-full w-full">
@@ -99,7 +127,7 @@ const MusicAlbumPage = ({ item, config }: MusicAlbumPageProps) => {
                     </div>
                     {/* <p className="text-sm text-muted-foreground line-clamp-2">{item.Overview}</p> */}
                     <div className="flex flex-wrap gap-2">
-                        <Button>
+                        <Button onClick={handlePlayAlbum}>
                             <Play />
                             Play
                         </Button>
@@ -125,13 +153,14 @@ const MusicAlbumPage = ({ item, config }: MusicAlbumPageProps) => {
                             </div>
                             <div className="border-b border-border mb-4" />
                             <div className="flex flex-col gap-1">
-                                {albumTracks.map((track) => {
+                                {albumTracks.map((track, index) => {
                                     if (!track.IndexNumber) return null;
 
                                     return (
                                         <div
                                             key={track.Id}
                                             className="flex items-center p-2 px-8 hover:bg-accent/70 rounded-md group cursor-pointer"
+                                            onClick={() => handleTrackClick(track, index)}
                                         >
                                             {track.IndexNumber !== undefined && (
                                                 <span className="text-sm text-muted-foreground mr-8 font-mono w-4">

@@ -12,58 +12,46 @@ import {
 import { Button } from './ui/button';
 import { Slider } from './ui/slider';
 import { getPrimaryImageUrl } from '@/utils/jellyfinUrls';
+import { useMusicPlayback } from '@/hooks/useMusicPlayback';
 
-const formatTime = (time: number) => {
-    const minutes = Math.floor(time / 60);
-    const seconds = Math.floor(time % 60)
+const formatTime = (timeTicks: number) => {
+    const timeSeconds = timeTicks / 10000000;
+    const minutes = Math.floor(timeSeconds / 60);
+    const seconds = Math.floor(timeSeconds % 60)
         .toString()
         .padStart(2, '0');
     return `${minutes}:${seconds}`;
 };
 
-interface MusicPlayerBarProps {
-    itemId: string;
-    title: string;
-    artist: string;
-    shuffle: boolean;
-    onShuffleToggle: () => void;
-    repeat: boolean;
-    onRepeatToggle: () => void;
-    isPlaying: boolean;
-    onPlayPauseToggle: () => void;
-    onSkipNext: () => void;
-    onSkipPrevious: () => void;
-    currentTime: number;
-    duration: number;
-    onSeek: (time: number) => void;
-    volume: number;
-    onVolumeChange: (volume: number) => void;
-}
+const MusicPlayerBar = () => {
+    const {
+        currentTrack,
+        shuffle,
+        toggleShuffle,
+        repeat,
+        setRepeat,
+        isPlaying,
+        togglePlayPause,
+        skipNext,
+        skipPrevious,
+        currentTime,
+        duration,
+        seek,
+        volume,
+        setVolume,
+        clearPlayback,
+    } = useMusicPlayback();
+    if (!currentTrack) return null;
 
-const MusicPlayerBar = ({
-    itemId,
-    title,
-    artist,
-    shuffle,
-    onShuffleToggle,
-    repeat,
-    onRepeatToggle,
-    isPlaying,
-    onPlayPauseToggle,
-    onSkipNext,
-    onSkipPrevious,
-    currentTime,
-    duration,
-    onSeek,
-    volume,
-    onVolumeChange,
-}: MusicPlayerBarProps) => {
+    const currentTimeSeconds = currentTime / 10000000;
+    const durationSeconds = duration / 10000000;
+
     return (
         <div className="p-1 sticky bottom-0">
             <div className="bg-sidebar/90 border-sidebar-border flex justify-between items-center h-full w-full rounded-lg border shadow-sm p-3 backdrop-blur-lg">
                 <div className="flex items-center gap-2 flex-1">
                     <img
-                        src={getPrimaryImageUrl(itemId, {
+                        src={getPrimaryImageUrl(currentTrack.id, {
                             width: 64,
                             height: 64,
                         })}
@@ -71,9 +59,9 @@ const MusicPlayerBar = ({
                         className="rounded-md h-16 w-16 object-cover self-center"
                     />
                     <div className="grid flex-1 text-left leading-tight">
-                        <span className="truncate font-medium">{title}</span>
+                        <span className="truncate font-medium">{currentTrack.title}</span>
                         <span className="truncate text-sm font-normal text-muted-foreground">
-                            {artist}
+                            {currentTrack.artist}
                         </span>
                     </div>
                 </div>
@@ -83,7 +71,7 @@ const MusicPlayerBar = ({
                             variant="ghost"
                             size="icon"
                             className={`cursor-pointer ${shuffle ? 'text-blue-500' : 'text-muted-foreground'}`}
-                            onClick={onShuffleToggle}
+                            onClick={toggleShuffle}
                         >
                             <Shuffle />
                         </Button>
@@ -91,18 +79,18 @@ const MusicPlayerBar = ({
                             variant="ghost"
                             size="icon"
                             className="cursor-pointer"
-                            onClick={onSkipPrevious}
+                            onClick={skipPrevious}
                         >
                             <SkipBack />
                         </Button>
-                        <Button variant="default" size="icon-lg" onClick={onPlayPauseToggle}>
+                        <Button variant="default" size="icon-lg" onClick={togglePlayPause}>
                             {isPlaying ? <Pause /> : <Play />}
                         </Button>
                         <Button
                             variant="ghost"
                             size="icon"
                             className="cursor-pointer"
-                            onClick={onSkipNext}
+                            onClick={skipNext}
                         >
                             <SkipForward />
                         </Button>
@@ -110,7 +98,7 @@ const MusicPlayerBar = ({
                             variant="ghost"
                             size="icon"
                             className={`cursor-pointer ${repeat ? 'text-blue-500' : 'text-muted-foreground'}`}
-                            onClick={onRepeatToggle}
+                            onClick={() => setRepeat(!repeat)}
                         >
                             <Repeat2 />
                         </Button>
@@ -119,10 +107,10 @@ const MusicPlayerBar = ({
                         <span>{formatTime(currentTime)}</span>
                         <Slider
                             className="flex-1"
-                            max={duration}
-                            step={1}
-                            value={[currentTime]}
-                            onValueChange={(value) => onSeek(value[0])}
+                            max={durationSeconds}
+                            step={0.1}
+                            value={[currentTimeSeconds]}
+                            onValueChange={(value) => seek(Math.floor(value[0] * 10000000))}
                         />
                         <span>{formatTime(duration)}</span>
                     </div>
@@ -133,8 +121,8 @@ const MusicPlayerBar = ({
                         size="icon"
                         className="cursor-pointer"
                         onClick={() => {
-                            if (volume === 0) onVolumeChange(0.5);
-                            else onVolumeChange(0);
+                            if (volume === 0) setVolume(0.5);
+                            else setVolume(0);
                         }}
                     >
                         {volume === 0 ? <VolumeX /> : <Volume2 />}
@@ -144,9 +132,14 @@ const MusicPlayerBar = ({
                         max={1}
                         step={0.01}
                         value={[volume]}
-                        onValueChange={(value) => onVolumeChange(value[0])}
+                        onValueChange={(value) => setVolume(value[0])}
                     />
-                    <Button variant="outline" size="icon" className="cursor-pointer ml-2">
+                    <Button
+                        variant="outline"
+                        size="icon"
+                        className="cursor-pointer ml-2"
+                        onClick={clearPlayback}
+                    >
                         <XIcon />
                     </Button>
                 </div>

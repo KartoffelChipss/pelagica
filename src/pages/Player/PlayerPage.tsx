@@ -14,6 +14,7 @@ import { getUserId } from '@/utils/localstorageCredentials';
 import { getLastAudioLanguage, getLastSubtitleLanguage } from '@/utils/localstorageLastlanguage';
 import { useUserConfiguration } from '@/hooks/api/playbackPreferences/useUserConfiguration';
 import { usePlayerItem } from '@/hooks/api/usePlayerItem';
+import { useMusicPlayback } from '@/hooks/useMusicPlayback';
 
 const PLAYBACK_PROGRESS_REPORT_MIN_PLAYTIME_SECONDS = 5;
 const PLAYBACK_PROGRESS_REPORT_INTERVAL_MS = 5000;
@@ -99,6 +100,7 @@ const PlayerPage = () => {
     const { reportProgress } = useReportPlaybackProgress();
     const { startPlayback } = usePlaybackStart();
     const { stopPlayback } = usePlaybackStop();
+    const { clearPlayback } = useMusicPlayback();
 
     useEffect(() => {
         const handleFullscreenChange = () => {
@@ -174,6 +176,9 @@ const PlayerPage = () => {
     useEffect(() => {
         if (!itemId || !player) return;
 
+        // Clear any music playback when starting video
+        clearPlayback();
+
         // Report playback start
         startPlayback({ itemId, positionTicks: startTicks });
 
@@ -214,7 +219,7 @@ const PlayerPage = () => {
             // Here we need the last know position since the player might be already in the shadow realm
             stopPlayback({ itemId, positionTicks: lastPositionRef.current });
         };
-    }, [itemId, player, reportProgress, startPlayback, startTicks, stopPlayback]);
+    }, [itemId, player, reportProgress, startPlayback, startTicks, stopPlayback, clearPlayback]);
 
     useEffect(() => {
         lastPositionRef.current = startTicks;

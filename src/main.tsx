@@ -15,27 +15,30 @@ import ItemPage from './pages/Item/ItemPage.tsx';
 import NotFoundPage from './pages/NotFound/NotFoundPage.tsx';
 import PlayerPage from './pages/Player/PlayerPage.tsx';
 import PersonPage from './pages/Person/PersonPage.tsx';
+import { MusicPlaybackProvider } from './context/MusicPlaybackProvider.tsx';
 
 const queryClient = new QueryClient();
 
 createRoot(document.getElementById('root')!).render(
     <QueryClientProvider client={queryClient}>
         <ThemeProvider>
-            <SearchProvider>
-                <BrowserRouter>
-                    <KeyboardShortcuts />
-                    <SearchCommand />
-                    <Routes>
-                        <Route path="/" element={<HomePage />} />
-                        <Route path="/library" element={<LibraryPage />} />
-                        <Route path="/item/:itemId" element={<ItemPage />} />
-                        <Route path="/person/:itemId" element={<PersonPage />} />
-                        <Route path="/login" element={<LoginPage />} />
-                        <Route path="/play/:itemId" element={<PlayerPage />} />
-                        <Route path="*" element={<NotFoundPage />} />
-                    </Routes>
-                </BrowserRouter>
-            </SearchProvider>
+            <MusicPlaybackProvider>
+                <SearchProvider>
+                    <BrowserRouter>
+                        <KeyboardShortcuts />
+                        <SearchCommand />
+                        <Routes>
+                            <Route path="/" element={<HomePage />} />
+                            <Route path="/library" element={<LibraryPage />} />
+                            <Route path="/item/:itemId" element={<ItemPage />} />
+                            <Route path="/person/:itemId" element={<PersonPage />} />
+                            <Route path="/login" element={<LoginPage />} />
+                            <Route path="/play/:itemId" element={<PlayerPage />} />
+                            <Route path="*" element={<NotFoundPage />} />
+                        </Routes>
+                    </BrowserRouter>
+                </SearchProvider>
+            </MusicPlaybackProvider>
         </ThemeProvider>
     </QueryClientProvider>
 );

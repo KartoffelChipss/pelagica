@@ -8,6 +8,7 @@ import { Avatar, AvatarFallback } from '@/components/ui/avatar';
 import { getServerUrl } from '@/utils/localstorageCredentials';
 import { PageBackgroundProvider } from '@/context/PageBackgroundProvider';
 import { usePageBackground } from '@/hooks/usePageBackground';
+import MusicPlayerBar from '@/components/MusicPlayerBar';
 
 interface PageProps {
     title?: string;
@@ -17,6 +18,7 @@ interface PageProps {
     sidebar?: boolean;
     breadcrumbs?: React.ReactNode;
     bgItem?: React.ReactNode;
+    showPlayerBar?: boolean;
 }
 
 const isLoggedIn = () => {
@@ -41,6 +43,7 @@ const PageContent = ({
     sidebar = true,
     breadcrumbs,
     bgItem,
+    showPlayerBar = true,
 }: PropsWithChildren<PageProps>) => {
     const navigate = useNavigate();
     const { isLoading, isError } = useCurrentUser();
@@ -100,7 +103,7 @@ const PageContent = ({
                     </div>
                 )}
                 <main className={`w-full ${className ?? ''}`}>{children}</main>
-                {/* <MusicPlayerBar /> */}
+                {showPlayerBar && <MusicPlayerBar />}
             </div>
         </SidebarProvider>
     );

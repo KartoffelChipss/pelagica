@@ -1,5 +1,50 @@
 import { getAccessToken, getServerUrl } from './localstorageCredentials';
 
+export function getAudioStreamUrl(itemId: string, userId?: string) {
+    try {
+        const server = getServerUrl();
+        const token = getAccessToken();
+
+        if (!server || !token) return '';
+
+        const url = new URL(server);
+        url.pathname = `/Audio/${itemId}/universal`;
+        if (userId) url.searchParams.append('UserId', userId);
+        url.searchParams.append('ApiKey', token);
+        url.searchParams.append('AudioCodec', 'aac');
+        url.searchParams.append(
+            'Container',
+            'opus,webm|opus,ts|mp3,mp3,aac,m4a|aac,m4b|aac,flac,alac,m4a|alac,m4b|alac,webma,webm|webma,wav,ogg,mp4|opus'
+        );
+        url.searchParams.append('TranscodingContainer', 'mp4');
+        url.searchParams.append('TranscodingProtocol', 'hls');
+        url.searchParams.append('StartTimeTicks', '0');
+        url.searchParams.append('MaxStreamingBitrate', '150000000');
+        url.searchParams.append('EnableRedirection', 'true');
+        url.searchParams.append('EnableRemoteMedia', 'false');
+        url.searchParams.append('EnableAudioVbrEncoding', 'true');
+
+        // https://jellyfin.jan.run/Audio/7ef9a3411c0387ab625e63ff19e5c71b/universal
+        // ?UserId=cffdf3fcb5724b3d8cbd980d3a72cbb8
+        // &DeviceId=TW96aWxsYS81LjAgKE1hY2ludG9zaDsgSW50ZWwgTWFjIE9TIFggMTBfMTVfNykgQXBwbGVXZWJLaXQvNjA1LjEuMTUgKEtIVE1MLCBsaWtlIEdlY2tvKSBWZXJzaW9uLzE4LjUgU2FmYXJpLzYwNS4xLjE1fDE3NTYwMjYzOTY4MTI1
+        // &MaxStreamingBitrate=150000000
+        // &Container=opus%2Cwebm%7Copus%2Cts%7Cmp3%2Cmp3%2Caac%2Cm4a%7Caac%2Cm4b%7Caac%2Cflac%2Calac%2Cm4a%7Calac%2Cm4b%7Calac%2Cwebma%2Cwebm%7Cwebma%2Cwav%2Cogg%2Cmp4%7Copus
+        // &TranscodingContainer=mp4
+        // &TranscodingProtocol=hls
+        // &AudioCodec=aac
+        // &ApiKey=d0b80ecc697e4b7994fb790e65a09667
+        // &PlaySessionId=1768386958787
+        // &StartTimeTicks=0
+        // &EnableRedirection=true
+        // &EnableRemoteMedia=false
+        // &EnableAudioVbrEncoding=true
+
+        return url.toString();
+    } catch {
+        return '';
+    }
+}
+
 export function getBackdropUrl(itemId: string, size?: { width?: number; height?: number }) {
     try {
         const server = getServerUrl();
