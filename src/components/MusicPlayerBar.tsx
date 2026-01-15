@@ -47,7 +47,7 @@ const MusicPlayerBar = () => {
     const durationSeconds = duration / 10000000;
 
     return (
-        <div className="p-1 sticky bottom-0">
+        <div className="p-1 sticky bottom-0 z-100">
             <div className="bg-sidebar/90 border-sidebar-border flex justify-between items-center h-full w-full rounded-lg border shadow-sm p-3 backdrop-blur-lg">
                 <div className="flex items-center gap-2 flex-1">
                     <img

@@ -103,7 +103,7 @@ const ItemPage = () => {
     return (
         <Page
             title={item ? `${item.Name}` : isLoading ? t('loading') : t('item_not_found')}
-            className="min-h-full"
+            className="flex-1 flex flex-col"
         >
             {(isLoading || configLoading) && <ItemPageSkeleton />}
             {error && <p>Error loading item details.</p>}

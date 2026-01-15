@@ -43,8 +43,8 @@ const BaseMediaPage = ({
     }, [itemId, name, setBackground]);
 
     return (
-        <div className="relative h-full w-full">
-            <div className="absolute top-0 left-0 h-3/4 w-full -z-10">
+        <div className="relative">
+            <div className="absolute top-0 left-0 h-[calc(75dvh-2rem)] w-full -z-10">
                 {!failedBackdrop && (
                     <img
                         className="h-full w-full object-cover rounded-md border border-border"
@@ -59,7 +59,7 @@ const BaseMediaPage = ({
                 <div className="absolute bottom-0 left-0 h-full w-full px-4 bg-linear-to-t from-background to-transparent rounded-md" />
             </div>
             {topPadding && (
-                <div className="h-2/5 flex items-center justify-center">
+                <div className="h-[calc(40dvh-2rem)] flex items-center justify-center">
                     {showLogo && (
                         <>
                             {logo || (
