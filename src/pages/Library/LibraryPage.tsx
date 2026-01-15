@@ -122,7 +122,7 @@ const LibraryContent = ({
     const totalPages = libraryData?.totalCount ? Math.ceil(libraryData.totalCount / pageSize) : 0;
 
     return (
-        <div>
+        <div className="mb-4">
             {isLoading && (
                 <div className="w-full grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 lg:grid-cols-5 xl:grid-cols-7 gap-4 mt-2">
                     {Array.from({ length: pageSize }).map((_, i) => (
@@ -277,7 +277,7 @@ const LibraryPage = () => {
     }, [activeLibraryId, page, sortBy, sortOrder, setSearchParams]);
 
     return (
-        <Page title={t('title')} requiresAuth>
+        <Page title={t('title')} requiresAuth className="flex-1">
             <Tabs
                 value={activeLibraryId}
                 onValueChange={handleLibraryChange}
