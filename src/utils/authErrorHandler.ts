@@ -1,3 +1,6 @@
+import { clearDeviceId } from './deviceId';
+import { clearCredentials } from './localstorageCredentials';
+
 export function isAuthError(error: unknown): boolean {
     if (error && typeof error === 'object' && 'status' in error) {
         const status = (error as { status: number }).status;
@@ -7,9 +10,8 @@ export function isAuthError(error: unknown): boolean {
 }
 
 export function clearAuthAndRedirect() {
-    localStorage.removeItem('jf_token');
-    localStorage.removeItem('jf_user');
-    localStorage.removeItem('jf_server');
+    clearCredentials();
+    clearDeviceId();
 
     window.location.href = '/login';
 }
