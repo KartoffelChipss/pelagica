@@ -7,6 +7,7 @@ import { ticksToReadableMusicTime, ticksToReadableTime } from '@/utils/timeConve
 import { Button } from '@/components/ui/button';
 import { Play, Shuffle } from 'lucide-react';
 import FavoriteButton from '@/components/FavoriteButton';
+import { Skeleton } from '@/components/ui/skeleton';
 import type { AppConfig } from '@/hooks/api/useConfig';
 import { useAlbumTracks } from '@/hooks/api/useAlbumTracks';
 import { useMusicPlayback } from '@/hooks/useMusicPlayback';
@@ -149,7 +150,21 @@ const MusicAlbumPage = ({ item, config }: MusicAlbumPageProps) => {
                             )}
                         />
                     </div>
-                    {isLoadingAlbumTracks && <div>{t('loading_tracks')}</div>}
+                    {isLoadingAlbumTracks && (
+                        <div className="flex flex-col gap-0">
+                            <div className="flex items-center p-2 px-8 group text-muted-foreground">
+                                <span className="text-sm mr-8 font-mono w-4">#</span>
+                                <span>{t('title')}</span>
+                                <span className="text-sm ml-auto">{t('duration')}</span>
+                            </div>
+                            <div className="border-b border-border mb-4" />
+                            <div className="flex flex-col gap-3">
+                                {[...Array(3)].map((_, index) => (
+                                    <Skeleton key={index} className="h-15 w-full rounded-xl" />
+                                ))}
+                            </div>
+                        </div>
+                    )}
                     {albumTracksError && (
                         <div className="text-red-500">{t('error_loading_tracks')}</div>
                     )}
