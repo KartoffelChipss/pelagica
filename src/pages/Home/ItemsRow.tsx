@@ -82,6 +82,8 @@ function getDetailFieldsStringForItem(
                 : t('not_available');
         case 'AgeRating':
             return item.OfficialRating || t('not_rated');
+        case 'Artist':
+            return item.AlbumArtist || t('unknown_artist');
         default:
             return '';
     }
