@@ -10,5 +10,6 @@
     "dismiss": "Dismiss",
     "seasonEpisode": "S{{season}} E{{episode}}",
     "previousItem": "Previous Item",
-    "nextItem": "Next Item"
+    "nextItem": "Next Item",
+    "nowPlaying": "Now Playing"
 }

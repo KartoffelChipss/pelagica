@@ -65,5 +65,12 @@
     "show_less": "Mostrar Menos",
     "mark_as_played": "Marcar como reproduzido",
     "mark_as_unplayed": "Marcar como não reproduzido",
-    "boxSetItems": "Itens do Box Set"
+    "boxSetItems": "Itens do Box Set",
+    "album": "Álbum",
+    "tracks_count": "{{count}} Faixa",
+    "tracks_count_plural": "{{count}} Faixas",
+    "loading_tracks": "Carregando faixas...",
+    "error_loading_tracks": "Erro ao carregar faixas.",
+    "duration": "Duração",
+    "more_artists": "+{{count}} mais"
 }

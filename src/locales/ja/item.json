@@ -52,5 +52,12 @@
     "image": "画像",
     "mark_as_played": "再生済みにする",
     "mark_as_unplayed": "未再生にする",
-    "boxSetItems": "ボックスセットアイテム"
+    "boxSetItems": "ボックスセットアイテム",
+    "album": "アルバム",
+    "tracks_count": "{{count}} トラック",
+    "tracks_count_plural": "{{count}} トラック",
+    "loading_tracks": "トラックを読み込み中...",
+    "error_loading_tracks": "トラックの読み込みエラー。",
+    "duration": "再生時間",
+    "more_artists": "+{{count}} 人"
 }

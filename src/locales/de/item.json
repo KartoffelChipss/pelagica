@@ -65,5 +65,12 @@
     "show_less": "Weniger anzeigen",
     "mark_as_played": "Als abgespielt markieren",
     "mark_as_unplayed": "Als nicht abgespielt markieren",
-    "boxSetItems": "Box-Set-Elemente"
+    "boxSetItems": "Box-Set-Elemente",
+    "album": "Album",
+    "tracks_count": "{{count}} Titel",
+    "tracks_count_plural": "{{count}} Titel",
+    "loading_tracks": "Titel werden geladen...",
+    "error_loading_tracks": "Fehler beim Laden der Titel.",
+    "duration": "Dauer",
+    "more_artists": "+{{count}} weitere"
 }

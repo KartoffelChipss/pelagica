@@ -16,6 +16,7 @@ import { getPrimaryImageUrl } from '@/utils/jellyfinUrls';
 import { useMusicPlayback } from '@/hooks/useMusicPlayback';
 import { useIsMobile } from '@/hooks/use-mobile';
 import { useState } from 'react';
+import { useTranslation } from 'react-i18next';
 
 const formatTime = (timeTicks: number) => {
     const timeSeconds = timeTicks / 10000000;
@@ -27,6 +28,7 @@ const formatTime = (timeTicks: number) => {
 };
 
 const MusicPlayerBar = () => {
+    const { t } = useTranslation('player');
     const {
         currentTrack,
         shuffle,
@@ -97,7 +99,7 @@ const MusicPlayerBar = () => {
                     <Button variant="ghost" size="icon" onClick={() => setIsExpanded(false)}>
                         <ChevronDown />
                     </Button>
-                    <span className="text-sm font-medium">Now Playing</span>
+                    <span className="text-sm font-medium">{t('nowPlaying')}</span>
                     <Button variant="ghost" size="icon" onClick={clearPlayback}>
                         <XIcon />
                     </Button>

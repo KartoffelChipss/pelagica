@@ -10,6 +10,7 @@ import FavoriteButton from '@/components/FavoriteButton';
 import type { AppConfig } from '@/hooks/api/useConfig';
 import { useAlbumTracks } from '@/hooks/api/useAlbumTracks';
 import { useMusicPlayback } from '@/hooks/useMusicPlayback';
+import { useTranslation } from 'react-i18next';
 
 const MAX_ARTISTS_DISPLAYED = 5;
 
@@ -19,6 +20,7 @@ interface MusicAlbumPageProps {
 }
 
 const MusicAlbumPage = ({ item, config }: MusicAlbumPageProps) => {
+    const { t } = useTranslation('item');
     const { setBackground } = usePageBackground();
     const { loadQueue } = useMusicPlayback();
     const {
@@ -52,8 +54,10 @@ const MusicAlbumPage = ({ item, config }: MusicAlbumPageProps) => {
         const year = new Date(item.PremiereDate).getFullYear();
         detailItems.push(year.toString());
     }
-    if (item.ChildCount !== undefined) {
-        detailItems.push(`${item.ChildCount} Tracks`);
+    if (item.ChildCount !== undefined && item.ChildCount !== null) {
+        detailItems.push(
+            t(`tracks_count${item.ChildCount > 1 ? '_plural' : ''}`, { count: item.ChildCount })
+        );
     }
     if (item.RunTimeTicks !== undefined && item.RunTimeTicks !== null) {
         detailItems.push(ticksToReadableTime(item.RunTimeTicks));
@@ -98,7 +102,7 @@ const MusicAlbumPage = ({ item, config }: MusicAlbumPageProps) => {
                             className="relative w-32 h-32 object-contain rounded-md"
                         />
                         <div className="flex flex-col gap-0">
-                            <span className="text-sm text-muted-foreground">Album</span>
+                            <span className="text-sm text-muted-foreground">{t('album')}</span>
                             <h1 className="text-3xl font-bold">{item.Name}</h1>
                             <div className="flex flex-wrap gap-2 mt-1">
                                 {item.ArtistItems &&
@@ -116,7 +120,10 @@ const MusicAlbumPage = ({ item, config }: MusicAlbumPageProps) => {
                                 {item.ArtistItems &&
                                     item.ArtistItems.length > MAX_ARTISTS_DISPLAYED && (
                                         <span className="text-sm text-muted-foreground">
-                                            +{item.ArtistItems.length - MAX_ARTISTS_DISPLAYED} more
+                                            {t('more_artists', {
+                                                count:
+                                                    item.ArtistItems.length - MAX_ARTISTS_DISPLAYED,
+                                            })}
                                         </span>
                                     )}
                             </div>
@@ -129,7 +136,7 @@ const MusicAlbumPage = ({ item, config }: MusicAlbumPageProps) => {
                     <div className="flex flex-wrap gap-2">
                         <Button onClick={handlePlayAlbum}>
                             <Play />
-                            Play
+                            {t('play')}
                         </Button>
                         <Button variant={'outline'} size={'icon'}>
                             <Shuffle />
@@ -142,14 +149,16 @@ const MusicAlbumPage = ({ item, config }: MusicAlbumPageProps) => {
                             )}
                         />
                     </div>
-                    {isLoadingAlbumTracks && <div>Loading tracks...</div>}
-                    {albumTracksError && <div className="text-red-500">Error loading tracks.</div>}
+                    {isLoadingAlbumTracks && <div>{t('loading_tracks')}</div>}
+                    {albumTracksError && (
+                        <div className="text-red-500">{t('error_loading_tracks')}</div>
+                    )}
                     {albumTracks && albumTracks.length > 0 && (
                         <div className="flex flex-col gap-0">
                             <div className="flex items-center p-2 px-8 group text-muted-foreground">
                                 <span className="text-sm mr-8 font-mono w-4">#</span>
-                                <span>Title</span>
-                                <span className="text-sm ml-auto">Duration</span>
+                                <span>{t('title')}</span>
+                                <span className="text-sm ml-auto">{t('duration')}</span>
                             </div>
                             <div className="border-b border-border mb-4" />
                             <div className="flex flex-col gap-1">

@@ -266,7 +266,8 @@
         "PlayEnd",
         "SeasonCount",
         "EpisodeCount",
-        "AgeRating"
+        "AgeRating",
+        "Artist"
       ],
       "type": "string"
     },
@@ -723,7 +724,9 @@
           "items": {
             "enum": [
               "Movie",
-              "Series"
+              "Series",
+              "BoxSet",
+              "MusicAlbum"
             ],
             "type": "string"
           },
