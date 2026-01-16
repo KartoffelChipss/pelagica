@@ -16,7 +16,7 @@ export interface SectionItemsConfig {
     /** Filter items from a specific library by its ID */
     libraryId?: string;
     /** Filter by media types */
-    types?: ('Movie' | 'Series' | 'BoxSet' | 'MusicAlbum')[];
+    types?: ('Movie' | 'Series' | 'BoxSet' | 'MusicAlbum' | 'Playlist')[];
     /** Filter by genre names */
     genres?: string[];
     /** Filter by tag names */
@@ -63,7 +63,8 @@ export type DetailField =
     | 'SeasonCount'
     | 'EpisodeCount'
     | 'AgeRating'
-    | 'Artist';
+    | 'Artist'
+    | 'TrackCount';
 
 /** A generic section displaying a grid of items */
 export interface ItemsSection extends BaseHomeScreenSection {

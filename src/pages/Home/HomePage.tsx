@@ -1,6 +1,6 @@
 import Page from '../Page';
 import { useUserViews } from '@/hooks/api/useMediaFolders';
-import { useConfig } from '@/hooks/api/useConfig';
+import { useConfig, type DetailField } from '@/hooks/api/useConfig';
 import MediaBar from './MediaBar';
 import ItemsRow from './ItemsRow';
 import ContinueWatchingRow from './ContinueWatchingRow';
@@ -8,6 +8,18 @@ import { useTranslation } from 'react-i18next';
 import RecommendedItemsRow from './RecommendedItemsRow';
 import NextUpRow from './NextUpRow';
 import ResumeRow from './ResumeRow';
+import type { CollectionType } from '@jellyfin/sdk/lib/generated-client/models';
+
+function getDetailFieldsForCollectionType(type: CollectionType | undefined): DetailField[] {
+    switch (type) {
+        case 'music':
+            return ['Artist'];
+        case 'playlists':
+            return ['TrackCount'];
+        default:
+            return ['ReleaseYear'];
+    }
+}
 
 const HomePage = () => {
     const { t } = useTranslation('home');
@@ -102,11 +114,9 @@ const HomePage = () => {
                                                                     'MusicAlbum',
                                                                 ],
                                                             }}
-                                                            detailFields={
-                                                                view.CollectionType === 'music'
-                                                                    ? ['Artist']
-                                                                    : ['ReleaseYear']
-                                                            }
+                                                            detailFields={getDetailFieldsForCollectionType(
+                                                                view.CollectionType
+                                                            )}
                                                         />
                                                     )}
                                                 </div>

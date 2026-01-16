@@ -267,7 +267,8 @@
         "SeasonCount",
         "EpisodeCount",
         "AgeRating",
-        "Artist"
+        "Artist",
+        "TrackCount"
       ],
       "type": "string"
     },
@@ -726,7 +727,8 @@
               "Movie",
               "Series",
               "BoxSet",
-              "MusicAlbum"
+              "MusicAlbum",
+              "Playlist"
             ],
             "type": "string"
           },

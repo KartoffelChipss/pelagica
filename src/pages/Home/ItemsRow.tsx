@@ -84,6 +84,12 @@ function getDetailFieldsStringForItem(
             return item.OfficialRating || t('not_rated');
         case 'Artist':
             return item.AlbumArtist || t('unknown_artist');
+        case 'TrackCount':
+            return item.ChildCount !== undefined && item.ChildCount !== null
+                ? item.ChildCount === 1
+                    ? t('track_count', { count: item.ChildCount })
+                    : t('track_count_plural', { count: item.ChildCount })
+                : t('not_available');
         default:
             return '';
     }
