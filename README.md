@@ -10,6 +10,7 @@ Pelagica is an alternative web frontend for [Jellyfin](https://jellyfin.org) bui
 - **Media Bars:** Add custom media bars to feature specific content.
 - **Search:** Quickly find media across your library from anywhere using `Cmd+K` / `Ctrl+K`.
 - **Video Player:** Integrated video player for movies and TV shows.
+- **Music Player:** A music player that allows you to listen to your music albums or playlists while browsing your library.
 - **Responsive Design:** Works seamlessly on both desktop and mobile devices.
 - **Theming:** Light and dark mode support.
 - **Localization:** Supports multiple languages through [community contributions](https://gitlocalize.com/repo/10635).
