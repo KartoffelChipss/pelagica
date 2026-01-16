@@ -30,12 +30,17 @@ import { useCurrentUser } from '@/hooks/api/useCurrentUser';
 import { useState, useEffect, useMemo } from 'react';
 import { useQueryClient } from '@tanstack/react-query';
 import { usePlaylistPresence } from '@/hooks/api/playlist/usePlaylistPresence';
+import { CreatePlaylistDialog } from '@/components/CreatePlaylistDialog';
 
 const MAX_ARTISTS_DISPLAYED = 5;
 
 const SongDropDown = ({ track, t }: { track: BaseItemDto; t: TFunction }) => {
     const { data: currentUser } = useCurrentUser();
-    const { data: playlists, isLoading: isLoadingPlaylists } = usePlaylists(currentUser?.Id);
+    const {
+        data: playlists,
+        isLoading: isLoadingPlaylists,
+        refetch: refetchPlaylists,
+    } = usePlaylists(currentUser?.Id);
     const playlistIds = useMemo(
         () => playlists?.map((p) => p.Id!).filter(Boolean) || [],
         [playlists]
@@ -128,6 +133,10 @@ const SongDropDown = ({ track, t }: { track: BaseItemDto; t: TFunction }) => {
                                     {playlist.Name}
                                 </DropdownMenuCheckboxItem>
                             ))}
+                        <CreatePlaylistDialog
+                            userId={currentUser?.Id}
+                            onSuccess={() => refetchPlaylists()}
+                        />
                     </DropdownMenuSubContent>
                 </DropdownMenuSub>
                 <MediaInfoDialog
