@@ -284,8 +284,8 @@ const LibraryPage = () => {
                 className="w-full"
                 ref={pageRef}
             >
-                <div className="flex items-center justify-between">
-                    <TabsList>
+                <div className="flex flex-col sm:items-center sm:justify-between sm:flex-row gap-2">
+                    <TabsList className="max-w-full overflow-auto">
                         {libraryItems?.map((library) => (
                             <TabsTrigger key={library.Id} value={library.Id ?? ''}>
                                 <JellyfinLibraryIcon libraryType={library.CollectionType} />
