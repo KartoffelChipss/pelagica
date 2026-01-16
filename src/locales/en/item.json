@@ -72,5 +72,6 @@
     "loading_tracks": "Loading tracks...",
     "error_loading_tracks": "Error loading tracks.",
     "duration": "Duration",
-    "more_artists": "+{{count}} more"
+    "more_artists": "+{{count}} more",
+    "mediaInfo": "Media Info"
 }

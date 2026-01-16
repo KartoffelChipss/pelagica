@@ -5,15 +5,45 @@ import { usePageBackground } from '@/hooks/usePageBackground';
 import { Link } from 'react-router';
 import { ticksToReadableMusicTime, ticksToReadableTime } from '@/utils/timeConversion';
 import { Button } from '@/components/ui/button';
-import { Play, Shuffle } from 'lucide-react';
+import { EllipsisVertical, Info, Play } from 'lucide-react';
 import FavoriteButton from '@/components/FavoriteButton';
 import { Skeleton } from '@/components/ui/skeleton';
 import type { AppConfig } from '@/hooks/api/useConfig';
 import { useAlbumTracks } from '@/hooks/api/useAlbumTracks';
 import { useMusicPlayback } from '@/hooks/useMusicPlayback';
 import { useTranslation } from 'react-i18next';
+import {
+    DropdownMenu,
+    DropdownMenuContent,
+    DropdownMenuItem,
+    DropdownMenuTrigger,
+} from '@/components/ui/dropdown-menu';
+import MediaInfoDialog from './MediaInfoDialog';
+import type { TFunction } from 'i18next';
 
 const MAX_ARTISTS_DISPLAYED = 5;
+
+const SongDropDown = ({ track, t }: { track: BaseItemDto; t: TFunction }) => {
+    return (
+        <DropdownMenu>
+            <DropdownMenuTrigger asChild>
+                <Button variant={'outline'} size={'icon-sm'} onClick={(e) => e.stopPropagation()}>
+                    <EllipsisVertical />
+                </Button>
+            </DropdownMenuTrigger>
+                </DropdownMenuItem> */}
+                <MediaInfoDialog
+                    streams={track.MediaStreams || []}
+                    trigger={
+                        <DropdownMenuItem onSelect={(e) => e.preventDefault()}>
+                            <Info /> {t('mediaInfo')}
+                        </DropdownMenuItem>
+                    }
+                />
+            </DropdownMenuContent>
+        </DropdownMenu>
+    );
+};
 
 interface MusicAlbumPageProps {
     item: BaseItemDto;
@@ -139,9 +169,6 @@ const MusicAlbumPage = ({ item, config }: MusicAlbumPageProps) => {
                             <Play />
                             {t('play')}
                         </Button>
-                        <Button variant={'outline'} size={'icon'}>
-                            <Shuffle />
-                        </Button>
                         <FavoriteButton
                             item={item}
                             size={'icon'}
@@ -174,6 +201,9 @@ const MusicAlbumPage = ({ item, config }: MusicAlbumPageProps) => {
                                 <span className="text-sm mr-8 font-mono w-4">#</span>
                                 <span>{t('title')}</span>
                                 <span className="text-sm ml-auto">{t('duration')}</span>
+                                <Button variant="ghost" size="icon-sm" className="ml-4 invisible">
+                                    <EllipsisVertical />
+                                </Button>
                             </div>
                             <div className="border-b border-border mb-4" />
                             <div className="flex flex-col gap-1">
@@ -215,6 +245,12 @@ const MusicAlbumPage = ({ item, config }: MusicAlbumPageProps) => {
                                                         )}
                                                     </span>
                                                 )}
+                                            <div
+                                                className="ml-4"
+                                                onClick={(e) => e.stopPropagation()}
+                                            >
+                                                <SongDropDown track={track} t={t} />
+                                            </div>
                                         </div>
                                     );
                                 })}

@@ -221,9 +221,10 @@ const MediaStreamInfo = ({ stream, t }: { stream: MediaStream; t: TFunction }) =
 
 interface MediaInfoDialogProps {
     streams: MediaStream[];
+    trigger?: React.ReactNode;
 }
 
-const MediaInfoDialog = ({ streams }: MediaInfoDialogProps) => {
+const MediaInfoDialog = ({ streams, trigger }: MediaInfoDialogProps) => {
     const { t } = useTranslation('item');
     const [selectedStreamIndex, setSelectedStreamIndex] = useState<number>(0);
 
@@ -239,9 +240,13 @@ const MediaInfoDialog = ({ streams }: MediaInfoDialogProps) => {
     return (
         <Dialog>
             <DialogTrigger asChild>
-                <Button variant={'outline'} size={'icon'}>
-                    <Info />
-                </Button>
+                {trigger ? (
+                    trigger
+                ) : (
+                    <Button variant={'outline'} size={'icon'}>
+                        <Info />
+                    </Button>
+                )}
             </DialogTrigger>
             <DialogContent className="max-h-[80vh] overflow-y-auto">
                 <DialogHeader>
