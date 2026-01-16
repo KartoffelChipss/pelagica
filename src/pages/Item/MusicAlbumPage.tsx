@@ -1,11 +1,10 @@
 import type { BaseItemDto } from '@jellyfin/sdk/lib/generated-client/models';
 import { getPrimaryImageUrl } from '@/utils/jellyfinUrls';
-import { useEffect } from 'react';
 import { usePageBackground } from '@/hooks/usePageBackground';
 import { Link } from 'react-router';
 import { ticksToReadableMusicTime, ticksToReadableTime } from '@/utils/timeConversion';
 import { Button } from '@/components/ui/button';
-import { EllipsisVertical, Info, Play } from 'lucide-react';
+import { EllipsisVertical, Info, ListMusic, Play } from 'lucide-react';
 import FavoriteButton from '@/components/FavoriteButton';
 import { Skeleton } from '@/components/ui/skeleton';
 import type { AppConfig } from '@/hooks/api/useConfig';
@@ -17,13 +16,87 @@ import {
     DropdownMenuContent,
     DropdownMenuItem,
     DropdownMenuTrigger,
+    DropdownMenuSub,
+    DropdownMenuSubTrigger,
+    DropdownMenuSubContent,
+    DropdownMenuCheckboxItem,
 } from '@/components/ui/dropdown-menu';
 import MediaInfoDialog from './MediaInfoDialog';
 import type { TFunction } from 'i18next';
+import { usePlaylists } from '@/hooks/api/playlist/usePlaylists';
+import { useAddToPlaylist } from '@/hooks/api/playlist/useAddToPlaylist';
+import { useRemoveFromPlaylist } from '@/hooks/api/playlist/useRemoveFromPlaylist';
+import { useCurrentUser } from '@/hooks/api/useCurrentUser';
+import { useState, useEffect, useMemo } from 'react';
+import { useQueryClient } from '@tanstack/react-query';
+import { usePlaylistPresence } from '@/hooks/api/playlist/usePlaylistPresence';
 
 const MAX_ARTISTS_DISPLAYED = 5;
 
 const SongDropDown = ({ track, t }: { track: BaseItemDto; t: TFunction }) => {
+    const { data: currentUser } = useCurrentUser();
+    const { data: playlists, isLoading: isLoadingPlaylists } = usePlaylists(currentUser?.Id);
+    const playlistIds = useMemo(
+        () => playlists?.map((p) => p.Id!).filter(Boolean) || [],
+        [playlists]
+    );
+    const {
+        data: presence,
+        isLoading: isCheckingPlaylists,
+        refetch,
+    } = usePlaylistPresence(track.Id, playlistIds, currentUser?.Id);
+    const addToPlaylist = useAddToPlaylist();
+    const removeFromPlaylist = useRemoveFromPlaylist();
+    const queryClient = useQueryClient();
+    const [localPresence, setLocalPresence] = useState(presence || {});
+    const [loadingStates, setLoadingStates] = useState<Record<string, boolean>>({});
+
+    useEffect(() => {
+        if (presence) setLocalPresence(presence);
+    }, [presence]);
+
+    const handlePlaylistToggle = async (playlistId: string) => {
+        if (!track.Id) return;
+
+        const currentState = localPresence[playlistId]?.present || false;
+        setLoadingStates((prev) => ({ ...prev, [playlistId]: true }));
+
+        try {
+            if (currentState) {
+                const playlistItemId = localPresence[playlistId]?.playlistItemId;
+                if (playlistItemId) {
+                    await removeFromPlaylist.mutateAsync({
+                        playlistId,
+                        entryIds: [playlistItemId],
+                    });
+                    setLocalPresence((prev) => ({
+                        ...prev,
+                        [playlistId]: { present: false, playlistItemId: null },
+                    }));
+                }
+            } else {
+                await addToPlaylist.mutateAsync({
+                    playlistId,
+                    itemIds: [track.Id],
+                    userId: currentUser?.Id,
+                });
+                setLocalPresence((prev) => ({
+                    ...prev,
+                    [playlistId]: {
+                        present: true,
+                        playlistItemId: prev[playlistId]?.playlistItemId || null,
+                    },
+                }));
+            }
+            await queryClient.invalidateQueries({ queryKey: ['playlistPresence', track.Id] });
+            refetch();
+        } catch (error) {
+            console.error('Error toggling playlist:', error);
+        } finally {
+            setLoadingStates((prev) => ({ ...prev, [playlistId]: false }));
+        }
+    };
+
     return (
         <DropdownMenu>
             <DropdownMenuTrigger asChild>
@@ -31,7 +104,32 @@ const SongDropDown = ({ track, t }: { track: BaseItemDto; t: TFunction }) => {
                     <EllipsisVertical />
                 </Button>
             </DropdownMenuTrigger>
-                </DropdownMenuItem> */}
+            <DropdownMenuContent align="end">
+                <DropdownMenuSub>
+                    <DropdownMenuSubTrigger>
+                        <ListMusic /> {t('add_to_playlist')}
+                    </DropdownMenuSubTrigger>
+                    <DropdownMenuSubContent>
+                        {(isLoadingPlaylists || isCheckingPlaylists) && (
+                            <DropdownMenuItem disabled>Loading...</DropdownMenuItem>
+                        )}
+                        {!isLoadingPlaylists && playlists && playlists.length === 0 && (
+                            <DropdownMenuItem disabled>No playlists found</DropdownMenuItem>
+                        )}
+                        {!isCheckingPlaylists &&
+                            playlists?.map((playlist) => (
+                                <DropdownMenuCheckboxItem
+                                    key={playlist.Id}
+                                    checked={localPresence[playlist.Id!]?.present || false}
+                                    disabled={loadingStates[playlist.Id!]}
+                                    onCheckedChange={() => handlePlaylistToggle(playlist.Id!)}
+                                    onSelect={(e) => e.preventDefault()}
+                                >
+                                    {playlist.Name}
+                                </DropdownMenuCheckboxItem>
+                            ))}
+                    </DropdownMenuSubContent>
+                </DropdownMenuSub>
                 <MediaInfoDialog
                     streams={track.MediaStreams || []}
                     trigger={
