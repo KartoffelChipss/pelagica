@@ -1,84 +1,124 @@
 {
-    "$schema": "./config.schema.json",
-    "itemPage": {
-        "episodeDisplay": "grid",
-        "detailBadges": ["ReleaseYear", "CommunityRating", "AgeRating", "EpisodeNumber"],
-        "favoriteButton": ["Movie", "Series", "MusicAlbum"],
-        "showWatchlistButton": true
-    },
+    "$schema": "./wsda/config.schema.json",
     "homeScreenSections": [
         {
             "type": "mediaBar",
-            "size": "medium",
             "items": {
-                "sortBy": ["Random"],
-                "types": ["Movie", "Series"]
+                "types": [
+                    "Movie",
+                    "Series"
+                ],
+                "sortBy": [
+                    "Random"
+                ]
             },
             "showFavoriteButton": true,
-            "showWatchlistButton": true
+            "showWatchlistButton": true,
+            "size": "medium"
         },
         {
             "type": "continueWatching",
+            "limit": 20,
+            "detailLine": [
+                "TimeRemaining"
+            ],
             "titleLine": "ItemTitleWithEpisodeInfo",
-            "detailLine": ["TimeRemaining"],
-            "accurateSorting": true,
-            "limit": 20
+            "accurateSorting": true
         },
         {
             "type": "items",
             "title": "Favorites",
             "items": {
+                "limit": 10,
                 "isFavorite": true,
-                "sortBy": ["DatePlayed"],
-                "sortOrder": "Descending",
-                "limit": 10
+                "sortBy": [
+                    "DatePlayed"
+                ],
+                "sortOrder": "Descending"
             }
         },
         {
             "type": "items",
             "title": "Watchlist",
             "items": {
+                "limit": 10,
                 "isInKefinTweaksWatchlist": true,
-                "sortBy": ["DatePlayed"],
-                "sortOrder": "Descending",
-                "limit": 10
+                "sortBy": [
+                    "DatePlayed"
+                ],
+                "sortOrder": "Descending"
             }
         },
         {
             "type": "items",
             "title": "Top Rated Anime",
             "items": {
-                "sortBy": ["CommunityRating"],
-                "sortOrder": "Descending",
+                "tags": [
+                    "Anime",
+                    "anime"
+                ],
                 "limit": 10,
-                "tags": ["Anime", "anime"]
+                "sortBy": [
+                    "CommunityRating"
+                ],
+                "sortOrder": "Descending"
             },
-            "detailFields": ["CommunityRating"]
+            "detailFields": [
+                "CommunityRating"
+            ]
         },
         {
             "type": "items",
             "title": "Recently Released Anime",
             "items": {
-                "sortBy": ["PremiereDate"],
-                "sortOrder": "Descending",
+                "tags": [
+                    "Anime",
+                    "anime"
+                ],
                 "limit": 10,
-                "tags": ["Anime", "anime"]
+                "sortBy": [
+                    "PremiereDate"
+                ],
+                "sortOrder": "Descending"
             },
-            "detailFields": ["ReleaseYearAndMonth"]
+            "detailFields": [
+                "ReleaseYearAndMonth"
+            ]
         },
         {
             "type": "items",
             "title": "Recently Released Movies",
             "items": {
-                "sortBy": ["PremiereDate"],
-                "sortOrder": "Descending",
+                "types": [
+                    "Movie"
+                ],
                 "limit": 10,
-                "types": ["Movie"]
+                "sortBy": [
+                    "PremiereDate"
+                ],
+                "sortOrder": "Descending"
             },
-            "detailFields": ["ReleaseYearAndMonth"]
+            "detailFields": [
+                "ReleaseYearAndMonth"
+            ]
         },
         {
             "type": "recentlyAdded"
         }
-    ]
+    ],
+    "itemPage": {
+        "detailBadges": [
+            "ReleaseYear",
+            "CommunityRating",
+            "AgeRating",
+            "EpisodeNumber"
+        ],
+        "episodeDisplay": "grid",
+        "favoriteButton": [
+            "Movie",
+            "Series",
+            "MusicAlbum"
+        ],
+        "showWatchlistButton": false
+    }
 }

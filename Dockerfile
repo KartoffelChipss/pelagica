@@ -1,31 +1,58 @@
-# Stage 1: Build the application
-FROM node:20-alpine AS builder
+# Stage 1: Build frontend
+FROM node:20-alpine AS frontend-builder
 
 WORKDIR /app
 
-COPY package.json pnpm-lock.yaml ./
+COPY frontend/package.json frontend/pnpm-lock.yaml ./
+RUN npm install -g pnpm \
+    && pnpm install --frozen-lockfile
 
-RUN npm install -g pnpm
-
-RUN pnpm install --frozen-lockfile
-
-# Copy source files
-COPY . .
-
+COPY frontend .
 RUN pnpm run build
 
-# Stage 2: Production server with nginx
+
+# Stage 2: Build backend
+FROM golang:1.24-alpine AS backend-builder
+
+WORKDIR /backend
+
+ARG TARGETOS
+ARG TARGETARCH
+
+COPY backend/go.mod ./
+RUN go mod download
+
+COPY backend .
+RUN CGO_ENABLED=0 \ 
+    GOOS=$TARGETOS \
+    GOARCH=$TARGETARCH \
+    go build -o server ./
+
+
+# Stage 3: Final image
 FROM nginx:alpine
 
-RUN apk add --no-cache gettext
+# runtime essentials
+RUN apk add --no-cache ca-certificates tzdata
 
-COPY --from=builder /app/dist /usr/share/nginx/html
+# frontend
+COPY --from=frontend-builder /app/dist /usr/share/nginx/html
 
+# backend
+COPY --from=backend-builder /backend/server /server
+
+# nginx config
 COPY nginx.conf /etc/nginx/conf.d/default.conf
 
-# Copy default config files (will be overridden by volumes if mounted)
-COPY public/example.config.json /usr/share/nginx/html/config.json
+# config directory (volume-friendly)
+RUN mkdir -p /config
+COPY default.config.json /config/config.json
+RUN chmod 644 /config/config.json
+
+ENV PORT=4321
+ENV CONFIG_PATH=/config/config.json
 
 EXPOSE 80
 
-CMD ["nginx", "-g", "daemon off;"]
+# start backend + nginx
+CMD ["/bin/sh", "-c", "exec /server & exec nginx -g 'daemon off;'"]

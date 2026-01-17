@@ -9,8 +9,7 @@ services:
         ports:
             - '8080:80'
         volumes:
-            - ./config.json:/usr/share/nginx/html/config.json
-            - ./config.schema.json:/usr/share/nginx/html/config.schema.json
+            - ./config.json:/config/config.json
         restart: unless-stopped
         healthcheck:
             test:
