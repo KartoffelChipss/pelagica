@@ -18,23 +18,27 @@ func getPort() string {
 func main() {
 	mux := http.NewServeMux()
 
-	mux.HandleFunc("/api/config", func (w http.ResponseWriter, r *http.Request) {
-		if r.Method == http.MethodOptions {
-			w.Header().Set("Access-Control-Allow-Methods", "GET, POST, OPTIONS")
-			w.Header().Set("Access-Control-Allow-Headers", "Content-Type, Authorization")
-			w.WriteHeader(http.StatusNoContent)
-			return
-		}
-
+	configHandler := http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
 		switch r.Method {
-		case http.MethodGet:
-			handlers.GetConfig(w, r)
-		case http.MethodPost:
-			handlers.UpdateConfig(w, r)
-		default:
-			http.Error(w, "Method not allowed", http.StatusMethodNotAllowed)
+			case http.MethodGet:
+				handlers.GetConfig(w, r)
+
+			case http.MethodPost:
+				handlers.AuthMiddleware(
+					http.HandlerFunc(handlers.UpdateConfig),
+				).ServeHTTP(w, r)
+
+			case http.MethodOptions:
+				w.Header().Set("Access-Control-Allow-Methods", "GET, POST, OPTIONS")
+				w.Header().Set("Access-Control-Allow-Headers", "Content-Type, Authorization")
+				w.WriteHeader(http.StatusNoContent)
+
+			default:
+				http.Error(w, "Method not allowed", http.StatusMethodNotAllowed)
 		}
 	})
+
+	mux.Handle("/api/config", configHandler)
 
 	log.Println("Server starting on " + getPort())
 

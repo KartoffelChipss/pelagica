@@ -1,6 +1,7 @@
 import type { BaseItemKind, ItemSortBy } from '@jellyfin/sdk/lib/generated-client/models';
 import { useEffect, useState } from 'react';
 import type { RecommendationTypeFilter } from './useRecommendedItems';
+import { getAccessToken, getServerUrl } from '@/utils/localstorageCredentials';
 
 interface BaseHomeScreenSection {
     /** Whether the section is enabled. Mostly intended for testing purposes */
@@ -312,13 +313,17 @@ export const useUpdateConfig = () => {
         setLoading(true);
         setError(null);
         try {
-            const response = await fetch('/api/config', {
-                method: 'POST',
-                headers: {
-                    'Content-Type': 'application/json',
-                },
-                body: JSON.stringify(newConfig),
-            });
+            const response = await fetch(
+                '/api/config?jellyfin_url=' + encodeURIComponent(getServerUrl() || ''),
+                {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json',
+                        Authorization: getAccessToken() || '',
+                    },
+                    body: JSON.stringify(newConfig),
+                }
+            );
             if (!response.ok) {
                 throw new Error(`Failed to update config: ${response.statusText}`);
             }
