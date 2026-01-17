@@ -1,5 +1,5 @@
 import * as React from 'react';
-import { X } from 'lucide-react';
+import { Plus, X } from 'lucide-react';
 import { Badge } from '@/components/ui/badge';
 import { Button } from '@/components/ui/button';
 import {
@@ -23,6 +23,7 @@ interface MultiSelectProps {
     selected: string[];
     onChange: (selected: string[]) => void;
     placeholder?: string;
+    allowCustom?: boolean;
 }
 
 export function MultiSelect({
@@ -30,8 +31,10 @@ export function MultiSelect({
     selected,
     onChange,
     placeholder = 'Select items...',
+    allowCustom = false,
 }: MultiSelectProps) {
     const [open, setOpen] = React.useState(false);
+    const [query, setQuery] = React.useState('');
 
     const handleToggle = (value: string) => {
         const newSelected = selected.includes(value)
@@ -43,6 +46,16 @@ export function MultiSelect({
     const handleRemove = (value: string) => {
         onChange(selected.filter((item) => item !== value));
     };
+
+    const addCustom = (value: string) => {
+        const v = value.trim();
+        if (!v) return;
+        if (selected.includes(v)) return;
+        onChange([...selected, v]);
+        setQuery('');
+    };
+
+    const optionValues = new Set(options.map((o) => o.value));
 
     return (
         <Popover open={open} onOpenChange={setOpen}>
@@ -77,8 +90,10 @@ export function MultiSelect({
             </PopoverTrigger>
             <PopoverContent className="w-full p-0">
                 <Command>
-                    <CommandInput placeholder="Search..." />
-                    <CommandEmpty>No items found.</CommandEmpty>
+                    <CommandInput placeholder="Search..." value={query} onValueChange={setQuery} />
+                    <CommandEmpty>
+                        {allowCustom ? 'No items found. Type to add.' : 'No matching items.'}
+                    </CommandEmpty>
                     <CommandList>
                         <CommandGroup>
                             {options.map((option) => (
@@ -94,6 +109,15 @@ export function MultiSelect({
                                     {option.label}
                                 </CommandItem>
                             ))}
+                            {allowCustom &&
+                                query &&
+                                !optionValues.has(query) &&
+                                !selected.includes(query) && (
+                                    <CommandItem value={query} onSelect={() => addCustom(query)}>
+                                        <Plus />
+                                        Add "{query}"
+                                    </CommandItem>
+                                )}
                         </CommandGroup>
                     </CommandList>
                 </Command>

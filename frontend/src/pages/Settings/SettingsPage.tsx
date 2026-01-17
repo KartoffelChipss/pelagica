@@ -1,3 +1,4 @@
+/* eslint-disable @typescript-eslint/no-explicit-any */
 /* eslint-disable react-hooks/set-state-in-effect */
 import { useTranslation } from 'react-i18next';
 import Page from '../Page';
@@ -5,15 +6,20 @@ import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
 import {
     DETAIL_BADGES,
     EPISODE_DISPLAYS,
+    DETAIL_FIELDS,
     useConfig,
     useUpdateConfig,
     type DetailBadge,
+    type DetailField,
+    type HomeScreenSection,
+    type SectionItemsConfig,
 } from '@/hooks/api/useConfig';
-import { useState, useEffect } from 'react';
+import { useState, useEffect, memo } from 'react';
 import { Label } from '@/components/ui/label';
 import { Input } from '@/components/ui/input';
 import { Button } from '@/components/ui/button';
-import { Check } from 'lucide-react';
+import { Check, Trash2, Plus, Edit, ArrowUp, ArrowDown } from 'lucide-react';
+import { Skeleton } from '@/components/ui/skeleton';
 import { Switch } from '@/components/ui/switch';
 import {
     Select,
@@ -22,6 +28,13 @@ import {
     SelectTrigger,
     SelectValue,
 } from '@/components/ui/select';
+import {
+    Dialog,
+    DialogContent,
+    DialogHeader,
+    DialogTitle,
+    DialogFooter,
+} from '@/components/ui/dialog';
 import { MultiSelect, type Option } from '@/components/ui/multi-select';
 import type { BaseItemKind } from '@jellyfin/sdk/lib/generated-client/models';
 
@@ -112,19 +125,391 @@ const MultiSelectInput = ({
     selected,
     onChange,
     description,
+    allowCustom,
 }: {
     label: string;
     options: Option[];
     selected: string[];
     onChange: (selected: string[]) => void;
     description?: string;
+    allowCustom?: boolean;
 }) => (
     <div className="mt-4">
         <Label className="mb-2">{label}</Label>
         {description && <p className="mb-2 text-sm text-muted-foreground">{description}</p>}
-        <MultiSelect options={options} selected={selected} onChange={onChange} />
+        <MultiSelect
+            options={options}
+            selected={selected}
+            onChange={onChange}
+            allowCustom={allowCustom}
+        />
     </div>
 );
+
+const SectionEditor = ({
+    section,
+    onSave,
+    onClose,
+}: {
+    section: HomeScreenSection | null;
+    onSave: (section: HomeScreenSection) => void;
+    onClose: () => void;
+}) => {
+    const { t } = useTranslation('settings');
+    const [editedSection, setEditedSection] = useState<HomeScreenSection | null>(section);
+
+    useEffect(() => {
+        setEditedSection(section);
+    }, [section]);
+
+    if (!editedSection) return null;
+
+    return (
+        <Dialog open={!!section} onOpenChange={onClose}>
+            <DialogContent className="max-w-2xl max-h-[80vh] overflow-y-auto">
+                <DialogHeader>
+                    <DialogTitle>{t('edit_section')}</DialogTitle>
+                </DialogHeader>
+                <div className="space-y-4">
+                    <StringInput
+                        label={t('section_title_label')}
+                        value={editedSection.title || ''}
+                        onChange={(value) =>
+                            setEditedSection({
+                                ...editedSection,
+                                title: value,
+                            })
+                        }
+                        placeholder={t('section_title_placeholder')}
+                    />
+                    <SelectInput
+                        label={t('section_type_label')}
+                        options={[
+                            { value: 'mediaBar', label: 'Media Bar' },
+                            { value: 'continueWatching', label: 'Continue Watching' },
+                            { value: 'nextUp', label: 'Next Up' },
+                            { value: 'resume', label: 'Resume' },
+                            { value: 'items', label: 'Items' },
+                            { value: 'recentlyAdded', label: 'Recently Added' },
+                            { value: 'streamystatsRecommended', label: 'Recommended' },
+                        ]}
+                        value={editedSection.type}
+                        onChange={(value) => {
+                            setEditedSection({
+                                ...editedSection,
+                                type: value as HomeScreenSection['type'],
+                            });
+                        }}
+                    />
+
+                    {editedSection.type !== 'recentlyAdded' &&
+                        editedSection.type !== 'mediaBar' &&
+                        editedSection.type !== 'items' && (
+                            <StringInput
+                                label={t('section_limit_label')}
+                                value={
+                                    'limit' in editedSection
+                                        ? String(editedSection.limit || '')
+                                        : ''
+                                }
+                                onChange={(value) =>
+                                    setEditedSection({
+                                        ...editedSection,
+                                        limit: value ? parseInt(value) : undefined,
+                                    } as any)
+                                }
+                                placeholder={t('section_limit_placeholder')}
+                            />
+                        )}
+
+                    {editedSection.type === 'mediaBar' && (
+                        <>
+                            <SelectInput
+                                label={t('size')}
+                                options={[
+                                    { value: 'small', label: t('small') },
+                                    { value: 'medium', label: t('medium') },
+                                    { value: 'large', label: t('large') },
+                                ]}
+                                value={(editedSection as any).size || 'medium'}
+                                onChange={(value) =>
+                                    setEditedSection({
+                                        ...editedSection,
+                                        size: value as any,
+                                    })
+                                }
+                            />
+                            <BooleanInput
+                                label={t('show_favorite_button')}
+                                checked={(editedSection as any).showFavoriteButton || false}
+                                onChange={(value) =>
+                                    setEditedSection({
+                                        ...editedSection,
+                                        showFavoriteButton: value,
+                                    })
+                                }
+                            />
+                            <BooleanInput
+                                label={t('show_watchlist_button')}
+                                checked={(editedSection as any).showWatchlistButton || false}
+                                onChange={(value) =>
+                                    setEditedSection({
+                                        ...editedSection,
+                                        showWatchlistButton: value,
+                                    })
+                                }
+                            />
+                        </>
+                    )}
+
+                    {editedSection.type === 'mediaBar' && (
+                        <ItemsConfigEditor
+                            items={(editedSection as any).items}
+                            onChange={(newItems) =>
+                                setEditedSection({
+                                    ...editedSection,
+                                    items: newItems,
+                                })
+                            }
+                        />
+                    )}
+
+                    {(editedSection.type === 'continueWatching' ||
+                        editedSection.type === 'nextUp' ||
+                        editedSection.type === 'resume') && (
+                        <>
+                            <SelectInput
+                                label={t('title_line')}
+                                options={[
+                                    { value: 'ItemTitle', label: 'Item Title' },
+                                    { value: 'ParentTitle', label: 'Parent Title' },
+                                    {
+                                        value: 'ItemTitleWithEpisodeInfo',
+                                        label: 'Item Title with Episode Info',
+                                    },
+                                ]}
+                                value={(editedSection as any).titleLine || 'ItemTitle'}
+                                onChange={(value) =>
+                                    setEditedSection({
+                                        ...editedSection,
+                                        titleLine: value as any,
+                                    })
+                                }
+                            />
+                        </>
+                    )}
+
+                    {editedSection.type === 'continueWatching' && (
+                        <BooleanInput
+                            label={t('accurate_sorting')}
+                            checked={(editedSection as any).accurateSorting || false}
+                            onChange={(value) =>
+                                setEditedSection({
+                                    ...editedSection,
+                                    accurateSorting: value,
+                                })
+                            }
+                        />
+                    )}
+
+                    {editedSection.type === 'streamystatsRecommended' && (
+                        <>
+                            <SelectInput
+                                label={t('recommendation_type')}
+                                options={[
+                                    { value: 'all', label: t('recomm_all') },
+                                    { value: 'Movie', label: t('recomm_movies') },
+                                    { value: 'Series', label: t('recomm_series') },
+                                ]}
+                                value={(editedSection as any).recommendationType || 'all'}
+                                onChange={(value) =>
+                                    setEditedSection({
+                                        ...editedSection,
+                                        recommendationType: value as any,
+                                    })
+                                }
+                            />
+                            <BooleanInput
+                                label={t('show_similarity')}
+                                checked={(editedSection as any).showSimilarity || false}
+                                onChange={(value) =>
+                                    setEditedSection({
+                                        ...editedSection,
+                                        showSimilarity: value,
+                                    })
+                                }
+                            />
+                            <BooleanInput
+                                label={t('show_based_on')}
+                                checked={(editedSection as any).showBasedOn || false}
+                                onChange={(value) =>
+                                    setEditedSection({
+                                        ...editedSection,
+                                        showBasedOn: value,
+                                    })
+                                }
+                            />
+                        </>
+                    )}
+
+                    {editedSection.type === 'items' && (
+                        <>
+                            <ItemsConfigEditor
+                                items={(editedSection as any).items}
+                                onChange={(newItems) =>
+                                    setEditedSection({
+                                        ...editedSection,
+                                        items: newItems,
+                                    })
+                                }
+                            />
+                            <MultiSelectInput
+                                label={t('detail_fields')}
+                                options={DETAIL_FIELDS.map((f) => ({ value: f, label: f }))}
+                                selected={((editedSection as any).detailFields || []) as string[]}
+                                onChange={(selected) =>
+                                    setEditedSection({
+                                        ...editedSection,
+                                        detailFields: selected as DetailField[],
+                                    } as any)
+                                }
+                            />
+                        </>
+                    )}
+                </div>
+                <DialogFooter>
+                    <Button variant="outline" onClick={onClose}>
+                        {t('cancel')}
+                    </Button>
+                    <Button
+                        onClick={() => {
+                            onSave(editedSection);
+                            onClose();
+                        }}
+                    >
+                        {t('save')}
+                    </Button>
+                </DialogFooter>
+            </DialogContent>
+        </Dialog>
+    );
+};
+
+const SettingsSkeleton = memo(() => (
+    <div className="space-y-4 max-w-200">
+        <div className="flex gap-3">
+            <Skeleton className="h-10 w-24" />
+            <Skeleton className="h-10 w-24" />
+            <Skeleton className="h-10 w-24" />
+        </div>
+        <Skeleton className="h-8 w-48" />
+        <Skeleton className="h-24 w-full" />
+        <Skeleton className="h-8 w-48" />
+        <div className="space-y-2">
+            <Skeleton className="h-10 w-full" />
+            <Skeleton className="h-10 w-full" />
+            <Skeleton className="h-10 w-full" />
+        </div>
+    </div>
+));
+
+const ItemsConfigEditor = ({
+    items,
+    onChange,
+}: {
+    items: SectionItemsConfig | undefined;
+    onChange: (items: SectionItemsConfig) => void;
+}) => {
+    const { t } = useTranslation('settings');
+
+    const current: SectionItemsConfig = items || {};
+    const sortByOptions: Option[] = [
+        { value: 'DateCreated', label: 'Date Created' },
+        { value: 'PremiereDate', label: 'Premiere Date' },
+        { value: 'Random', label: 'Random' },
+        { value: 'CommunityRating', label: 'Community Rating' },
+        { value: 'ProductionYear', label: 'Production Year' },
+        { value: 'Name', label: 'Name' },
+        { value: 'SortName', label: 'Sort Name' },
+    ];
+    const typeOptions: Option[] = [
+        { value: 'Movie', label: 'Movie' },
+        { value: 'Series', label: 'Series' },
+        { value: 'BoxSet', label: 'Box Set' },
+        { value: 'MusicAlbum', label: 'Music Album' },
+        { value: 'Playlist', label: 'Playlist' },
+    ];
+
+    return (
+        <div className="mt-6 space-y-4">
+            <MultiSelectInput
+                label={t('sort_by')}
+                options={sortByOptions}
+                selected={(current.sortBy as string[]) || []}
+                onChange={(selected) => onChange({ ...current, sortBy: selected as any })}
+            />
+            <SelectInput
+                label={t('sort_order')}
+                options={[
+                    { value: 'Ascending', label: t('ascending') },
+                    { value: 'Descending', label: t('descending') },
+                ]}
+                value={current.sortOrder || 'Descending'}
+                onChange={(value) => onChange({ ...current, sortOrder: value as any })}
+            />
+            <MultiSelectInput
+                label={t('item_types')}
+                options={typeOptions}
+                selected={(current.types as string[]) || []}
+                onChange={(selected) => onChange({ ...current, types: selected as any })}
+            />
+            <StringInput
+                label={t('library_id')}
+                value={current.libraryId || ''}
+                onChange={(value) => onChange({ ...current, libraryId: value || undefined })}
+                placeholder={t('library_id_placeholder')}
+                description={t('library_id_description')}
+            />
+            <MultiSelectInput
+                label={t('genres')}
+                options={(current.genres || []).map((g) => ({ value: g, label: g }))}
+                selected={current.genres || []}
+                onChange={(selected) => onChange({ ...current, genres: selected })}
+                allowCustom
+            />
+            <MultiSelectInput
+                label={t('tags')}
+                options={(current.tags || []).map((g) => ({ value: g, label: g }))}
+                selected={current.tags || []}
+                onChange={(selected) => onChange({ ...current, tags: selected })}
+                allowCustom
+            />
+            <StringInput
+                label={t('items_limit')}
+                value={String(current.limit || '')}
+                onChange={(value) =>
+                    onChange({ ...current, limit: value ? parseInt(value) : undefined })
+                }
+                placeholder={t('items_limit_placeholder')}
+            />
+            <BooleanInput
+                label={t('only_favorites')}
+                checked={current.isFavorite || false}
+                onChange={(checked) => onChange({ ...current, isFavorite: checked })}
+            />
+            <BooleanInput
+                label={t('only_watchlist_kefintweaks')}
+                checked={current.isInKefinTweaksWatchlist || false}
+                onChange={(checked) => onChange({ ...current, isInKefinTweaksWatchlist: checked })}
+            />
+            <BooleanInput
+                label={t('only_unplayed')}
+                checked={current.isUnplayed || false}
+                onChange={(checked) => onChange({ ...current, isUnplayed: checked })}
+            />
+        </div>
+    );
+};
 
 const SettingsPage = () => {
     const { t } = useTranslation('settings');
@@ -137,7 +522,18 @@ const SettingsPage = () => {
     const [showWatchlistButton, setShowWatchlistButton] = useState(false);
     const [favoriteButton, setFavoriteButton] = useState<string[]>([]);
     const [detailBadges, setDetailBadges] = useState<string[]>([]);
+    const [homeScreenSections, setHomeScreenSections] = useState<HomeScreenSection[]>([]);
     const [saveSuccess, setSaveSuccess] = useState(false);
+    const [editingIndex, setEditingIndex] = useState<number | null>(null);
+
+    const moveSection = (index: number, direction: -1 | 1) => {
+        const newIndex = index + direction;
+        if (newIndex < 0 || newIndex >= homeScreenSections.length) return;
+        const updated = [...homeScreenSections];
+        const [moved] = updated.splice(index, 1);
+        updated.splice(newIndex, 0, moved);
+        setHomeScreenSections(updated);
+    };
 
     useEffect(() => {
         setServerAddress(config?.serverAddress || '');
@@ -147,6 +543,7 @@ const SettingsPage = () => {
         setShowWatchlistButton(config?.itemPage?.showWatchlistButton || false);
         setFavoriteButton(config?.itemPage?.favoriteButton || []);
         setDetailBadges(config?.itemPage?.detailBadges || []);
+        setHomeScreenSections(config?.homeScreenSections || []);
     }, [
         config?.serverAddress,
         config?.streamystatsUrl,
@@ -155,6 +552,7 @@ const SettingsPage = () => {
         config?.itemPage?.showWatchlistButton,
         config?.itemPage?.favoriteButton,
         config?.itemPage?.detailBadges,
+        config?.homeScreenSections,
     ]);
 
     const handleUpdateConfig = async () => {
@@ -166,6 +564,7 @@ const SettingsPage = () => {
                     serverAddress,
                     streamystatsUrl,
                     showStreamystatsButton,
+                    homeScreenSections,
                     itemPage: {
                         ...config.itemPage,
                         episodeDisplay,
@@ -189,7 +588,7 @@ const SettingsPage = () => {
     if (loading) {
         return (
             <Page title={t('title')} requiresAuth>
-                Loading...
+                <SettingsSkeleton />
             </Page>
         );
     }
@@ -239,7 +638,105 @@ const SettingsPage = () => {
                         onChange={setShowStreamystatsButton}
                     />
                 </TabsContent>
-                <TabsContent value="homesections">Home Sections Settings here</TabsContent>
+                <TabsContent value="homesections" className="max-w-200">
+                    <h1 className="mb-2 mt-2 text-2xl font-bold leading-none tracking-tight">
+                        {t('category_homesections')}
+                    </h1>
+                    <p className="mb-4 text-sm text-muted-foreground">
+                        {t('homesections_description')}
+                    </p>
+                    <div className="mt-4 space-y-3">
+                        {homeScreenSections.length === 0 ? (
+                            <p className="text-sm text-muted-foreground">
+                                {t('no_sections_configured')}
+                            </p>
+                        ) : (
+                            homeScreenSections.map((section, index) => (
+                                <div
+                                    key={index}
+                                    className="flex flex-col sm:flex-row sm:items-center justify-between rounded-lg border p-4"
+                                >
+                                    <div className="flex flex-col flex-1">
+                                        <span className="font-semibold">
+                                            {section.title ||
+                                                t(`section_type_${section.type}`) ||
+                                                section.type}
+                                        </span>
+                                        <span className="text-sm text-muted-foreground">
+                                            {t(`section_type_${section.type}`)}
+                                        </span>
+                                    </div>
+                                    <div className="flex items-center gap-2 mt-2 sm:mt-0">
+                                        <Button
+                                            onClick={() => moveSection(index, -1)}
+                                            variant="ghost"
+                                            size="sm"
+                                            disabled={index === 0}
+                                        >
+                                            <ArrowUp className="h-4 w-4" />
+                                        </Button>
+                                        <Button
+                                            onClick={() => moveSection(index, 1)}
+                                            variant="ghost"
+                                            size="sm"
+                                            disabled={index === homeScreenSections.length - 1}
+                                        >
+                                            <ArrowDown className="h-4 w-4" />
+                                        </Button>
+                                        <Switch
+                                            checked={section.enabled !== false}
+                                            onCheckedChange={(checked) => {
+                                                const updated = [...homeScreenSections];
+                                                updated[index] = {
+                                                    ...updated[index],
+                                                    enabled: checked,
+                                                };
+                                                setHomeScreenSections(updated);
+                                            }}
+                                            className="mr-2"
+                                        />
+                                        <Button
+                                            onClick={() => setEditingIndex(index)}
+                                            variant="ghost"
+                                            size="sm"
+                                        >
+                                            <Edit className="h-4 w-4" />
+                                        </Button>
+                                        <Button
+                                            onClick={() => {
+                                                setHomeScreenSections(
+                                                    homeScreenSections.filter((_, i) => i !== index)
+                                                );
+                                            }}
+                                            variant="ghost"
+                                            size="sm"
+                                            className="text-destructive hover:text-destructive"
+                                        >
+                                            <Trash2 className="h-4 w-4" />
+                                        </Button>
+                                    </div>
+                                </div>
+                            ))
+                        )}
+                    </div>
+                    <Button
+                        onClick={() => {
+                            setHomeScreenSections([
+                                ...homeScreenSections,
+                                {
+                                    type: 'items',
+                                    title: 'New Section',
+                                    enabled: true,
+                                },
+                            ]);
+                        }}
+                        className="mt-4"
+                        variant="outline"
+                    >
+                        <Plus />
+                        {t('add_section')}
+                    </Button>
+                </TabsContent>
                 <TabsContent value="itempage" className="max-w-200">
                     <h1 className="mb-2 mt-2 text-2xl font-bold leading-none tracking-tight">
                         {t('category_itempage')}
@@ -285,6 +782,18 @@ const SettingsPage = () => {
                     />
                 </TabsContent>
             </Tabs>
+            <SectionEditor
+                section={editingIndex !== null ? homeScreenSections[editingIndex] : null}
+                onSave={(editedSection) => {
+                    const updated = [...homeScreenSections];
+                    if (editingIndex !== null) {
+                        updated[editingIndex] = editedSection;
+                        setHomeScreenSections(updated);
+                        setEditingIndex(null);
+                    }
+                }}
+                onClose={() => setEditingIndex(null)}
+            />
             <Button className="mt-6" onClick={handleUpdateConfig} disabled={updating}>
                 {updating ? (
                     t('saving')
