@@ -65,43 +65,22 @@ The easiest way to run Pelagica is using Docker. This provides a production-read
     mkdir -p pelagica && cd pelagica
     ```
 
-2. **Download default config files:**
-
-    ```bash
-    curl -o config.json https://raw.githubusercontent.com/KartoffelChipss/pelagica/main/config.json
-    curl -o config.schema.json https://raw.githubusercontent.com/KartoffelChipss/pelagica/main/config.schema.json
-    ```
-
-3. **Run the container:**
+2. **Run the container:**
 
     ```bash
     docker run -d \
       --name pelagica \
       -p 8080:80 \
-      -v "$(pwd)/config.json:/usr/share/nginx/html/config.json" \
-      -v "$(pwd)/config.schema.json:/usr/share/nginx/html/config.schema.json" \
+      -v "$(pwd)/config:/config" \
       --restart unless-stopped \
       kartoffelchipss/pelagica:latest
     ```
 
-4. **Access Pelagica:**
-   Open your browser to http://localhost:8080
+    Make sure to replace `$(pwd)/config` with the actual path where your config files should be located (e.g. `/mnt/user/appdata/pelagica`)
 
-### Configuration
+3. **Access Pelagica:**
 
-The `config.json` file in your directory controls the app's behavior. Edit it with any text editor - changes take effect immediately without restarting the container.
-
-**Example: Set default Jellyfin server:**
-
-```json
-{
-  "$schema": "./config.schema.json",
-  "serverAddress": "https://jellyfin.example.com",
-  ...
-}
-```
-
-After editing `config.json`, refresh your browser to see the changes.
+    Open your browser to http://localhost:8080
 
 ### Container Management
 
@@ -134,10 +113,11 @@ services:
         ports:
             - '8080:80'
         volumes:
-            - ./config.json:/usr/share/nginx/html/config.json
-            - ./config.schema.json:/usr/share/nginx/html/config.schema.json
+            - /path/to/your/config:/config
         restart: unless-stopped
 ```
+
+Replace `/path/to/your/config` with the actual path where your config files should be located (e.g. `/mnt/user/appdata/pelagica`)
 
 Then run: `docker-compose up -d`
 
@@ -154,25 +134,45 @@ cd pelagica
 docker-compose up -d --build
 ```
 
-Your `config.json` in the project root will be used automatically.
-
 ## Development Setup
 
-For local development without Docker:
+### Frontend
 
-1. **Install dependencies:**
+1. **Switch to the frontend directory:**
+
+    ```
+    cd frontend
+    ```
+
+2. **Install dependencies:**
 
     ```bash
     pnpm install
     ```
 
-2. **Start development server:**
+3. **Start development server:**
 
     ```bash
     pnpm dev
     ```
 
-3. **Access at:** http://localhost:3000
+4. **Access at:** http://localhost:3000
+
+### Backend
+
+1. **Switch to the backend directory:**
+
+    ```
+    cd backend
+    ```
+
+2. **Start the server:**
+
+    ```bash
+    CONFIG_PATH="./config.json" go run main.go
+    ```
+
+You can also use the `dev.sh` script to start both frontend and backend with hot reloading.
 
 ## Community Discord
 

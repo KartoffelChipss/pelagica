@@ -7,7 +7,7 @@ services:
         ports:
             - '8080:80'
         volumes:
-            - ./config.json:/config/config.json
+            - ./config:/config
         restart: unless-stopped
         healthcheck:
             test:
