@@ -12,6 +12,7 @@ dist
 dist-ssr
 *.local
 dev.config.json
+config.json
 
 # Editor directories and files
 .vscode/*
