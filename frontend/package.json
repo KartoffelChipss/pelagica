@@ -8,7 +8,7 @@
         "build": "tsc -b && vite build && npm run mkschema",
         "lint": "eslint .",
         "preview": "vite preview",
-        "mkschema": "ts-json-schema-generator --path src/hooks/api/useConfig.ts --type AppConfig --out config.schema.json --no-type-check --additional-properties"
+        "mkschema": "ts-json-schema-generator --path src/hooks/api/useConfig.ts --type AppConfig --out ../config.schema.json --no-type-check --additional-properties"
     },
     "dependencies": {
         "@jellyfin/sdk": "^0.13.0",
