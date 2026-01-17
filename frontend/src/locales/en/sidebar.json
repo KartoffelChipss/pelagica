@@ -13,5 +13,6 @@
     "preferences": "Preferences",
     "audio_language_preference": "Audio Language Preference",
     "subtitle_language_preference": "Subtitle Language Preference",
-    "select_language": "Select language"
+    "select_language": "Select language",
+    "pelagica_config": "Pelagica Config"
 }

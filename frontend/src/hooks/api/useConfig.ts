@@ -53,18 +53,20 @@ export interface RecentlyAddedSection extends BaseHomeScreenSection {
     limit?: number;
 }
 
-export type DetailField =
-    | 'ReleaseYear'
-    | 'ReleaseYearAndMonth'
-    | 'ReleaseDate'
-    | 'CommunityRating'
-    | 'PlayDuration'
-    | 'PlayEnd'
-    | 'SeasonCount'
-    | 'EpisodeCount'
-    | 'AgeRating'
-    | 'Artist'
-    | 'TrackCount';
+export const DETAIL_FIELDS = [
+    'ReleaseYear',
+    'ReleaseYearAndMonth',
+    'ReleaseDate',
+    'CommunityRating',
+    'PlayDuration',
+    'PlayEnd',
+    'SeasonCount',
+    'EpisodeCount',
+    'AgeRating',
+    'Artist',
+    'TrackCount',
+] as const;
+export type DetailField = (typeof DETAIL_FIELDS)[number];
 
 /** A generic section displaying a grid of items */
 export interface ItemsSection extends BaseHomeScreenSection {
@@ -77,14 +79,22 @@ export interface ItemsSection extends BaseHomeScreenSection {
     detailFields?: DetailField[];
 }
 
-export type ContinueWatchingTitleLine = 'ItemTitle' | 'ParentTitle' | 'ItemTitleWithEpisodeInfo';
-export type ContinueWatchingDetailLine =
-    | 'ProgressPercentage'
-    | 'TimeRemaining'
-    | 'EpisodeInfo'
-    | 'EndsAt'
-    | 'ParentTitle'
-    | 'None';
+export const CONTINUE_WATCHING_TITLE_LINES = [
+    'ItemTitle',
+    'ParentTitle',
+    'ItemTitleWithEpisodeInfo',
+] as const;
+export type ContinueWatchingTitleLine = (typeof CONTINUE_WATCHING_TITLE_LINES)[number];
+
+export const CONTINUE_WATCHING_DETAIL_LINES = [
+    'ProgressPercentage',
+    'TimeRemaining',
+    'EpisodeInfo',
+    'EndsAt',
+    'ParentTitle',
+    'None',
+] as const;
+export type ContinueWatchingDetailLine = (typeof CONTINUE_WATCHING_DETAIL_LINES)[number];
 
 export interface ContinueWatchingSection extends BaseHomeScreenSection {
     type: 'continueWatching';
@@ -130,21 +140,24 @@ export type HomeScreenSection =
     | NextUpSection
     | ResumeSection;
 
-export type EpisodeDisplay = 'grid' | 'row';
+export const EPISODE_DISPLAYS = ['grid', 'row'] as const;
+export type EpisodeDisplay = (typeof EPISODE_DISPLAYS)[number];
 
-export type DetailBadge =
-    | 'ReleaseYear'
-    | 'ReleaseYearAndMonth'
-    | 'ReleaseDate'
-    | 'CommunityRating'
-    | 'PlayDuration'
-    | 'PlayEnd'
-    | 'SeasonCount'
-    | 'EpisodeCount'
-    | 'AgeRating'
-    | 'EpisodeNumber'
-    | 'Duration'
-    | 'VideoQuality';
+export const DETAIL_BADGES = [
+    'ReleaseYear',
+    'ReleaseYearAndMonth',
+    'ReleaseDate',
+    'CommunityRating',
+    'PlayDuration',
+    'PlayEnd',
+    'SeasonCount',
+    'EpisodeCount',
+    'AgeRating',
+    'EpisodeNumber',
+    'Duration',
+    'VideoQuality',
+] as const;
+export type DetailBadge = (typeof DETAIL_BADGES)[number];
 
 export interface ItemPageSettings {
     /** How to display episodes on series pages */
@@ -289,4 +302,34 @@ export const useConfig = () => {
     }, []);
 
     return { config, loading, error };
+};
+
+export const useUpdateConfig = () => {
+    const [loading, setLoading] = useState(false);
+    const [error, setError] = useState<string | null>(null);
+
+    const updateConfig = async (newConfig: AppConfig): Promise<void> => {
+        setLoading(true);
+        setError(null);
+        try {
+            const response = await fetch('/api/config', {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json',
+                },
+                body: JSON.stringify(newConfig),
+            });
+            if (!response.ok) {
+                throw new Error(`Failed to update config: ${response.statusText}`);
+            }
+        } catch (err) {
+            const errorMessage = err instanceof Error ? err.message : 'Failed to update config';
+            setError(errorMessage);
+            throw err;
+        } finally {
+            setLoading(false);
+        }
+    };
+
+    return { updateConfig, loading, error };
 };

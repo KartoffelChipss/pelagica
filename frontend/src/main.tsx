@@ -16,6 +16,7 @@ import NotFoundPage from './pages/NotFound/NotFoundPage.tsx';
 import PlayerPage from './pages/Player/PlayerPage.tsx';
 import PersonPage from './pages/Person/PersonPage.tsx';
 import { MusicPlaybackProvider } from './context/MusicPlaybackProvider.tsx';
+import SettingsPage from './pages/Settings/SettingsPage.tsx';
 
 const queryClient = new QueryClient();
 
@@ -34,6 +35,7 @@ createRoot(document.getElementById('root')!).render(
                             <Route path="/person/:itemId" element={<PersonPage />} />
                             <Route path="/login" element={<LoginPage />} />
                             <Route path="/play/:itemId" element={<PlayerPage />} />
+                            <Route path="/settings" element={<SettingsPage />} />
                             <Route path="*" element={<NotFoundPage />} />
                         </Routes>
                     </BrowserRouter>

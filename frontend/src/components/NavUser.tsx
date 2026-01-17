@@ -1,5 +1,4 @@
 import {
-    Bolt,
     ChartLine,
     ChevronsUpDown,
     Check,
@@ -9,6 +8,8 @@ import {
     LogOut,
     Moon,
     Sun,
+    Settings,
+    Settings2,
 } from 'lucide-react';
 import { useState } from 'react';
 import { Avatar, AvatarFallback, AvatarImage } from '@/components/ui/avatar';
@@ -27,7 +28,7 @@ import {
     useSidebar,
 } from '@/components/ui/sidebar';
 import { useCurrentUser } from '@/hooks/api/useCurrentUser';
-import { useNavigate } from 'react-router';
+import { Link, useNavigate } from 'react-router';
 import { logout } from '@/api/logout';
 import { getApi } from '@/api/getApi';
 import { useTheme } from './theme-provider';
@@ -142,6 +143,7 @@ export function NavUser() {
 
     const profileImageUrl = getUserProfileImageUrl(user.Id);
     const userName = user?.Name || t('unknown_user');
+    const isAdmin = user?.Policy?.IsAdministrator;
 
     return (
         <SidebarMenu>
@@ -282,7 +284,7 @@ export function NavUser() {
                         <Dialog>
                             <DialogTrigger asChild>
                                 <SidebarMenuButton>
-                                    <Bolt className="text-muted-foreground" />
+                                    <Settings2 className="text-muted-foreground" />
                                     {t('preferences')}
                                 </SidebarMenuButton>
                             </DialogTrigger>
@@ -332,6 +334,18 @@ export function NavUser() {
                                 </div>
                             </DialogContent>
                         </Dialog>
+                        {isAdmin && (
+                            <>
+                                <DropdownMenuSeparator />
+                                <DropdownMenuItem asChild>
+                                    <Link to="/settings">
+                                        <Settings className="text-muted-foreground" />
+                                        {t('pelagica_config')}
+                                    </Link>
+                                </DropdownMenuItem>
+                            </>
+                        )}
+                        <DropdownMenuSeparator />
                         <DropdownMenuItem
                             onClick={() => {
                                 logout(getApi());

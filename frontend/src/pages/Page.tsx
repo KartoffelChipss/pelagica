@@ -15,6 +15,7 @@ interface PageProps {
     className?: string;
     containerClassName?: string;
     requiresAuth?: boolean;
+    requireAdmin?: boolean;
     sidebar?: boolean;
     breadcrumbs?: React.ReactNode;
     bgItem?: React.ReactNode;
@@ -40,13 +41,14 @@ const PageContent = ({
     className,
     containerClassName,
     requiresAuth = false,
+    requireAdmin = false,
     sidebar = true,
     breadcrumbs,
     bgItem,
     showPlayerBar = true,
 }: PropsWithChildren<PageProps>) => {
     const navigate = useNavigate();
-    const { isLoading, isError } = useCurrentUser();
+    const { isLoading, isError, data: user } = useCurrentUser();
     const { background } = usePageBackground();
     const serverUrl = getServerUrl();
     const serverDomain = serverUrl ? serverUrlToDomain(serverUrl) : null;
@@ -62,12 +64,18 @@ const PageContent = ({
     }, [requiresAuth, navigate]);
 
     // show loading while checking auth on protected pages
-    if (requiresAuth && isLoading) return null;
+    if (requiresAuth && isLoading) return null; // TODO show a spinner here
 
     // if auth check failed and we're on a protected page, don't render
-    if (requiresAuth && isError) return null;
+    if (requiresAuth && isError) return null; // TODO show an error message here
 
     if (requiresAuth && !isLoggedIn()) return null;
+
+    if (requiresAuth && !user) return null;
+
+    if (requireAdmin && user && !user.Policy?.IsAdministrator) {
+        return null; // TODO show an unauthorized message here
+    }
 
     return (
         <SidebarProvider
