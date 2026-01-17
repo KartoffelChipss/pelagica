@@ -5,6 +5,7 @@ import (
 	"log"
 	"net/http"
 	"os"
+	"path/filepath"
 	"pelagica-backend/models"
 )
 
@@ -17,14 +18,36 @@ func configPath() string {
 }
 
 func GetConfig(w http.ResponseWriter, r *http.Request) {
-    data, err := os.ReadFile(configPath())
+    path := configPath()
+
+    data, err := os.ReadFile(path)
     if err != nil {
-        log.Println("Error reading config file:", err)
-        http.Error(w, "Failed to read config", http.StatusInternalServerError)
-        return
+        if os.IsNotExist(err) {
+            defaultConfig := []byte(`{}`)
+
+            // ensure the directory exists
+            if err := os.MkdirAll(filepath.Dir(path), 0755); err != nil {
+                log.Println("Error creating config directory:", err)
+                http.Error(w, "Failed to create config directory", http.StatusInternalServerError)
+                return
+            }
+
+            if err := os.WriteFile(path, defaultConfig, 0644); err != nil {
+                log.Println("Error creating config file:", err)
+                http.Error(w, "Failed to create config", http.StatusInternalServerError)
+                return
+            }
+
+            data = defaultConfig
+        } else {
+            log.Println("Error reading config file:", err)
+            http.Error(w, "Failed to read config", http.StatusInternalServerError)
+            return
+        }
     }
 
     w.Header().Set("Content-Type", "application/json")
+    w.WriteHeader(http.StatusOK)
     w.Write(data)
 }
 
