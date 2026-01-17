@@ -260,7 +260,7 @@ export const useConfig = () => {
     useEffect(() => {
         const loadConfig = async () => {
             try {
-                const response = await fetch('/config.json');
+                const response = await fetch('/api/config');
                 if (!response.ok) {
                     console.warn('Config file not found, using default configuration');
                     setConfig(DEFAULT_CONFIG);
