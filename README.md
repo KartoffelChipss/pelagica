@@ -127,8 +127,6 @@ docker rm pelagica
 If you prefer using docker-compose, create a `docker-compose.yml` file:
 
 ```yaml
-version: '3.8'
-
 services:
     pelagica:
         image: kartoffelchipss/pelagica:latest
