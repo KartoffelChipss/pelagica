@@ -4,6 +4,7 @@ import (
 	"encoding/json"
 	"errors"
 	"net/http"
+	"net/url"
 )
 
 type UserMeResponse struct {
@@ -14,22 +15,30 @@ type UserMeResponse struct {
 	} `json:"Policy"`
 }
 
-func AuthenticateByToken(r *http.Request) (isAdmin bool, err error) {
-	jellyfinURL := r.URL.Query().Get("jellyfin_url")
-	if jellyfinURL == "" {
+func AuthenticateByToken(r *http.Request) (bool, error) {
+	jellyfinURLRaw := r.URL.Query().Get("jellyfin_url")
+	if jellyfinURLRaw == "" {
 		return false, errors.New("missing jellyfin_url query parameter")
 	}
+
+	baseURL, err := url.Parse(jellyfinURLRaw)
+	if err != nil {
+		return false, errors.New("invalid jellyfin_url")
+	}
+
+	endpoint, err := url.Parse("/Users/Me")
+	if err != nil {
+		return false, err
+	}
+
+	fullURL := baseURL.ResolveReference(endpoint)
 
 	token := r.Header.Get("Authorization")
 	if token == "" {
 		return false, errors.New("missing Authorization header")
 	}
 
-	req, err := http.NewRequest(
-		http.MethodGet,
-		jellyfinURL + "/Users/Me",
-		nil,
-	)
+	req, err := http.NewRequest(http.MethodGet, fullURL.String(), nil)
 	if err != nil {
 		return false, err
 	}
@@ -43,7 +52,10 @@ func AuthenticateByToken(r *http.Request) (isAdmin bool, err error) {
 	defer res.Body.Close()
 
 	if res.StatusCode != http.StatusOK {
-		return false, errors.New("invalid Jellyfin token")
+		if res.StatusCode == http.StatusUnauthorized {
+			return false, errors.New("unauthorized: invalid Jellyfin token")
+		}
+		return false, errors.New("failed to authenticate with Jellyfin: " + res.Status)
 	}
 
 	var user UserMeResponse
