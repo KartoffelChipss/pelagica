@@ -23,22 +23,24 @@ jobs:
         run: npm install -g pnpm
 
       - name: Install dependencies
+        working-directory: frontend
         run: pnpm install --frozen-lockfile
 
       - name: Build Vite app
+        working-directory: frontend
         run: pnpm build
 
       - name: Add SPA 404 fallback
-        run: cp dist/index.html dist/404.html
+        run: cp frontend/dist/index.html frontend/dist/404.html
 
       - name: Add CNAME file
-        run: echo "pelagica.jan.run" > dist/CNAME
+        run: echo "pelagica.jan.run" > frontend/dist/CNAME
 
       - name: Upload production-ready build files
         uses: actions/upload-artifact@v4
         with:
           name: production-files
-          path: ./dist
+          path: frontend/dist
 
   deploy:
     name: Deploy
