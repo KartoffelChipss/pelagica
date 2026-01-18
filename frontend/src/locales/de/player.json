@@ -1,8 +1,8 @@
 {
-    "skipIntro": "Intro überspringen",
-    "skipOutro": "Abspann überspringen",
-    "audioTracks": "Audiospuren",
-    "subtitles": "Untertitel",
-    "off": "Aus",
-    "nowPlaying": "Läuft gerade"
+  "skipIntro": "Intro überspringen",
+  "skipOutro": "Abspann überspringen",
+  "audioTracks": "Audiospuren",
+  "subtitles": "Untertitel",
+  "off": "Aus",
+  "nowPlaying": "Läuft gerade"
 }
