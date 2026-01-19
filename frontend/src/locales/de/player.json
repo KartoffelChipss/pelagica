@@ -1,8 +1,15 @@
 {
-    "skipIntro": "Intro überspringen",
-    "skipOutro": "Abspann überspringen",
-    "audioTracks": "Audiospuren",
-    "subtitles": "Untertitel",
-    "off": "Aus",
-    "nowPlaying": "Läuft gerade"
+  "skipIntro": "Intro überspringen",
+  "skipOutro": "Abspann überspringen",
+  "audioTracks": "Audiospuren",
+  "subtitles": "Untertitel",
+  "off": "Aus",
+  "playNextItem": "Nächste Episode abspielen",
+  "upNext": "Nächste Episode beginnt in {{seconds}} Sekunden",
+  "startNow": "Jetzt starten",
+  "dismiss": "Abbrechen",
+  "seasonEpisode": "S{{season}} E{{episode}}",
+  "previousItem": "Vorherige Episode",
+  "nextItem": "Nächste Episode",
+  "nowPlaying": "Läuft gerade"
 }
