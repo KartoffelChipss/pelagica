@@ -331,7 +331,7 @@ const LoginPage = () => {
                                 {/* <Label className="mb-2 text-center font-medium">
                                     {t('quick_connect_code')}
                                 </Label> */}
-                                <div className="text-5xl font-bold tracking-widest mb-4 p-4 bg-muted rounded-lg">
+                                <div className="text-4xl sm:text-5xl font-bold tracking-widest mb-4 p-4 bg-muted rounded-lg">
                                     {quickConnectCode.slice(0, 3)} {quickConnectCode.slice(3, 6)}
                                 </div>
                                 <p className="text-sm text-center text-muted-foreground mb-4">
