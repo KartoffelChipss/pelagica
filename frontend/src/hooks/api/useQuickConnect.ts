@@ -53,3 +53,15 @@ export function useQuickConnectAuthenticate() {
         },
     });
 }
+
+export function useAuthorizeQuickConnect() {
+    return useMutation({
+        mutationFn: async ({ code }: { code: string }) => {
+            if (!code) throw new Error('No code provided');
+            const { getApi } = await import('@/api/getApi');
+            const api = getApi();
+            const res = await getQuickConnectApi(api).authorizeQuickConnect({ code });
+            return res.data;
+        },
+    });
+}

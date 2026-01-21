@@ -10,8 +10,12 @@ import {
     Sun,
     Settings,
     Settings2,
+    Fingerprint,
+    TriangleAlert,
+    DotIcon,
 } from 'lucide-react';
-import { useState } from 'react';
+import { useEffect, useState } from 'react';
+import { useRef } from 'react';
 import { Avatar, AvatarFallback, AvatarImage } from '@/components/ui/avatar';
 import {
     DropdownMenu,
@@ -51,11 +55,132 @@ import { Popover, PopoverContent, PopoverTrigger } from '@/components/ui/popover
 import { cn } from '@/lib/utils';
 import { Label } from '@radix-ui/react-dropdown-menu';
 import { getUserProfileImageUrl } from '@/utils/jellyfinUrls';
+import { InputOTP, InputOTPGroup, InputOTPSlot } from './ui/input-otp';
+import { useAuthorizeQuickConnect } from '@/hooks/api/useQuickConnect';
 
 const FlagIcon = ({ countryCode }: { countryCode: string }) => {
     const flagUrl = `https://flagcdn.com/${countryCode.toLowerCase()}.svg`;
     return (
         <img src={flagUrl} className="inline h-4 w-6 object-cover" alt={`${countryCode} Flag`} />
+    );
+};
+
+const AuthorizeQuickConnectDialog = ({
+    onAuthorize,
+    isLoading,
+    hasSuccess,
+    hasError,
+}: {
+    onAuthorize: (code: string) => void;
+    isLoading: boolean;
+    hasSuccess: boolean;
+    hasError: boolean;
+}) => {
+    const { t } = useTranslation('sidebar');
+    const [code, setCode] = useState('');
+    const [open, setOpen] = useState(false);
+    const authorizedCodeRef = useRef<string | null>(null);
+    // eslint-disable-next-line @typescript-eslint/no-explicit-any
+    const successTimeoutRef = useRef<any | null>(null);
+    const prevErrorRef = useRef(false);
+    const prevOpenRef = useRef(false);
+
+    useEffect(() => {
+        // Only reset when going from open to closed
+        if (prevOpenRef.current && !open) {
+            queueMicrotask(() => {
+                setCode('');
+                authorizedCodeRef.current = null;
+                prevErrorRef.current = false;
+                if (successTimeoutRef.current) {
+                    clearTimeout(successTimeoutRef.current);
+                    successTimeoutRef.current = null;
+                }
+            });
+        }
+        prevOpenRef.current = open;
+    }, [open]);
+
+    useEffect(() => {
+        if (code.length === 6 && !hasSuccess && !isLoading && authorizedCodeRef.current !== code) {
+            authorizedCodeRef.current = code;
+            onAuthorize(code);
+        }
+    }, [code, onAuthorize, hasSuccess, isLoading]);
+
+    useEffect(() => {
+        if (hasSuccess && !successTimeoutRef.current) {
+            successTimeoutRef.current = setTimeout(() => {
+                setOpen(false);
+                successTimeoutRef.current = null;
+            }, 1500);
+        }
+    }, [hasSuccess]);
+
+    useEffect(() => {
+        if (hasError && !prevErrorRef.current && code.length === 6) {
+            queueMicrotask(() => {
+                setCode('');
+                authorizedCodeRef.current = null;
+            });
+        }
+        prevErrorRef.current = hasError;
+    }, [hasError, code.length]);
+
+    return (
+        <Dialog open={open} onOpenChange={setOpen}>
+            <DialogTrigger asChild>
+                <SidebarMenuButton onClick={(e) => e.stopPropagation()}>
+                    <Fingerprint className="text-muted-foreground" />
+                    {t('quick_connect')}
+                </SidebarMenuButton>
+            </DialogTrigger>
+            <DialogContent className="max-h-[80vh] overflow-y-auto">
+                <DialogHeader>
+                    <DialogTitle>{t('authorize_quick_connect')}</DialogTitle>
+                </DialogHeader>
+                <p className="text-sm text-muted-foreground mb-4">
+                    {t('enter_quick_connect_code')}
+                </p>
+                <div className="flex justify-center max-w-full overflow-hidden">
+                    <InputOTP
+                        maxLength={6}
+                        onChange={(value) => setCode(value)}
+                        value={code}
+                        disabled={isLoading || hasSuccess}
+                    >
+                        <InputOTPGroup className="gap-0 sm:gap-2 sm:*:data-[slot=input-otp-slot]:rounded-md sm:*:data-[slot=input-otp-slot]:border">
+                            <InputOTPSlot index={0} />
+                            <InputOTPSlot index={1} />
+                            <InputOTPSlot index={2} />
+                        </InputOTPGroup>
+                        <div
+                            role="separator"
+                            className="text-muted-foreground hidden sm:inline-flex"
+                        >
+                            <DotIcon />
+                        </div>
+                        <InputOTPGroup className="gap-0 sm:gap-2 sm:*:data-[slot=input-otp-slot]:rounded-md sm:*:data-[slot=input-otp-slot]:border">
+                            <InputOTPSlot index={3} />
+                            <InputOTPSlot index={4} />
+                            <InputOTPSlot index={5} />
+                        </InputOTPGroup>
+                    </InputOTP>
+                </div>
+                {hasError && (
+                    <p className="text-sm mt-4 text-destructive text-center flex items-center justify-center gap-2">
+                        <TriangleAlert size={16} />
+                        {t('quick_connect_authorization_failed')}
+                    </p>
+                )}
+                {hasSuccess && (
+                    <p className="text-sm mt-4 text-primary text-center flex items-center justify-center gap-2">
+                        <Check size={16} />
+                        {t('quick_connect_authorized')}
+                    </p>
+                )}
+            </DialogContent>
+        </Dialog>
     );
 };
 
@@ -138,6 +263,36 @@ export function NavUser() {
     const updateUserConfiguration = useUpdateUserConfiguration();
     const [audioLanguageOpen, setAudioLanguageOpen] = useState(false);
     const [subtitleLanguageOpen, setSubtitleLanguageOpen] = useState(false);
+    const authorizeQuickConnect = useAuthorizeQuickConnect();
+    const [authorizeQuickCConnectLoading, setAuthorizeQuickConnectLoading] = useState(false);
+    const [quickConnectSuccess, setQuickConnectSuccess] = useState(false);
+    const [quickConnectError, setQuickConnectError] = useState(false);
+
+    const onAuthorizeQuickConnect = (code: string) => {
+        setAuthorizeQuickConnectLoading(true);
+        setQuickConnectSuccess(false);
+        setQuickConnectError(false);
+        authorizeQuickConnect
+            .mutateAsync({ code })
+            .then(() => {
+                setAuthorizeQuickConnectLoading(false);
+                setQuickConnectSuccess(true);
+                console.log('Quick Connect authorized successfully');
+            })
+            .catch((error) => {
+                // Jellyfin's Quick Connect authorize endpoint returns a 500 error even on success
+                // If it's a 500 error, treat it as success since the authorization actually works
+                if (error?.response?.status === 500) {
+                    setAuthorizeQuickConnectLoading(false);
+                    setQuickConnectSuccess(true);
+                    console.log('Quick Connect authorized successfully (500 workaround)');
+                } else {
+                    setAuthorizeQuickConnectLoading(false);
+                    setQuickConnectError(true);
+                    console.error('Error authorizing Quick Connect:', error);
+                }
+            });
+    };
 
     if (!user?.Id) return null;
 
@@ -334,6 +489,13 @@ export function NavUser() {
                                 </div>
                             </DialogContent>
                         </Dialog>
+                        <DropdownMenuSeparator />
+                        <AuthorizeQuickConnectDialog
+                            onAuthorize={onAuthorizeQuickConnect}
+                            isLoading={authorizeQuickCConnectLoading}
+                            hasSuccess={quickConnectSuccess}
+                            hasError={quickConnectError}
+                        />
                         {isAdmin && (
                             <>
                                 <DropdownMenuSeparator />
