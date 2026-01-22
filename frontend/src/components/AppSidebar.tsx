@@ -11,7 +11,7 @@ import {
     SidebarMenuItem,
     SidebarMenuSub,
 } from '@/components/ui/sidebar';
-import { Home, Library, Search } from 'lucide-react';
+import { ChartLine, Home, Library, Search } from 'lucide-react';
 import { Link } from 'react-router';
 import { NavUser } from './NavUser';
 import { Avatar, AvatarFallback, AvatarImage } from './ui/avatar';
@@ -21,6 +21,7 @@ import { useUserViews } from '@/hooks/api/useMediaFolders';
 import JellyfinLibraryIcon from './JellyfinLibraryIcon';
 import { getServerUrl } from '@/utils/localstorageCredentials';
 import { useTheme } from './theme-provider';
+import { useConfig } from '@/hooks/api/useConfig';
 
 function serverUrlToDomain(url: string) {
     try {
@@ -33,6 +34,7 @@ function serverUrlToDomain(url: string) {
 
 const AppSidebar = () => {
     const { t } = useTranslation('sidebar');
+    const { config } = useConfig();
     const search = useSearch();
     const { data: views } = useUserViews();
     const serverUrl = getServerUrl();
@@ -114,6 +116,20 @@ const AppSidebar = () => {
                                     {t('search')}
                                 </SidebarMenuButton>
                             </SidebarMenuItem>
+                            {config && config.streamystatsUrl && config.showStreamystatsButton && (
+                                <SidebarMenuButton
+                                    className="cursor-pointer"
+                                    title="Streamystats"
+                                    onClick={() => {
+                                        window.open(config.streamystatsUrl, '_blank');
+                                    }}
+                                >
+                                    <>
+                                        <ChartLine />
+                                        Streamystats
+                                    </>
+                                </SidebarMenuButton>
+                            )}
                         </SidebarMenu>
                     </SidebarGroupContent>
                 </SidebarGroup>

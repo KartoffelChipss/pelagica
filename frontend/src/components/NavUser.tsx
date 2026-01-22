@@ -1,8 +1,6 @@
 import {
-    ChartLine,
     ChevronsUpDown,
     Check,
-    ExternalLink,
     Globe,
     Laptop,
     LogOut,
@@ -38,7 +36,6 @@ import { getApi } from '@/api/getApi';
 import { useTheme } from './theme-provider';
 import i18n from 'i18next';
 import { useTranslation } from 'react-i18next';
-import { useConfig } from '@/hooks/api/useConfig';
 import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogTrigger } from './ui/dialog';
 import { useUpdateUserConfiguration } from '@/hooks/api/playbackPreferences/useUpdateUserConfiguration';
 import {
@@ -259,7 +256,6 @@ export function NavUser() {
     const { isMobile } = useSidebar();
     const { theme, setTheme } = useTheme();
     const { data: user } = useCurrentUser();
-    const { config } = useConfig();
     const updateUserConfiguration = useUpdateUserConfiguration();
     const [audioLanguageOpen, setAudioLanguageOpen] = useState(false);
     const [subtitleLanguageOpen, setSubtitleLanguageOpen] = useState(false);
@@ -354,23 +350,6 @@ export function NavUser() {
                                 </div>
                             </div>
                         </DropdownMenuLabel>
-                        {config && config.streamystatsUrl && config.showStreamystatsButton && (
-                            <>
-                                <DropdownMenuSeparator />
-                                <DropdownMenuItem
-                                    asChild
-                                    onClick={() => {
-                                        window.open(config.streamystatsUrl, '_blank');
-                                    }}
-                                >
-                                    <div>
-                                        <ChartLine className="text-muted-foreground" />
-                                        Streamystats
-                                        <ExternalLink className="ml-auto inline size-4 text-muted-foreground" />
-                                    </div>
-                                </DropdownMenuItem>
-                            </>
-                        )}
                         <DropdownMenuSeparator />
                         <DropdownMenu>
                             <DropdownMenuTrigger asChild>
