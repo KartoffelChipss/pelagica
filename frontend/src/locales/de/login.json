@@ -16,5 +16,15 @@
     "please_enter_server_address": "Bitte gib eine Serveradresse ein.",
     "could_not_find_server": "Es konnte kein Jellyfin-Server unter dieser Adresse gefunden werden.",
     "enter_at_least_username": "Bitte gib mindestens deinen Benutzernamen ein.",
-    "login_failed": "Anmeldung fehlgeschlagen. Bitte überprüfe deine Anmeldedaten und versuche es erneut."
+    "login_failed": "Anmeldung fehlgeschlagen. Bitte überprüfe deine Anmeldedaten und versuche es erneut.",
+    "quick_connect": "Schnellverbindung",
+    "back_to_login": "Zurück zur Anmeldung",
+    "quick_connect_description": "Verwende Schnellverbindung, um dich ohne Passwort anzumelden.",
+    "quick_connect_code": "Schnellverbindungscode",
+    "quick_connect_instructions": "Gib diesen Code im Dashboard deines Jellyfin-Servers ein, um dieses Gerät zu genehmigen.",
+    "waiting_for_approval": "Warte auf Genehmigung...",
+    "quick_connect_initiated": "Schnellverbindung wird initialisiert...",
+    "quick_connect_failed": "Schnellverbindung fehlgeschlagen. Bitte versuche es erneut.",
+    "quick_connect_approved": "Schnellverbindung genehmigt! Anmeldung läuft...",
+    "quick_connect_timeout": "Schnellverbindung Zeitüberschreitung. Bitte versuche es erneut."
 }

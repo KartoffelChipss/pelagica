@@ -14,5 +14,10 @@
     "audio_language_preference": "Audio Language Preference",
     "subtitle_language_preference": "Subtitle Language Preference",
     "select_language": "Select language",
-    "pelagica_config": "Pelagica Config"
+    "pelagica_config": "Pelagica Config",
+    "quick_connect": "Quick Connect",
+    "authorize_quick_connect": "Authorize Quick Connect",
+    "enter_quick_connect_code": "Enter the 6-digit code displayed on the device you want to authorize.",
+    "quick_connect_authorized": "Device authorized successfully!",
+    "quick_connect_authorization_failed": "Failed to authorize device. Please check the code and try again."
 }
