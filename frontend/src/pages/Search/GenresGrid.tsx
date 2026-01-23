@@ -13,7 +13,7 @@ const GenreSkeletonLoader = memo(() => (
     </div>
 ));
 
-const EmptySearchPage = () => {
+const GenresGrid = () => {
     const { data: genres, isLoading, error } = useGenresWithItems();
 
     return (
@@ -31,4 +31,4 @@ const EmptySearchPage = () => {
     );
 };
 
-export default EmptySearchPage;
+export default GenresGrid;
