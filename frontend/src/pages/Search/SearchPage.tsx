@@ -132,7 +132,7 @@ const SearchPage = () => {
                     value={typeFilter}
                     onValueChange={(v) => setTypeFilter(v as typeof typeFilter)}
                 >
-                    <SelectTrigger className="min-w-40">
+                    <SelectTrigger className="min-w-30 sm:min-w-40">
                         <SelectValue placeholder="Types" />
                     </SelectTrigger>
                     <SelectContent>
