@@ -1,4 +1,4 @@
-import { memo, useEffect, useState, useTransition } from 'react';
+import { memo, useEffect, useState, useTransition, type JSX } from 'react';
 import { useSearchParams } from 'react-router';
 import Page from '../Page';
 import { useSearchItems } from '@/hooks/api/useSearchItems';
@@ -35,6 +35,7 @@ import {
     EmptyMedia,
     EmptyTitle,
 } from '@/components/ui/empty';
+import { useTranslation } from 'react-i18next';
 
 const ITEM_TYPE_GROUPS = {
     episodes: ['Episode'] as BaseItemKind[],
@@ -62,20 +63,29 @@ const LoadingSkeleton = memo(() => (
     </div>
 ));
 
+type SearchTypeFilter = 'all' | 'movies-tv' | 'music';
+const ALL_TYPE_FILTERS: SearchTypeFilter[] = ['all', 'movies-tv', 'music'];
+const ITEM_TYPE_FILTER_MAP: Record<SearchTypeFilter, BaseItemKind[] | undefined> = {
+    all: ['MusicAlbum', 'Movie', 'Series', 'Episode', 'Person'],
+    'movies-tv': ['Movie', 'Series'],
+    music: ['MusicAlbum'],
+};
+const ITEM_TYPE_FILTER_ICONS: Record<SearchTypeFilter, JSX.Element> = {
+    all: <LayoutGrid />,
+    'movies-tv': <Clapperboard />,
+    music: <Music />,
+};
+
 const SearchPage = () => {
+    const { t } = useTranslation('search');
     const [searchParams, setSearchParams] = useSearchParams();
     const [query, setQuery] = useState(searchParams.get('q') || '');
     const [debouncedQuery, setDebouncedQuery] = useState(searchParams.get('q') || '');
-    const [typeFilter, setTypeFilter] = useState<'all' | 'movies-tv' | 'music'>(
-        (searchParams.get('type') as 'all' | 'movies-tv' | 'music') || 'movies-tv'
+    const [typeFilter, setTypeFilter] = useState<SearchTypeFilter>(
+        (searchParams.get('type') as SearchTypeFilter) || 'movies-tv'
     );
     const [, startTransition] = useTransition();
-    const itemTypes: BaseItemKind[] | undefined =
-        typeFilter === 'all'
-            ? ['MusicAlbum', 'Movie', 'Series', 'Episode', 'Person']
-            : typeFilter === 'music'
-              ? ['MusicAlbum']
-              : ['Movie', 'Series'];
+    const itemTypes: BaseItemKind[] | undefined = ITEM_TYPE_FILTER_MAP[typeFilter];
     const {
         data: results,
         isLoading,
@@ -106,9 +116,10 @@ const SearchPage = () => {
                         <SearchIcon />
                     </InputGroupAddon>
                     <InputGroupInput
-                        placeholder="Search..."
+                        placeholder={t('input_placeholder')}
                         value={query}
                         onChange={(e) => setQuery(e.target.value)}
+                        autoFocus
                     />
                     <InputGroupAddon hidden={!query} align={'inline-end'}>
                         <Button variant={'ghost'} size={'icon-sm'} onClick={() => setQuery('')}>
@@ -124,18 +135,12 @@ const SearchPage = () => {
                         <SelectValue placeholder="Types" />
                     </SelectTrigger>
                     <SelectContent>
-                        <SelectItem value="all">
-                            <LayoutGrid />
-                            All
-                        </SelectItem>
-                        <SelectItem value="movies-tv">
-                            <Clapperboard />
-                            Movies / TV
-                        </SelectItem>
-                        <SelectItem value="music">
-                            <Music />
-                            Music
-                        </SelectItem>
+                        {ALL_TYPE_FILTERS.map((filter) => (
+                            <SelectItem key={filter} value={filter}>
+                                {ITEM_TYPE_FILTER_ICONS[filter]}
+                                {t('typefilter_' + filter)}
+                            </SelectItem>
+                        ))}
                     </SelectContent>
                 </Select>
             </ButtonGroup>
@@ -146,8 +151,8 @@ const SearchPage = () => {
                         <EmptyMedia variant="icon">
                             <TriangleAlert />
                         </EmptyMedia>
-                        <EmptyTitle>Unexpected Error</EmptyTitle>
-                        <EmptyDescription>An error occurred while searching.</EmptyDescription>
+                        <EmptyTitle>{t('unexpected_error')}</EmptyTitle>
+                        <EmptyDescription>{t('error_occurred_while_searching')}</EmptyDescription>
                     </EmptyHeader>
                 </Empty>
             )}
@@ -157,11 +162,11 @@ const SearchPage = () => {
                         <EmptyMedia variant="icon">
                             <CircleQuestionMark />
                         </EmptyMedia>
-                        <EmptyTitle>No Results</EmptyTitle>
-                        <EmptyDescription>No items matched your search.</EmptyDescription>
+                        <EmptyTitle>{t('no_results')}</EmptyTitle>
+                        <EmptyDescription>{t('no_results_description')}</EmptyDescription>
                         <EmptyContent>
                             <Button variant={'link'} onClick={() => setQuery('')}>
-                                Clear Search
+                                {t('clear_search')}
                             </Button>
                         </EmptyContent>
                     </EmptyHeader>
@@ -187,7 +192,9 @@ const SearchPage = () => {
                     if (groupKey === 'moviesTv') {
                         return (
                             <div key={groupKey} className="mt-4">
-                                <h2 className="text-xl font-semibold mb-2">Movies & TV</h2>
+                                <h2 className="text-xl font-semibold mb-2">
+                                    {t('group_moviesTv')}
+                                </h2>
                                 <MovieTvGrid items={groupResults} />
                             </div>
                         );
@@ -196,7 +203,7 @@ const SearchPage = () => {
                     if (groupKey === 'music') {
                         return (
                             <div key={groupKey} className="mt-4">
-                                <h2 className="text-xl font-semibold mb-2">Music</h2>
+                                <h2 className="text-xl font-semibold mb-2">{t('group_music')}</h2>
                                 <MusicGrid items={groupResults} />
                             </div>
                         );
@@ -205,7 +212,7 @@ const SearchPage = () => {
                     if (groupKey === 'people') {
                         return (
                             <div key={groupKey} className="mt-4">
-                                <h2 className="text-xl font-semibold mb-2">People</h2>
+                                <h2 className="text-xl font-semibold mb-2">{t('group_people')}</h2>
                                 <PeopleGrid items={groupResults} />
                             </div>
                         );
@@ -214,7 +221,9 @@ const SearchPage = () => {
                     if (groupKey === 'episodes') {
                         return (
                             <div key={groupKey} className="mt-4">
-                                <h2 className="text-xl font-semibold mb-2">Episodes</h2>
+                                <h2 className="text-xl font-semibold mb-2">
+                                    {t('group_episodes')}
+                                </h2>
                                 <EpisodesGrid items={groupResults} />
                             </div>
                         );
