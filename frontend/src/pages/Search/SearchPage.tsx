@@ -36,6 +36,7 @@ import {
     EmptyTitle,
 } from '@/components/ui/empty';
 import { useTranslation } from 'react-i18next';
+import EmptySearchPage from './EmptySearchPage';
 
 const ITEM_TYPE_GROUPS = {
     episodes: ['Episode'] as BaseItemKind[],
@@ -231,6 +232,7 @@ const SearchPage = () => {
 
                     return null;
                 })}
+            {!query && <EmptySearchPage />}
         </Page>
     );
 };
