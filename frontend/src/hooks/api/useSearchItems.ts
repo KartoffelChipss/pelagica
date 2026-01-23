@@ -2,20 +2,31 @@ import { useQuery } from '@tanstack/react-query';
 import { getApi } from '@/api/getApi';
 import { getSearchApi } from '@jellyfin/sdk/lib/utils/api/search-api';
 import { getItemsApi } from '@jellyfin/sdk/lib/utils/api/items-api';
-import type { BaseItemDto } from '@jellyfin/sdk/lib/generated-client/models';
+import type { BaseItemDto, BaseItemKind } from '@jellyfin/sdk/lib/generated-client/models';
 import { getRetryConfig } from '@/utils/authErrorHandler';
 
-export function useSearchItems(searchTerm: string) {
+interface UseSearchItemsOptions {
+    itemTypes?: BaseItemKind[];
+    limit?: number;
+}
+
+export function useSearchItems(searchTerm: string, options?: UseSearchItemsOptions) {
+    const normalizedItemTypes =
+        options?.itemTypes && options.itemTypes.length ? [...options.itemTypes] : undefined;
+    const itemTypesKey = normalizedItemTypes ? [...normalizedItemTypes].sort() : 'all';
+
+    const limit = options?.limit ?? 15;
+
     return useQuery<BaseItemDto[]>({
-        queryKey: ['searchItems', searchTerm],
+        queryKey: ['searchItems', searchTerm, itemTypesKey, limit],
         queryFn: async (): Promise<BaseItemDto[]> => {
             try {
                 const api = getApi();
                 const searchApi = getSearchApi(api);
                 const response = await searchApi.getSearchHints({
                     searchTerm: searchTerm.trim(),
-                    limit: 15,
-                    includeItemTypes: ['Movie', 'Series'],
+                    limit,
+                    includeItemTypes: normalizedItemTypes,
                 });
 
                 const hints = response?.data?.SearchHints;
@@ -31,7 +42,7 @@ export function useSearchItems(searchTerm: string) {
                 const itemsApi = getItemsApi(api);
                 const itemsResponse = await itemsApi.getItems({
                     ids: itemIds,
-                    fields: ['Overview'],
+                    fields: ['Overview', 'ParentId'],
                 });
 
                 return itemsResponse.data.Items || [];
