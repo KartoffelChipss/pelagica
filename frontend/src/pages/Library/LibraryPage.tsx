@@ -124,7 +124,7 @@ const LibraryContent = ({
     return (
         <div className="mb-4">
             {isLoading && (
-                <div className="w-full grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 lg:grid-cols-5 xl:grid-cols-7 gap-4 mt-2">
+                <div className="w-full gap-4 mt-2 grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 lg:grid-cols-5 xl:grid-cols-7 2xl:grid-cols-9">
                     {Array.from({ length: pageSize }).map((_, i) => (
                         <div key={i} className="p-0 m-0">
                             <div className="relative w-full aspect-2/3 overflow-hidden rounded-md">

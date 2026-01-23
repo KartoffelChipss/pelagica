@@ -24,7 +24,14 @@ export const SearchCommand = () => {
     const [query, setQuery] = useState('');
     const [debouncedQuery, setDebouncedQuery] = useState('');
     const [, startTransition] = useTransition();
-    const { data: results, isLoading, error } = useSearchItems(debouncedQuery);
+    const {
+        data: results,
+        isLoading,
+        error,
+    } = useSearchItems(debouncedQuery, {
+        itemTypes: ['Movie', 'Series'],
+        limit: 15,
+    });
 
     useEffect(() => {
         const handler = setTimeout(() => {

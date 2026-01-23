@@ -16,7 +16,6 @@ import { Link } from 'react-router';
 import { NavUser } from './NavUser';
 import { Avatar, AvatarFallback, AvatarImage } from './ui/avatar';
 import { useTranslation } from 'react-i18next';
-import { useSearch } from '@/context/SearchContext';
 import { useUserViews } from '@/hooks/api/useMediaFolders';
 import JellyfinLibraryIcon from './JellyfinLibraryIcon';
 import { getServerUrl } from '@/utils/localstorageCredentials';
@@ -35,7 +34,6 @@ function serverUrlToDomain(url: string) {
 const AppSidebar = () => {
     const { t } = useTranslation('sidebar');
     const { config } = useConfig();
-    const search = useSearch();
     const { data: views } = useUserViews();
     const serverUrl = getServerUrl();
     const serverDomain = serverUrl ? serverUrlToDomain(serverUrl) : null;
@@ -111,9 +109,11 @@ const AppSidebar = () => {
                                 )}
                             </SidebarMenuItem>
                             <SidebarMenuItem>
-                                <SidebarMenuButton onClick={() => search.openSearch()}>
-                                    <Search />
-                                    {t('search')}
+                                <SidebarMenuButton asChild>
+                                    <Link to={'/search'}>
+                                        <Search />
+                                        {t('search')}
+                                    </Link>
                                 </SidebarMenuButton>
                             </SidebarMenuItem>
                             {config && config.streamystatsUrl && config.showStreamystatsButton && (
