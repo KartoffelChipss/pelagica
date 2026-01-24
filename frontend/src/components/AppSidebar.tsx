@@ -21,6 +21,7 @@ import JellyfinLibraryIcon from './JellyfinLibraryIcon';
 import { getServerUrl } from '@/utils/localstorageCredentials';
 import { useTheme } from './theme-provider';
 import { useConfig } from '@/hooks/api/useConfig';
+import { getEffectiveTheme } from '@/utils/effectiveTheme';
 
 function serverUrlToDomain(url: string) {
     try {
@@ -38,12 +39,7 @@ const AppSidebar = () => {
     const serverUrl = getServerUrl();
     const serverDomain = serverUrl ? serverUrlToDomain(serverUrl) : null;
     const { theme } = useTheme();
-    const effectiveTheme =
-        theme === 'system'
-            ? window.matchMedia('(prefers-color-scheme: dark)').matches
-                ? 'dark'
-                : 'light'
-            : theme;
+    const effectiveTheme = getEffectiveTheme(theme);
 
     return (
         <Sidebar variant="floating" collapsible="icon">

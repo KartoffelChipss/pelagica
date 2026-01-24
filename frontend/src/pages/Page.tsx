@@ -4,11 +4,13 @@ import { SidebarProvider, SidebarTrigger } from '@/components/ui/sidebar';
 import { type PropsWithChildren, useEffect } from 'react';
 import { useNavigate } from 'react-router';
 import { useCurrentUser } from '@/hooks/api/useCurrentUser';
-import { Avatar, AvatarFallback } from '@/components/ui/avatar';
+import { Avatar, AvatarFallback, AvatarImage } from '@/components/ui/avatar';
 import { getServerUrl } from '@/utils/localstorageCredentials';
 import { PageBackgroundProvider } from '@/context/PageBackgroundProvider';
 import { usePageBackground } from '@/hooks/usePageBackground';
 import MusicPlayerBar from '@/components/MusicPlayerBar';
+import { useTheme } from '@/components/theme-provider';
+import { getEffectiveTheme } from '@/utils/effectiveTheme';
 
 interface PageProps {
     title?: string;
@@ -52,6 +54,8 @@ const PageContent = ({
     const { background } = usePageBackground();
     const serverUrl = getServerUrl();
     const serverDomain = serverUrl ? serverUrlToDomain(serverUrl) : null;
+    const { theme } = useTheme();
+    const effectiveTheme = getEffectiveTheme(theme);
 
     useEffect(() => {
         if (title) document.title = title;
@@ -93,7 +97,11 @@ const PageContent = ({
                 ) : (
                     <div className="flex items-center justify-between py-4 md:hidden">
                         <div className="flex items-center gap-2">
-                            <Avatar className="h-8 w-8 rounded-lg">
+                            <Avatar className="h-8 w-8 p-1 rounded-lg">
+                                <AvatarImage
+                                    src={effectiveTheme === 'dark' ? '/logo.svg' : '/logo-dark.svg'}
+                                    alt={'Pelagica logo'}
+                                />
                                 <AvatarFallback className="rounded-lg">{'PE'}</AvatarFallback>
                             </Avatar>
                             <div className="grid flex-1 text-left text-sm leading-tight">
