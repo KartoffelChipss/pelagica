@@ -124,14 +124,14 @@ const SeriesPage = ({ item, config }: SeriesPageProps) => {
                     <DescriptionItem
                         label={t('writers')}
                         items={writers.map((person) => ({
-                            link: `/item/${person.Id}`,
+                            link: `/person/${person.Id}`,
                             name: person.Name!,
                         }))}
                     />
                     <DescriptionItem
                         label={t('directors')}
                         items={directors.map((person) => ({
-                            link: `/item/${person.Id}`,
+                            link: `/person/${person.Id}`,
                             name: person.Name!,
                         }))}
                     />
