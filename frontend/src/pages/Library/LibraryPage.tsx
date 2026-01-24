@@ -8,15 +8,7 @@ import { getImageApi } from '@jellyfin/sdk/lib/utils/api/image-api';
 import { getApi } from '@/api/getApi';
 import { useTranslation } from 'react-i18next';
 import { Skeleton } from '@/components/ui/skeleton';
-import {
-    Pagination,
-    PaginationContent,
-    PaginationItem,
-    PaginationLink,
-    PaginationNext,
-    PaginationPrevious,
-    PaginationEllipsis,
-} from '@/components/ui/pagination';
+import ItemPagination from '@/components/ItemPagination';
 import {
     Empty,
     EmptyDescription,
@@ -169,65 +161,11 @@ const LibraryContent = ({
                             />
                         ))}
                     </div>
-                    <div className="my-4 md:mb-0">
-                        <Pagination>
-                            <PaginationContent>
-                                <PaginationItem>
-                                    <PaginationPrevious
-                                        text={t('common:previous')}
-                                        onClick={() => onPageChange(Math.max(0, page - 1))}
-                                        className={
-                                            page === 0
-                                                ? 'pointer-events-none opacity-50'
-                                                : 'cursor-pointer'
-                                        }
-                                    />
-                                </PaginationItem>
-                                {Array.from({ length: totalPages }, (_, i) => {
-                                    if (
-                                        i === 0 ||
-                                        i === totalPages - 1 ||
-                                        (i >= page - 1 && i <= page + 1)
-                                    ) {
-                                        return (
-                                            <PaginationItem key={i}>
-                                                <PaginationLink
-                                                    onClick={() => onPageChange(i)}
-                                                    isActive={i === page}
-                                                    className="cursor-pointer"
-                                                >
-                                                    {i + 1}
-                                                </PaginationLink>
-                                            </PaginationItem>
-                                        );
-                                    } else if (
-                                        (i === 1 && page > 2) ||
-                                        (i === totalPages - 2 && page < totalPages - 3)
-                                    ) {
-                                        return (
-                                            <PaginationItem key={i}>
-                                                <PaginationEllipsis />
-                                            </PaginationItem>
-                                        );
-                                    }
-                                    return null;
-                                })}
-                                <PaginationItem>
-                                    <PaginationNext
-                                        text={t('common:next')}
-                                        onClick={() =>
-                                            onPageChange(Math.min(totalPages - 1, page + 1))
-                                        }
-                                        className={
-                                            page >= totalPages - 1
-                                                ? 'pointer-events-none opacity-50'
-                                                : 'cursor-pointer'
-                                        }
-                                    />
-                                </PaginationItem>
-                            </PaginationContent>
-                        </Pagination>
-                    </div>
+                    <ItemPagination
+                        totalPages={totalPages}
+                        currentPage={page}
+                        onPageChange={onPageChange}
+                    />
                 </>
             )}
         </div>

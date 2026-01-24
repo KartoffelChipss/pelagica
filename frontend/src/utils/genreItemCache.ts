@@ -1,4 +1,4 @@
-import type { GenreItem } from '@/hooks/api/useGenresWithItems';
+import type { GenreItem } from '@/hooks/api/genres/useGenresWithItems';
 
 const STORAGE_KEY = 'genreItemCache';
 

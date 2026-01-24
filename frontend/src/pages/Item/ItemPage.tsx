@@ -13,6 +13,7 @@ import { getUserId } from '@/utils/localstorageCredentials';
 import BoxSetPage from './BoxSetPage';
 import MusicAlbumPage from './MusicAlbumPage';
 import PlaylistPage from './PlaylistPage';
+import GenrePage from './GenrePage';
 
 const ItemPageSkeleton = memo(() => {
     return (
@@ -125,6 +126,8 @@ const ItemPage = () => {
                             return <MusicAlbumPage item={item} config={config} />;
                         case 'Playlist':
                             return <PlaylistPage item={item} config={config} />;
+                        case 'Genre':
+                            return <GenrePage item={item} />;
                         default:
                             return (
                                 <p>

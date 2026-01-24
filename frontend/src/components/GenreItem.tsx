@@ -1,4 +1,4 @@
-import type { GenreWithItem } from '@/hooks/api/useGenresWithItems';
+import type { GenreWithItem } from '@/hooks/api/genres/useGenresWithItems';
 import { getPrimaryImageUrl } from '@/utils/jellyfinUrls';
 import { useState } from 'react';
 import { Link } from 'react-router';
