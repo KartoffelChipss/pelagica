@@ -10,6 +10,7 @@ import { getCachedGenreItem, setCachedGenreItem } from '@/utils/genreItemCache';
 export interface GenreItem {
     Id?: string;
     Name?: string;
+    totalItems?: number;
 }
 
 export interface GenreWithItem {
@@ -19,17 +20,21 @@ export interface GenreWithItem {
     item?: GenreItem;
 }
 
-export function useGenresWithItems() {
+export interface GenresWithItemsOptions {
+    limit?: number;
+}
+
+export function useGenresWithItems(options?: GenresWithItemsOptions) {
     return useQuery<GenreWithItem[]>({
-        queryKey: ['genres-with-random-item'],
+        queryKey: ['genres-with-random-item', options?.limit],
         queryFn: async () => {
             const api = getApi();
             const genresApi = getGenresApi(api);
             const itemsApi = getItemsApi(api);
 
             const genresResponse = await genresApi.getGenres({
-                limit: 50,
-                sortBy: ['Name'],
+                limit: options?.limit || 50,
+                sortBy: ['SortName'],
                 sortOrder: ['Ascending'],
                 includeItemTypes: ['Movie', 'Series'],
             });
@@ -66,9 +71,10 @@ export function useGenresWithItems() {
                             const item = itemsResponse.data?.Items?.[0];
 
                             if (item?.Id) {
-                                const storedItem = {
+                                const storedItem: GenreItem = {
                                     Id: item.Id || undefined,
                                     Name: item.Name || undefined,
+                                    totalItems: itemsResponse.data?.TotalRecordCount || undefined,
                                 };
 
                                 setCachedGenreItem(genre.Id!, storedItem);

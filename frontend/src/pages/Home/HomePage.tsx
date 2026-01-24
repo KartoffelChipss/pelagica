@@ -9,6 +9,7 @@ import RecommendedItemsRow from './RecommendedItemsRow';
 import NextUpRow from './NextUpRow';
 import ResumeRow from './ResumeRow';
 import type { CollectionType } from '@jellyfin/sdk/lib/generated-client/models';
+import GenresRow from './GenresRow';
 
 function getDetailFieldsForCollectionType(type: CollectionType | undefined): DetailField[] {
     switch (type) {
@@ -152,6 +153,15 @@ const HomePage = () => {
                                     limit={section.limit}
                                     showSimilarity={section.showSimilarity}
                                     showBasedOn={section.showBasedOn}
+                                />
+                            );
+
+                        case 'genres':
+                            return (
+                                <GenresRow
+                                    key={index}
+                                    title={section.title || t('genres')}
+                                    limit={section.limit}
                                 />
                             );
 

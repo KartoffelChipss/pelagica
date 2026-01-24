@@ -27,5 +27,6 @@
     "resume": "Resume",
     "unknown_artist": "Unknown Artist",
     "track_count": "{{count}} Track",
-    "track_count_plural": "{{count}} Tracks"
+    "track_count_plural": "{{count}} Tracks",
+    "genres": "Genres"
 }

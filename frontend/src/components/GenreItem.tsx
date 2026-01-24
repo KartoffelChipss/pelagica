@@ -5,12 +5,24 @@ import { Link } from 'react-router';
 import { Skeleton } from './ui/skeleton';
 import { ImageOff } from 'lucide-react';
 
-const GenreItem = ({ genreWithItem }: { genreWithItem: GenreWithItem }) => {
+const GenreItem = ({
+    genreWithItem,
+    className,
+    titleClassName,
+}: {
+    genreWithItem: GenreWithItem;
+    className?: string;
+    titleClassName?: string;
+}) => {
     const [posterError, setPosterError] = useState(false);
     const posterUrl = getPrimaryImageUrl(genreWithItem.item?.Id || '');
 
     return (
-        <Link to={`/item/${genreWithItem.id}`} key={genreWithItem.id} className="p-0 m-0">
+        <Link
+            to={`/item/${genreWithItem.id}`}
+            key={genreWithItem.id}
+            className={`p-0 m-0 ${className || ''}`}
+        >
             <div className={`relative w-full aspect-video overflow-hidden rounded-md group`}>
                 {!posterError ? (
                     <>
@@ -40,7 +52,12 @@ const GenreItem = ({ genreWithItem }: { genreWithItem: GenreWithItem }) => {
                 <div className="absolute inset-0 z-20 rounded-md bg-linear-to-t from-black/80 via-black/40 to-transparent" />
 
                 <div className="absolute bottom-2 left-2 right-2 z-30">
-                    <p className="text-sm font-semibold text-gray-300 drop-shadow line-clamp-2">
+                    <p
+                        className={
+                            titleClassName ||
+                            `text-2xl font-semibold text-gray-300 drop-shadow line-clamp-2`
+                        }
+                    >
                         {genreWithItem.name}
                     </p>
                 </div>

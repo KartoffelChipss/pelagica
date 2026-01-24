@@ -132,6 +132,12 @@ export interface ResumeSection extends BaseHomeScreenSection {
     limit?: number;
 }
 
+export interface GenresSection extends BaseHomeScreenSection {
+    type: 'genres';
+    /** Maximum number of genres to display */
+    limit?: number;
+}
+
 export type HomeScreenSection =
     | MediaBarSection
     | RecentlyAddedSection
@@ -139,7 +145,8 @@ export type HomeScreenSection =
     | ContinueWatchingSection
     | RecommendedItemsSection
     | NextUpSection
-    | ResumeSection;
+    | ResumeSection
+    | GenresSection;
 
 export const EPISODE_DISPLAYS = ['grid', 'row'] as const;
 export type EpisodeDisplay = (typeof EPISODE_DISPLAYS)[number];
