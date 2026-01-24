@@ -115,9 +115,9 @@ const SeriesPage = ({ item, config }: SeriesPageProps) => {
                     <DescriptionItem
                         label={t('genres')}
                         items={
-                            item.Genres?.map((genre) => ({
-                                link: null,
-                                name: genre,
+                            item.GenreItems?.map((genre) => ({
+                                link: `/item/${genre.Id}`,
+                                name: genre.Name!,
                             })) || []
                         }
                     />

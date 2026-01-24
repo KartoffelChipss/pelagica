@@ -17,7 +17,12 @@ const DescriptionItem = ({
             <div className="flex flex-wrap gap-2 mt-1">
                 {items.map((item) =>
                     item.link ? (
-                        <Badge key={item.name} variant="secondary" asChild>
+                        <Badge
+                            key={item.name}
+                            variant="secondary"
+                            asChild
+                            className="hover:underline"
+                        >
                             <Link to={item.link}>{item.name}</Link>
                         </Badge>
                     ) : (
