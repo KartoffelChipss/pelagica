@@ -35,7 +35,7 @@ const DetailBox = ({ label, value }: { label: string; value: string }) => {
         <div className="group">
             <h4 className="font-medium">{label}</h4>
             <div className="flex items-center gap-0.5">
-                <p className="text-sm text-muted-foreground">{value}</p>
+                <p className="text-sm text-muted-foreground max-w-full truncate">{value}</p>
                 <Button
                     variant={'ghost'}
                     size={'icon-sm'}
