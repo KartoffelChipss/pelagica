@@ -11,6 +11,7 @@ import { useTranslation } from 'react-i18next';
 import FilmographyRow from './FilmographyRow';
 import type { TFunction } from 'i18next';
 import { Button } from '@/components/ui/button';
+import { ImageOff } from 'lucide-react';
 
 const PersonPageSkeleton = memo(() => {
     return (
@@ -66,6 +67,7 @@ interface PersonPageProps {
 const PersonPageContent = ({ item, t }: PersonPageProps) => {
     const { setBackground } = usePageBackground();
     const [isOverviewExpanded, setIsOverviewExpanded] = useState(false);
+    const [primaryImageError, setPrimaryImageError] = useState(false);
 
     console.log('PersonPage render for item:', item);
 
@@ -98,12 +100,30 @@ const PersonPageContent = ({ item, t }: PersonPageProps) => {
             <div className="bg-background/30 backdrop-blur-md p-4 sm:p-8 rounded-md w-full flex flex-col gap-8">
                 <div className="flex flex-col md:flex-row gap-6 max-w-7xl">
                     <div className="relative w-60 min-w-60 h-90 sm:w-72 sm:min-w-72 sm:h-108 hidden sm:block">
-                        <img
-                            src={getPrimaryImageUrl(item.Id || '')}
-                            alt={item.Name + ' Primary'}
-                            className="object-cover rounded-md w-full h-full"
-                        />
-                        <Skeleton className="absolute inset-0 w-full h-full rounded-md -z-1" />
+                        {!primaryImageError ? (
+                            <>
+                                <img
+                                    src={getPrimaryImageUrl(item.Id || '')}
+                                    alt={item.Name + ' Primary'}
+                                    className="object-cover rounded-md w-full h-full"
+                                    onError={() => setPrimaryImageError(true)}
+                                />
+                                <Skeleton className="absolute inset-0 w-full h-full rounded-md -z-1" />
+                            </>
+                        ) : (
+                            <div className="w-full h-full bg-muted flex items-center justify-center rounded-md">
+                                {item.Name ? (
+                                    <span className="text-5xl font-bold text-muted-foreground">
+                                        {item.Name.split(' ')
+                                            .map((n) => n[0])
+                                            .join('')
+                                            .toUpperCase()}
+                                    </span>
+                                ) : (
+                                    <ImageOff className="w-12 h-12 text-muted-foreground" />
+                                )}
+                            </div>
+                        )}
                     </div>
                     <div>
                         <h2 className="text-4xl sm:text-5xl font-bold mt-2 mb-4">{item.Name}</h2>
