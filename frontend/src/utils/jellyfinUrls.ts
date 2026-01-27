@@ -1,4 +1,5 @@
 import { getAccessToken, getServerUrl } from './localstorageCredentials';
+import { getSupportedVideoCodecs } from './videoCodecDetection';
 
 export function getAudioStreamUrl(itemId: string, userId?: string) {
     try {
@@ -137,12 +138,21 @@ export function getVideoStreamUrl(
         url.pathname = `/videos/${itemId}/master.m3u8`;
         url.searchParams.append('MediaSourceId', itemId);
         url.searchParams.append('ApiKey', token);
-        url.searchParams.append('VideoCodec', 'av1,hevc,h264,vp9');
+        url.searchParams.append('VideoCodec', getSupportedVideoCodecs());
         url.searchParams.append('AudioCodec', 'aac');
         url.searchParams.append('SegmentContainer', 'mp4');
         url.searchParams.append('MinSegments', '2');
         url.searchParams.append('BreakOnNonKeyFrames', 'true');
         url.searchParams.append('RequireAvc', 'false');
+
+        url.searchParams.append('MaxWidth', '3840');
+        url.searchParams.append('MaxHeight', '2160');
+        url.searchParams.append('VideoBitrate', '80000000'); // 80 Mbps
+        url.searchParams.append('AudioBitrate', '384000'); // 384 kbps
+        url.searchParams.append('MaxFramerate', '60');
+
+        url.searchParams.append('TranscodingProtocol', 'hls');
+
         if (options.playSessionId !== undefined)
             url.searchParams.append('PlaySessionId', options.playSessionId);
         if (options.audioStreamIndex !== undefined) {
