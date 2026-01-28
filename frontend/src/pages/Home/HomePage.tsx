@@ -1,5 +1,5 @@
 import Page from '../Page';
-import { useUserViews } from '@/hooks/api/useMediaFolders';
+import { useUserViews } from '@/hooks/api/useUserViews';
 import { useConfig, type DetailField } from '@/hooks/api/useConfig';
 import MediaBar from './MediaBar';
 import ItemsRow from './ItemsRow';
@@ -10,6 +10,7 @@ import NextUpRow from './NextUpRow';
 import ResumeRow from './ResumeRow';
 import type { CollectionType } from '@jellyfin/sdk/lib/generated-client/models';
 import GenresRow from './GenresRow';
+import LibrariesRow from './LibrariesRow';
 
 function getDetailFieldsForCollectionType(type: CollectionType | undefined): DetailField[] {
     switch (type) {
@@ -34,6 +35,11 @@ const HomePage = () => {
                     if (section.enabled === false) return null;
 
                     switch (section.type) {
+                        case 'libraries':
+                            return (
+                                <LibrariesRow key={index} title={section.title || t('libraries')} />
+                            );
+
                         case 'continueWatching':
                             return (
                                 <ContinueWatchingRow

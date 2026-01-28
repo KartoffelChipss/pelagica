@@ -16,7 +16,7 @@ import { Link } from 'react-router';
 import { NavUser } from './NavUser';
 import { Avatar, AvatarFallback, AvatarImage } from './ui/avatar';
 import { useTranslation } from 'react-i18next';
-import { useUserViews } from '@/hooks/api/useMediaFolders';
+import { useUserViews } from '@/hooks/api/useUserViews';
 import JellyfinLibraryIcon from './JellyfinLibraryIcon';
 import { getServerUrl } from '@/utils/localstorageCredentials';
 import { useTheme } from './theme-provider';

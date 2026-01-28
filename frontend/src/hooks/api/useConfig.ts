@@ -138,6 +138,10 @@ export interface GenresSection extends BaseHomeScreenSection {
     limit?: number;
 }
 
+export interface LibrariesSection extends BaseHomeScreenSection {
+    type: 'libraries';
+}
+
 export type HomeScreenSection =
     | MediaBarSection
     | RecentlyAddedSection
@@ -146,7 +150,8 @@ export type HomeScreenSection =
     | RecommendedItemsSection
     | NextUpSection
     | ResumeSection
-    | GenresSection;
+    | GenresSection
+    | LibrariesSection;
 
 export const EPISODE_DISPLAYS = ['grid', 'row'] as const;
 export type EpisodeDisplay = (typeof EPISODE_DISPLAYS)[number];

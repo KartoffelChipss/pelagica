@@ -193,6 +193,7 @@ const SectionEditor = ({
                             { value: 'recentlyAdded', label: 'Recently Added' },
                             { value: 'streamystatsRecommended', label: 'Recommended' },
                             { value: 'genres', label: 'Genres' },
+                            { value: 'libraries', label: 'Libraries' },
                         ]}
                         value={editedSection.type}
                         onChange={(value) => {
@@ -205,7 +206,8 @@ const SectionEditor = ({
 
                     {editedSection.type !== 'recentlyAdded' &&
                         editedSection.type !== 'mediaBar' &&
-                        editedSection.type !== 'items' && (
+                        editedSection.type !== 'items' &&
+                        editedSection.type !== 'libraries' && (
                             <StringInput
                                 label={t('section_limit_label')}
                                 value={

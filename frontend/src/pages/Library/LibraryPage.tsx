@@ -1,6 +1,6 @@
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
 import Page from '../Page';
-import { useUserViews } from '@/hooks/api/useMediaFolders';
+import { useUserViews } from '@/hooks/api/useUserViews';
 import { useMemo, useState, useEffect, useRef } from 'react';
 import { useLibraryItems } from '@/hooks/api/useLibraryItems';
 import { useSearchParams } from 'react-router';
@@ -34,15 +34,11 @@ import {
     SelectTrigger,
     SelectValue,
 } from '@/components/ui/select';
-import type {
-    CollectionType,
-    ItemSortBy,
-    SortOrder,
-} from '@jellyfin/sdk/lib/generated-client/models';
+import type { ItemSortBy, SortOrder } from '@jellyfin/sdk/lib/generated-client/models';
 import { ButtonGroup } from '@/components/ui/button-group';
 import LibraryItem from './LibraryItem';
+import { SUPPORTED_LIBRARY_COLLECTION_TYPES } from '@/utils/supportedLibraryCollectionTypes';
 
-const SUPPORTED_COLLECTION_TYPES: CollectionType[] = ['movies', 'tvshows', 'boxsets', 'music'];
 const ITEM_ROWS = 5;
 
 function getColumnCount(width: number): number {
@@ -202,7 +198,7 @@ const LibraryPage = () => {
     };
 
     const libraryItems = libraries?.Items?.filter((library) =>
-        SUPPORTED_COLLECTION_TYPES.includes(library.CollectionType!)
+        SUPPORTED_LIBRARY_COLLECTION_TYPES.includes(library.CollectionType!)
     );
 
     useEffect(() => {
