@@ -21,7 +21,7 @@ import {
     DropdownMenuSubContent,
     DropdownMenuCheckboxItem,
 } from '@/components/ui/dropdown-menu';
-import MediaInfoDialog from './MediaInfoDialog';
+import MediaInfoDialog from '../../components/MediaInfoDialog';
 import type { TFunction } from 'i18next';
 import { usePlaylists } from '@/hooks/api/playlist/usePlaylists';
 import { useAddToPlaylist } from '@/hooks/api/playlist/useAddToPlaylist';
@@ -31,6 +31,7 @@ import { useState, useEffect, useMemo } from 'react';
 import { useQueryClient } from '@tanstack/react-query';
 import { usePlaylistPresence } from '@/hooks/api/playlist/usePlaylistPresence';
 import { CreatePlaylistDialog } from '@/components/CreatePlaylistDialog';
+import MediaDeleteButton from '@/components/MediaDeleteButton';
 
 const MAX_ARTISTS_DISPLAYED = 5;
 
@@ -283,6 +284,12 @@ const BaseMusicListPage = ({ item, config, listType }: BaseMusicListPageProps) =
                             showFavoriteButton={config.itemPage?.favoriteButton?.includes(
                                 item.Type!
                             )}
+                        />
+                        <MediaDeleteButton
+                            item={item}
+                            deleteButton={
+                                item.Type && config.itemPage?.deleteButton?.includes(item.Type)
+                            }
                         />
                     </div>
                     {isLoadingAlbumTracks && (

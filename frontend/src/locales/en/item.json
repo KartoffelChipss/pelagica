@@ -80,5 +80,9 @@
     "playlist_name": "Playlist Name",
     "playlist": "Playlist",
     "cancel": "Cancel",
-    "create": "Create"
+    "create": "Create",
+    "media_delete_confirm_title": "Confirm Deletion",
+    "media_delete_confirm": "Are you sure you want to delete \"{{title}}\"?",
+    "delete": "Delete",
+    "deleting": "Deleting..."
 }

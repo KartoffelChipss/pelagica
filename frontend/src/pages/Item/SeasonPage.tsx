@@ -19,6 +19,7 @@ import { Link } from 'react-router';
 import JellyfinItemKindIcon from '@/components/JellyfinItemKindIcon';
 import FavoriteButton from '../../components/FavoriteButton';
 import { Skeleton } from '@/components/ui/skeleton';
+import MediaDeleteButton from '@/components/MediaDeleteButton';
 
 interface EpisodePageProps {
     item: BaseItemDto;
@@ -35,8 +36,6 @@ const SeasonPage = ({ item, config }: EpisodePageProps) => {
         (seasons && seasons.length > 0
             ? seasons.find((s) => s.IndexNumber === item.IndexNumber)?.Id || seasons[0]?.Id || ''
             : '');
-
-    const showFavoriteButton = item.Type && config.itemPage?.favoriteButton?.includes(item.Type);
 
     return (
         <BaseMediaPage itemId={item.SeriesId || ''} name={item.SeriesName || item.Name || ''}>
@@ -63,11 +62,20 @@ const SeasonPage = ({ item, config }: EpisodePageProps) => {
                     </div>
                     <h2 className="text-4xl sm:text-5xl font-bold -mt-2">{item.Name}</h2>
                     <DetailBadges item={item} appConfig={config} />
-                    {showFavoriteButton && (
-                        <div className="mt-1 flex items-center gap-2">
-                            <FavoriteButton item={item} showFavoriteButton={showFavoriteButton} />
-                        </div>
-                    )}
+                    <div className="mt-1 flex items-center gap-2">
+                        <FavoriteButton
+                            item={item}
+                            showFavoriteButton={
+                                item.Type && config.itemPage?.favoriteButton?.includes(item.Type)
+                            }
+                        />
+                        <MediaDeleteButton
+                            item={item}
+                            deleteButton={
+                                item.Type && config.itemPage?.deleteButton?.includes(item.Type)
+                            }
+                        />
+                    </div>
                     <p>{item.Overview}</p>
                 </div>
             </div>

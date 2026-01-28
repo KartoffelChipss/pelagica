@@ -26,6 +26,7 @@ import FavoriteButton from '../../components/FavoriteButton';
 import WatchListButton from '../../components/WatchlistButton';
 import PlayStateButton from '../../components/PlayStateButton';
 import { getUserId } from '@/utils/localstorageCredentials';
+import MediaDeleteButton from '@/components/MediaDeleteButton';
 
 interface SeriesPageProps {
     item: BaseItemDto;
@@ -110,6 +111,12 @@ const SeriesPage = ({ item, config }: SeriesPageProps) => {
                             showWatchlistButton={config.itemPage?.showWatchlistButton}
                         />
                         <PlayStateButton itemId={item.Id || ''} userId={getUserId() || ''} />
+                        <MediaDeleteButton
+                            item={item}
+                            deleteButton={
+                                item.Type && config.itemPage?.deleteButton?.includes(item.Type)
+                            }
+                        />
                     </div>
                     <p>{item.Overview}</p>
                     <DescriptionItem

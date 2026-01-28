@@ -33,6 +33,7 @@
     "detail_badges_description": "Select the badges to be displayed on item detail pages.",
     "movie": "Movie",
     "series": "Series",
+    "season": "Season",
     "box_set": "Box Set",
     "music_album": "Music Album",
     "playlist": "Playlist",
@@ -88,5 +89,7 @@
     "recomm_series": "Series",
     "show_similarity": "Show Similarity",
     "show_based_on": "Show Based On",
-    "detail_fields": "Detail Fields"
+    "detail_fields": "Detail Fields",
+    "delete_button_types_label": "Delete Button Item Types",
+    "delete_button_types_description": "Select the item types for which the delete button should be displayed."
 }

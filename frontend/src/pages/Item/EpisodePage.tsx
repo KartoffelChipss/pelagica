@@ -19,10 +19,11 @@ import {
 import PeopleRow from './PeopleRow';
 import { Link } from 'react-router';
 import JellyfinItemKindIcon from '@/components/JellyfinItemKindIcon';
-import MediaInfoDialog from './MediaInfoDialog';
+import MediaInfoDialog from '../../components/MediaInfoDialog';
 import FavoriteButton from '../../components/FavoriteButton';
 import { getUserId } from '@/utils/localstorageCredentials';
 import PlayStateButton from '../../components/PlayStateButton';
+import MediaDeleteButton from '@/components/MediaDeleteButton';
 
 interface EpisodePageProps {
     item: BaseItemDto;
@@ -120,6 +121,12 @@ const EpisodePage = ({ item, config }: EpisodePageProps) => {
                         />
                         <PlayStateButton itemId={item.Id || ''} userId={getUserId() || ''} />
                         <MediaInfoDialog streams={item.MediaStreams || []} />
+                        <MediaDeleteButton
+                            item={item}
+                            deleteButton={
+                                item.Type && config.itemPage?.deleteButton?.includes(item.Type)
+                            }
+                        />
                     </div>
                     <p>{item.Overview}</p>
                 </div>
