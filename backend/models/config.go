@@ -84,4 +84,5 @@ const (
 	SectionNextUp          = "nextUp"
 	SectionResume          = "resume"
 	SectionRecommended     = "streamystatsRecommended"
+	SectionGenres          = "genres"
 )
