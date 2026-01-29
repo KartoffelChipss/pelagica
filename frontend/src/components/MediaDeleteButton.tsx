@@ -6,6 +6,7 @@ import { Trash2 } from 'lucide-react';
 import { useTranslation } from 'react-i18next';
 import { useNavigate } from 'react-router';
 import { useState } from 'react';
+import { useCurrentUser } from '@/hooks/api/useCurrentUser';
 
 const MediaDeleteButton = ({
     item,
@@ -17,6 +18,7 @@ const MediaDeleteButton = ({
     deleteButton?: boolean;
 }) => {
     const [isOpen, setIsOpen] = useState(false);
+    const { data: currentUser } = useCurrentUser();
     const navigate = useNavigate();
     const { deleteMedia, isDeleting } = useDeleteMedia(() => {
         navigate('/');
@@ -28,6 +30,8 @@ const MediaDeleteButton = ({
     };
 
     if (deleteButton === false) return null;
+
+    if (currentUser?.Policy?.IsAdministrator !== true) return null;
 
     return (
         <Dialog open={isOpen} onOpenChange={setIsOpen}>
