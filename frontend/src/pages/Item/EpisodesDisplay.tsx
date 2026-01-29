@@ -210,7 +210,7 @@ const EpisodesRow = memo(
                             key={item.Id}
                             episode={item}
                             navigate={navigate}
-                            className="min-w-48 lg:min-w-64 2xl:min-w-80"
+                            className="w-min min-w-48 lg:min-w-64 2xl:min-w-80"
                         />
                     )) || []
                 }
