@@ -45,8 +45,8 @@ type HomeScreenSection struct {
 type ItemPageSettings struct {
 	DetailBadges         []DetailBadge  `json:"detailBadges,omitempty"`
 	EpisodeDisplay       EpisodeDisplay `json:"episodeDisplay,omitempty"`
-	FavoriteButton       []BaseItemKind `json:"favoriteButton,omitempty"`
-	DeleteButton         []BaseItemKind `json:"deleteButton,omitempty"`
+	FavoriteButton       []BaseItemKind `json:"favoriteButton"`
+	DeleteButton         []BaseItemKind `json:"deleteButton"`
 	ShowWatchlistButton  *bool          `json:"showWatchlistButton,omitempty"`
 }
 

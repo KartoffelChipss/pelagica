@@ -576,13 +576,11 @@ const SettingsPage = () => {
                         episodeDisplay,
                         showWatchlistButton,
                         favoriteButton:
-                            favoriteButton.length > 0
-                                ? (favoriteButton as BaseItemKind[])
-                                : undefined,
+                            favoriteButton.length > 0 ? (favoriteButton as BaseItemKind[]) : [],
                         detailBadges:
-                            detailBadges.length > 0 ? (detailBadges as DetailBadge[]) : undefined,
+                            detailBadges.length > 0 ? (detailBadges as DetailBadge[]) : [],
                         deleteButton:
-                            deleteButton.length > 0 ? (deleteButton as BaseItemKind[]) : undefined,
+                            deleteButton.length > 0 ? (deleteButton as BaseItemKind[]) : [],
                     },
                 });
                 setSaveSuccess(true);

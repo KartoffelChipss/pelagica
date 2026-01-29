@@ -63,6 +63,19 @@ func UpdateConfig(w http.ResponseWriter, r *http.Request) {
         return
     }
 
+    // Initialize empty arrays to save them in json as [] instead just ignoring them
+    if cfg.ItemPage != nil {
+        if cfg.ItemPage.FavoriteButton == nil {
+            cfg.ItemPage.FavoriteButton = []models.BaseItemKind{}
+        }
+        if cfg.ItemPage.DeleteButton == nil {
+            cfg.ItemPage.DeleteButton = []models.BaseItemKind{}
+        }
+        if cfg.ItemPage.DetailBadges == nil {
+            cfg.ItemPage.DetailBadges = []models.DetailBadge{}
+        }
+    }
+
     data, _ := json.MarshalIndent(cfg, "", "    ")
     
     // Write directly to config file because docker seems to have an issue with renaming files on mounted volumes
