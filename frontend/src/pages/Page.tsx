@@ -1,7 +1,7 @@
 import AppSidebar from '@/components/AppSidebar';
 import { Button } from '@/components/ui/button';
 import { SidebarProvider, SidebarTrigger } from '@/components/ui/sidebar';
-import { type PropsWithChildren, useEffect } from 'react';
+import { type PropsWithChildren, useEffect, useState } from 'react';
 import { useNavigate } from 'react-router';
 import { useCurrentUser } from '@/hooks/api/useCurrentUser';
 import { Avatar, AvatarFallback, AvatarImage } from '@/components/ui/avatar';
@@ -11,6 +11,10 @@ import { usePageBackground } from '@/hooks/usePageBackground';
 import MusicPlayerBar from '@/components/MusicPlayerBar';
 import { useTheme } from '@/components/theme-provider';
 import { getEffectiveTheme } from '@/utils/effectiveTheme';
+import FullPageLoader from '@/components/FullPageLoader';
+import { logout } from '@/api/logout';
+import { getApi } from '@/api/getApi';
+import FullPageError from '@/components/FullPageError';
 
 interface PageProps {
     title?: string;
@@ -56,6 +60,7 @@ const PageContent = ({
     const serverDomain = serverUrl ? serverUrlToDomain(serverUrl) : null;
     const { theme } = useTheme();
     const effectiveTheme = getEffectiveTheme(theme);
+    const [showLoader, setShowLoader] = useState(true);
 
     useEffect(() => {
         if (title) document.title = title;
@@ -67,18 +72,60 @@ const PageContent = ({
         }
     }, [requiresAuth, navigate]);
 
-    // show loading while checking auth on protected pages
-    if (requiresAuth && isLoading) return null; // TODO show a spinner here
+    useEffect(() => {
+        if (!isLoading) return;
 
-    // if auth check failed and we're on a protected page, don't render
-    if (requiresAuth && isError) return null; // TODO show an error message here
+        const t = setTimeout(() => {
+            setShowLoader(true);
+        }, 600);
+
+        return () => {
+            clearTimeout(t);
+            setShowLoader(false);
+        };
+    }, [isLoading]);
+
+    if (requiresAuth && isLoading && showLoader)
+        return <FullPageLoader message="Loading user information..." />;
+
+    if (requiresAuth && isError)
+        return (
+            <FullPageError
+                title="Authentication Error"
+                message="Failed to load user information."
+                content={
+                    <Button
+                        onClick={() => {
+                            logout(getApi());
+                            navigate('/login', { replace: true });
+                        }}
+                    >
+                        Return to login
+                    </Button>
+                }
+            />
+        );
 
     if (requiresAuth && !isLoggedIn()) return null;
 
     if (requiresAuth && !user) return null;
 
     if (requireAdmin && user && !user.Policy?.IsAdministrator) {
-        return null; // TODO show an unauthorized message here
+        return (
+            <FullPageError
+                title="Access Denied"
+                message="You do not have the necessary permissions to view this page."
+                content={
+                    <Button
+                        onClick={() => {
+                            navigate('/', { replace: true });
+                        }}
+                    >
+                        Return to home
+                    </Button>
+                }
+            />
+        );
     }
 
     return (

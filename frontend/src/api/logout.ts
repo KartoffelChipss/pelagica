@@ -3,7 +3,7 @@ import { clearDeviceId } from '@/utils/deviceId';
 
 // eslint-disable-next-line @typescript-eslint/no-explicit-any
 export async function logout(api: any) {
-    await api.logout();
     clearCredentials();
     clearDeviceId();
+    await api.logout();
 }
