@@ -33,8 +33,6 @@ export function useGenreItems(genreId: string, options?: GenreItemsOptions) {
                 startIndex: options?.startIndex ?? 0,
             });
 
-            console.log(itemsResponse);
-
             return {
                 items: (itemsResponse.data?.Items ?? []) as BaseItemDto[],
                 totalCount: itemsResponse.data?.TotalRecordCount ?? 0,

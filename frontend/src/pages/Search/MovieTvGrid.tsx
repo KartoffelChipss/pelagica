@@ -4,12 +4,15 @@ import type { BaseItemDto } from '@jellyfin/sdk/lib/generated-client/models';
 import { ImageOff } from 'lucide-react';
 import { useState } from 'react';
 import { Link } from 'react-router';
+import WatchedStateBadge from '@/components/WatchedStateBadge';
+import { useConfig } from '@/hooks/api/useConfig';
 
 interface MovieTvGridProps {
     items: BaseItemDto[];
 }
 
 const MovieTvItem = ({ item }: { item: BaseItemDto }) => {
+    const { config } = useConfig();
     const [posterError, setPosterError] = useState(false);
     const posterUrl = getPrimaryImageUrl(item.Id || '');
     const posterAspectRatio = '2/3';
@@ -36,6 +39,7 @@ const MovieTvItem = ({ item }: { item: BaseItemDto }) => {
                         <ImageOff className="text-4xl text-muted-foreground" />
                     </div>
                 )}
+                <WatchedStateBadge item={item} show={config?.watchedStateBadgeSearch || false} />
             </div>
             <p className="mt-2 text-sm line-clamp-1 text-ellipsis break-all">
                 {item.Name || 'No Title'}

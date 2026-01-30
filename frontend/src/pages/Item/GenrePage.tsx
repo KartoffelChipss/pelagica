@@ -24,6 +24,8 @@ import {
     SelectValue,
 } from '@/components/ui/select';
 import { ButtonGroup } from '@/components/ui/button-group';
+import WatchedStateBadge from '@/components/WatchedStateBadge';
+import { useConfig } from '@/hooks/api/useConfig';
 
 const ITEM_ROWS = 5;
 const DEFAULT_SORT_BY: ItemSortBy = 'Name';
@@ -40,6 +42,7 @@ function getColumnCount(width: number): number {
 
 const ItemDisplay = ({ item }: { item: BaseItemDto }) => {
     const { t } = useTranslation('item');
+    const { config } = useConfig();
     const [posterError, setPosterError] = useState(false);
 
     return (
@@ -62,6 +65,7 @@ const ItemDisplay = ({ item }: { item: BaseItemDto }) => {
                         <ImageOff className="text-4xl text-muted-foreground" />
                     </div>
                 )}
+                <WatchedStateBadge item={item} show={config?.watchedStateBadgeGenre || false} />
             </div>
             <p className="mt-2 text-sm line-clamp-1 text-ellipsis break-all">
                 {item.Name || t('library:no_title')}

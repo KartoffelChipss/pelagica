@@ -92,5 +92,11 @@
     "show_based_on": "Show Based On",
     "detail_fields": "Detail Fields",
     "delete_button_types_label": "Delete Button Item Types",
-    "delete_button_types_description": "Select the item types for which the delete button should be displayed."
+    "delete_button_types_description": "Select the item types for which the delete button should be displayed.",
+    "watched_state_badges": "Watched State Badges",
+    "watched_state_badges_description": "Configure the display of watched state badges on posters.",
+    "watched_state_badge_homescreen_label": "Show Watched State Badge on Home Screen",
+    "watched_state_badge_library_label": "Show Watched State Badge in Library",
+    "watched_state_badge_genre_label": "Show Watched State Badge on Genre Pages",
+    "watched_state_badge_search_label": "Show Watched State Badge on Search Pages"
 }

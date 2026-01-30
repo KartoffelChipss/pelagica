@@ -1,12 +1,16 @@
 package models
 
 type AppConfig struct {
-	JsonSchema               string 		 	 `json:"$schema,omitempty"`
-	HomeScreenSections      []HomeScreenSection  `json:"homeScreenSections,omitempty"`
-	ItemPage                *ItemPageSettings    `json:"itemPage,omitempty"`
-	ServerAddress            string              `json:"serverAddress,omitempty"`
-	ShowStreamystatsButton   *bool               `json:"showStreamystatsButton,omitempty"`
-	StreamystatsURL          string              `json:"streamystatsUrl,omitempty"`
+	JsonSchema                    string 		 	   `json:"$schema,omitempty"`
+	HomeScreenSections            []HomeScreenSection  `json:"homeScreenSections,omitempty"`
+	ItemPage                      *ItemPageSettings    `json:"itemPage,omitempty"`
+	ServerAddress                 string               `json:"serverAddress,omitempty"`
+	ShowStreamystatsButton        *bool                `json:"showStreamystatsButton,omitempty"`
+	StreamystatsURL               string               `json:"streamystatsUrl,omitempty"`
+	WatchedStateBadgeHomeScreen   *bool                `json:"watchedStateBadgeHomeScreen,omitempty"`
+	WatchedStateBadgeLibrary      *bool                `json:"watchedStateBadgeLibrary,omitempty"`
+	WatchedStateBadgeGenre        *bool                `json:"watchedStateBadgeGenre,omitempty"`
+	WatchedStateBadgeSearch       *bool                `json:"watchedStateBadgeSearch,omitempty"`
 }
 
 type HomeScreenSection struct {

@@ -192,6 +192,14 @@ export interface AppConfig {
     streamystatsUrl?: string;
     /** Whether to show the Streamystats button in the user menu */
     showStreamystatsButton?: boolean;
+    /** Whether to show the watched state badge for items on the home screen */
+    watchedStateBadgeHomeScreen?: boolean;
+    /** Whether to show the watched state badge for items in the library */
+    watchedStateBadgeLibrary?: boolean;
+    /** Whether to show the watched state badge for items on genre pages */
+    watchedStateBadgeGenre?: boolean;
+    /** Whether to show the watched state badge for items on search pages */
+    watchedStateBadgeSearch?: boolean;
     /** Settings for item detail pages */
     itemPage?: ItemPageSettings;
     /** Sections to display on the home screen, in order */
@@ -208,6 +216,10 @@ const DEFAULT_ITEM_PAGE_SETTINGS: ItemPageSettings = {
 
 const DEFAULT_CONFIG: AppConfig = {
     showStreamystatsButton: false,
+    watchedStateBadgeHomeScreen: false,
+    watchedStateBadgeLibrary: false,
+    watchedStateBadgeGenre: false,
+    watchedStateBadgeSearch: false,
     homeScreenSections: [
         {
             type: 'mediaBar',

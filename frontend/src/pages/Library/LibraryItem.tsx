@@ -1,9 +1,11 @@
 import { Skeleton } from '@/components/ui/skeleton';
+import { useConfig } from '@/hooks/api/useConfig';
 import type { BaseItemDto } from '@jellyfin/sdk/lib/generated-client/models';
 import type { TFunction } from 'i18next';
 import { ImageOff } from 'lucide-react';
 import { useState } from 'react';
 import { Link } from 'react-router';
+import WatchedStateBadge from '@/components/WatchedStateBadge';
 
 const LibraryItem = ({
     item,
@@ -18,6 +20,7 @@ const LibraryItem = ({
     posterAspectRatio?: string;
     detailLine?: React.ReactNode;
 }) => {
+    const { config } = useConfig();
     const [posterError, setPosterError] = useState(false);
 
     return (
@@ -42,6 +45,7 @@ const LibraryItem = ({
                         <ImageOff className="text-4xl text-muted-foreground" />
                     </div>
                 )}
+                <WatchedStateBadge item={item} show={config?.watchedStateBadgeLibrary || false} />
             </div>
             <p className="mt-2 text-sm line-clamp-1 text-ellipsis break-all">
                 {item.Name || t('library:no_title')}

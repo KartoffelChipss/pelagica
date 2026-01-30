@@ -521,6 +521,10 @@ const SettingsPage = () => {
     const [serverAddress, setServerAddress] = useState('');
     const [streamystatsUrl, setStreamystatsUrl] = useState('');
     const [showStreamystatsButton, setShowStreamystatsButton] = useState(false);
+    const [watchedStateBadgeHomeScreen, setWatchedStateBadgeHomeScreen] = useState(false);
+    const [watchedStateBadgeLibrary, setWatchedStateBadgeLibrary] = useState(false);
+    const [watchedStateBadgeGenre, setWatchedStateBadgeGenre] = useState(false);
+    const [watchedStateBadgeSearch, setWatchedStateBadgeSearch] = useState(false);
     const [episodeDisplay, setEpisodeDisplay] = useState<'grid' | 'row'>('row');
     const [showWatchlistButton, setShowWatchlistButton] = useState(false);
     const [favoriteButton, setFavoriteButton] = useState<string[]>([]);
@@ -543,6 +547,10 @@ const SettingsPage = () => {
         setServerAddress(config?.serverAddress || '');
         setStreamystatsUrl(config?.streamystatsUrl || '');
         setShowStreamystatsButton(config?.showStreamystatsButton || false);
+        setWatchedStateBadgeHomeScreen(config?.watchedStateBadgeHomeScreen || false);
+        setWatchedStateBadgeLibrary(config?.watchedStateBadgeLibrary || false);
+        setWatchedStateBadgeGenre(config?.watchedStateBadgeGenre || false);
+        setWatchedStateBadgeSearch(config?.watchedStateBadgeSearch || false);
         setEpisodeDisplay(config?.itemPage?.episodeDisplay || 'row');
         setShowWatchlistButton(config?.itemPage?.showWatchlistButton || false);
         setFavoriteButton(config?.itemPage?.favoriteButton || []);
@@ -553,6 +561,10 @@ const SettingsPage = () => {
         config?.serverAddress,
         config?.streamystatsUrl,
         config?.showStreamystatsButton,
+        config?.watchedStateBadgeHomeScreen,
+        config?.watchedStateBadgeLibrary,
+        config?.watchedStateBadgeGenre,
+        config?.watchedStateBadgeSearch,
         config?.itemPage?.episodeDisplay,
         config?.itemPage?.showWatchlistButton,
         config?.itemPage?.favoriteButton,
@@ -570,6 +582,10 @@ const SettingsPage = () => {
                     serverAddress,
                     streamystatsUrl,
                     showStreamystatsButton,
+                    watchedStateBadgeHomeScreen,
+                    watchedStateBadgeLibrary,
+                    watchedStateBadgeGenre,
+                    watchedStateBadgeSearch,
                     homeScreenSections,
                     itemPage: {
                         ...config.itemPage,
@@ -642,6 +658,32 @@ const SettingsPage = () => {
                         label={t('show_streamystats_button_label')}
                         checked={showStreamystatsButton}
                         onChange={setShowStreamystatsButton}
+                    />
+                    <h2 className="mt-6 mb-2 text-xl font-semibold leading-none tracking-tight">
+                        {t('watched_state_badges')}
+                    </h2>
+                    <p className="mb-2 text-sm text-muted-foreground">
+                        {t('watched_state_badges_description')}
+                    </p>
+                    <BooleanInput
+                        label={t('watched_state_badge_homescreen_label')}
+                        checked={watchedStateBadgeHomeScreen}
+                        onChange={setWatchedStateBadgeHomeScreen}
+                    />
+                    <BooleanInput
+                        label={t('watched_state_badge_library_label')}
+                        checked={watchedStateBadgeLibrary}
+                        onChange={setWatchedStateBadgeLibrary}
+                    />
+                    <BooleanInput
+                        label={t('watched_state_badge_genre_label')}
+                        checked={watchedStateBadgeGenre}
+                        onChange={setWatchedStateBadgeGenre}
+                    />
+                    <BooleanInput
+                        label={t('watched_state_badge_search_label')}
+                        checked={watchedStateBadgeSearch}
+                        onChange={setWatchedStateBadgeSearch}
                     />
                 </TabsContent>
                 <TabsContent value="homesections" className="max-w-200">

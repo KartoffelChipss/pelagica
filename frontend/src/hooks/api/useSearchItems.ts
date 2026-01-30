@@ -7,6 +7,7 @@ import { getRetryConfig } from '@/utils/authErrorHandler';
 interface UseSearchItemsOptions {
     itemTypes?: BaseItemKind[];
     limit?: number;
+    userId?: string;
 }
 
 export function useSearchItems(searchTerm: string, options?: UseSearchItemsOptions) {
@@ -17,13 +18,15 @@ export function useSearchItems(searchTerm: string, options?: UseSearchItemsOptio
     const limit = options?.limit ?? 15;
 
     return useQuery<BaseItemDto[]>({
-        queryKey: ['searchItems', searchTerm, itemTypesKey, limit],
+        queryKey: ['searchItems', searchTerm, itemTypesKey, limit, options?.userId],
         queryFn: async (): Promise<BaseItemDto[]> => {
             try {
                 const api = getApi();
                 const itemsApi = getItemsApi(api);
 
                 const response = await itemsApi.getItems({
+                    userId: options?.userId,
+                    enableUserData: true,
                     searchTerm: searchTerm.trim(),
                     includeItemTypes: normalizedItemTypes,
                     limit,

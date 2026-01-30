@@ -2,6 +2,8 @@ import type { BaseItemDto } from '@jellyfin/sdk/lib/generated-client/models';
 import { Link } from 'react-router';
 import { Skeleton } from './ui/skeleton';
 import { getPrimaryImageUrl } from '@/utils/jellyfinUrls';
+import { useConfig } from '@/hooks/api/useConfig';
+import WatchedStateBadge from './WatchedStateBadge';
 
 interface ScrollableSectionPosterProps {
     item?: BaseItemDto;
@@ -20,6 +22,8 @@ const ScrollableSectionPoster = ({
     itemId,
     className,
 }: ScrollableSectionPosterProps) => {
+    const { config } = useConfig();
+
     const isSquareType = item?.Type === 'Playlist' || item?.Type === 'MusicAlbum';
     const posterClasses = isSquareType
         ? 'w-36 h-36 lg:w-44 lg:h-44 2xl:w-52 2xl:h-52'
@@ -36,10 +40,11 @@ const ScrollableSectionPoster = ({
                     key={itemId || item?.Id}
                     src={posterUrl ? posterUrl : getPrimaryImageUrl(itemId || item?.Id || '')}
                     alt={itemName || item?.Name || ''}
-                    className={`${minPosterClasses} ${posterClasses} object-cover rounded-md group-hover:opacity-75 transition-all group-hover:scale-105 z-10`}
+                    className={`${minPosterClasses} ${posterClasses} object-cover rounded-md group-hover:opacity-75 transition-all group-hover:scale-105 transform-gpu will-change-transform z-10`}
                     loading="lazy"
                 />
                 <Skeleton className={`absolute bottom-0 left-0 right-0 ${skeletonClasses} -z-1`} />
+                <WatchedStateBadge item={item} show={config?.watchedStateBadgeHomeScreen || false} />
             </div>
             <p className="mt-2 text-sm line-clamp-1 text-ellipsis break-all max-w-36 lg:max-w-44 2xl:max-w-52">
                 {itemName || item?.Name || ''}

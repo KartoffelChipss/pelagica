@@ -37,6 +37,7 @@ import {
 } from '@/components/ui/empty';
 import { useTranslation } from 'react-i18next';
 import GenresGrid from './GenresGrid';
+import { getUserId } from '@/utils/localstorageCredentials';
 
 const ITEM_TYPE_GROUPS = {
     episodes: ['Episode'] as BaseItemKind[],
@@ -91,7 +92,7 @@ const SearchPage = () => {
         data: results,
         isLoading,
         error,
-    } = useSearchItems(debouncedQuery, { itemTypes, limit: 50 });
+    } = useSearchItems(debouncedQuery, { itemTypes, limit: 50, userId: getUserId() || undefined });
 
     useEffect(() => {
         const handler = setTimeout(() => {
