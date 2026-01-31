@@ -13,8 +13,6 @@ interface WatchedStateBadgeProps {
 const WatchedStateBadge = ({ item, show }: WatchedStateBadgeProps) => {
     if (!show || !item) return null;
 
-    console.log('WatchedStateBadge render for item:', item, 'with show:', show);
-
     const unplayedItemCount = item?.UserData?.UnplayedItemCount;
     const playedItem = item?.UserData?.Played;
     const shouldShowUnplayedCount =
