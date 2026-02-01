@@ -33,18 +33,31 @@ const ScrollableSectionPoster = ({
         : 'min-w-36 lg:min-w-44 2xl:min-w-52 min-h-54 lg:min-h-64 2xl:min-h-80';
     const skeletonClasses = isSquareType ? 'h-36 lg:h-44 2xl:h-52' : 'h-54 lg:h-64 2xl:h-80';
 
+    const primaryImageTag = item?.ImageTags?.Primary;
+
     return (
         <Link to={`/item/${itemId || item?.Id}`} key={itemId || item?.Id} className={className}>
             <div className={`relative overflow-hidden rounded-md group ${posterClasses}`}>
                 <img
                     key={itemId || item?.Id}
-                    src={posterUrl ? posterUrl : getPrimaryImageUrl(itemId || item?.Id || '')}
+                    src={
+                        posterUrl
+                            ? posterUrl
+                            : getPrimaryImageUrl(
+                                  itemId || item?.Id || '',
+                                  undefined,
+                                  primaryImageTag
+                              )
+                    }
                     alt={itemName || item?.Name || ''}
                     className={`${minPosterClasses} ${posterClasses} object-cover rounded-md group-hover:opacity-75 transition-all group-hover:scale-105 transform-gpu will-change-transform z-10`}
                     loading="lazy"
                 />
                 <Skeleton className={`absolute bottom-0 left-0 right-0 ${skeletonClasses} -z-1`} />
-                <WatchedStateBadge item={item} show={config?.watchedStateBadgeHomeScreen || false} />
+                <WatchedStateBadge
+                    item={item}
+                    show={config?.watchedStateBadgeHomeScreen || false}
+                />
             </div>
             <p className="mt-2 text-sm line-clamp-1 text-ellipsis break-all max-w-36 lg:max-w-44 2xl:max-w-52">
                 {itemName || item?.Name || ''}

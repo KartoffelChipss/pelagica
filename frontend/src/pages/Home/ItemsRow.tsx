@@ -1,10 +1,8 @@
-import { getApi } from '@/api/getApi';
 import SectionScroller from '@/components/SectionScroller';
 import { Button } from '@/components/ui/button';
 import { Skeleton } from '@/components/ui/skeleton';
 import type { DetailField, SectionItemsConfig } from '@/hooks/api/useConfig';
 import { useRowItems } from '@/hooks/api/useRowItems';
-import { getImageApi } from '@jellyfin/sdk/lib/utils/api/image-api';
 import { Link } from 'react-router';
 import { useEffect, useMemo, type ReactNode } from 'react';
 import type { BaseItemDto } from '@jellyfin/sdk/lib/generated-client/models';
@@ -13,6 +11,7 @@ import { Star } from 'lucide-react';
 import { useTranslation } from 'react-i18next';
 import type { TFunction } from 'i18next';
 import ScrollableSectionPoster from '@/components/ScrollableSectionPoster';
+import { getPrimaryImageUrl } from '@/utils/jellyfinUrls';
 
 interface ItemsRowProps {
     title?: string;
@@ -101,10 +100,9 @@ const ItemsRow = ({ title, allLink, items, detailFields }: ItemsRowProps) => {
 
     const posterUrls = useMemo(() => {
         if (!recentItems) return {};
-        const imageApi = getImageApi(getApi());
         return recentItems.reduce(
             (acc, item) => {
-                acc[item.Id!] = imageApi.getItemImageUrl({ Id: item.Id }) || '';
+                acc[item.Id!] = getPrimaryImageUrl(item.Id!, undefined, item.ImageTags?.Primary);
                 return acc;
             },
             {} as Record<string, string>

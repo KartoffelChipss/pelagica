@@ -174,7 +174,7 @@ const BaseMusicListPage = ({ item, config, listType }: BaseMusicListPageProps) =
             <div className="fixed top-0 left-0 w-full h-full -z-20 overflow-hidden">
                 <div className="absolute inset-0">
                     <img
-                        src={getPrimaryImageUrl(item.Id || '')}
+                        src={getPrimaryImageUrl(item.Id || '', undefined, item.ImageTags?.Primary)}
                         alt={item.Name + ' Backdrop'}
                         className="w-full h-full object-cover blur-3xl scale-110 opacity-40"
                     />
@@ -187,7 +187,7 @@ const BaseMusicListPage = ({ item, config, listType }: BaseMusicListPageProps) =
         return () => {
             setBackground(null);
         };
-    }, [item.Id, item.Name, setBackground]);
+    }, [item.Id, item.Name, item.ImageTags, setBackground]);
 
     const detailItems: string[] = [];
     if (item.PremiereDate) {
@@ -237,7 +237,7 @@ const BaseMusicListPage = ({ item, config, listType }: BaseMusicListPageProps) =
                 >
                     <div className="flex justify-start items-end-safe gap-4 w-full">
                         <img
-                            src={getPrimaryImageUrl(item.Id!)}
+                            src={getPrimaryImageUrl(item.Id!, undefined, item.ImageTags?.Primary)}
                             alt={item.Name + ' Cover'}
                             className="relative w-32 h-32 object-contain rounded-md"
                         />

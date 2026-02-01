@@ -11,7 +11,7 @@ interface MusicGridProps {
 
 const MusicItem = ({ item }: { item: BaseItemDto }) => {
     const [posterError, setPosterError] = useState(false);
-    const posterUrl = getPrimaryImageUrl(item.Id || '');
+    const posterUrl = getPrimaryImageUrl(item.Id || '', undefined, item.ImageTags?.Primary);
 
     return (
         <Link to={`/item/${item.Id}`} key={item.Id} className="p-0 m-0">

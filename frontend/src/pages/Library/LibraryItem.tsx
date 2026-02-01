@@ -32,7 +32,7 @@ const LibraryItem = ({
                     <>
                         <img
                             key={item.Id}
-                            src={`${posterUrl}?maxWidth=416&maxHeight=640&quality=85`}
+                            src={posterUrl}
                             alt={item.Name || t('library:no_title')}
                             className="w-full h-full object-cover rounded-md group-hover:opacity-75 transition-all group-hover:scale-105 z-10"
                             loading="lazy"

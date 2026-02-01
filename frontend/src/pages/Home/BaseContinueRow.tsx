@@ -72,12 +72,20 @@ export function BaseContinueRow({
                                                   <img
                                                       src={
                                                           item.SeriesId
-                                                              ? getPrimaryImageUrl(item.Id!, {
-                                                                    width: 416,
-                                                                })
-                                                              : getThumbUrl(item.Id!, {
-                                                                    width: 416,
-                                                                })
+                                                              ? getPrimaryImageUrl(
+                                                                    item.Id!,
+                                                                    {
+                                                                        width: 416,
+                                                                    },
+                                                                    item.ImageTags?.Primary
+                                                                )
+                                                              : getThumbUrl(
+                                                                    item.Id!,
+                                                                    {
+                                                                        width: 416,
+                                                                    },
+                                                                    item.ImageTags?.Thumb
+                                                                )
                                                       }
                                                       alt={item.Name || t('no_title')}
                                                       className="w-full h-full object-cover rounded-md group-hover:opacity-75 transition-all group-hover:scale-105"

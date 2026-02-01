@@ -32,7 +32,11 @@ const BoxSetPage = ({ item, config }: BoxSetPageProps) => {
                 {!primaryImageError && item.Id && (
                     <div className="relative w-60 min-w-60 h-90 sm:w-72 sm:min-w-72 sm:h-108 hidden sm:block">
                         <img
-                            src={getPrimaryImageUrl(item.Id || '')}
+                            src={getPrimaryImageUrl(
+                                item.Id || '',
+                                undefined,
+                                item.ImageTags?.Primary
+                            )}
                             alt={item.Name + ' Primary'}
                             className="object-cover rounded-md w-full h-full"
                             onError={() => setPrimaryImageError(true)}

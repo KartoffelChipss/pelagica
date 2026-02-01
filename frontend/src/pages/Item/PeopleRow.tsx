@@ -65,9 +65,13 @@ const PeopleRow = memo(
                                     </div>
                                 ) : (
                                     <img
-                                        src={getPrimaryImageUrl(person.Id!, {
-                                            width: 120,
-                                        })}
+                                        src={getPrimaryImageUrl(
+                                            person.Id!,
+                                            {
+                                                width: 120,
+                                            },
+                                            person.PrimaryImageTag || undefined
+                                        )}
                                         alt={person.Name || 'No Name'}
                                         className="h-full w-full object-cover group-hover:opacity-75 group-hover:scale-105 transition-opacity transition-transform duration-300 ease-out will-change-transform"
                                         onError={() => handleProfilePictureError(person.Id!)}

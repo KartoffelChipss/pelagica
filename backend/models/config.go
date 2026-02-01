@@ -51,6 +51,7 @@ type ItemPageSettings struct {
 	EpisodeDisplay       EpisodeDisplay `json:"episodeDisplay,omitempty"`
 	FavoriteButton       []BaseItemKind `json:"favoriteButton"`
 	ShowWatchlistButton  *bool          `json:"showWatchlistButton,omitempty"`
+	DeleteButton         []BaseItemKind `json:"deleteButton,omitempty"`
 }
 
 type SectionItemsConfig struct {

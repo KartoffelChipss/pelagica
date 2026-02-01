@@ -4,8 +4,6 @@ import { useUserViews } from '@/hooks/api/useUserViews';
 import { useMemo, useState, useEffect, useRef } from 'react';
 import { useLibraryItems } from '@/hooks/api/useLibraryItems';
 import { useSearchParams } from 'react-router';
-import { getImageApi } from '@jellyfin/sdk/lib/utils/api/image-api';
-import { getApi } from '@/api/getApi';
 import { useTranslation } from 'react-i18next';
 import { Skeleton } from '@/components/ui/skeleton';
 import ItemPagination from '@/components/ItemPagination';
@@ -38,6 +36,7 @@ import type { ItemSortBy, SortOrder } from '@jellyfin/sdk/lib/generated-client/m
 import { ButtonGroup } from '@/components/ui/button-group';
 import LibraryItem from './LibraryItem';
 import { SUPPORTED_LIBRARY_COLLECTION_TYPES } from '@/utils/supportedLibraryCollectionTypes';
+import { getPrimaryImageUrl } from '@/utils/jellyfinUrls';
 
 const ITEM_ROWS = 5;
 
@@ -97,10 +96,16 @@ const LibraryContent = ({
 
     const posterUrls = useMemo(() => {
         if (!libraryData) return {};
-        const imageApi = getImageApi(getApi());
         return libraryData.items.reduce(
             (acc, item) => {
-                acc[item.Id!] = imageApi.getItemImageUrl({ Id: item.Id }) || '';
+                acc[item.Id!] = getPrimaryImageUrl(
+                    item.Id!,
+                    {
+                        height: 640,
+                        width: 416,
+                    },
+                    item.ImageTags?.Primary
+                );
                 return acc;
             },
             {} as Record<string, string>

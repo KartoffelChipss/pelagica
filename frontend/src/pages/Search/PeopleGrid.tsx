@@ -11,7 +11,7 @@ interface PeopleGridProps {
 
 const PersonItem = ({ item }: { item: BaseItemDto }) => {
     const [posterError, setPosterError] = useState(false);
-    const posterUrl = getPrimaryImageUrl(item.Id || '');
+    const posterUrl = getPrimaryImageUrl(item.Id || '', undefined, item.ImageTags?.Primary);
 
     return (
         <Link to={`/person/${item.Id}`} key={item.Id} className="p-0 m-0">

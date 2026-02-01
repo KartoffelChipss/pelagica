@@ -14,7 +14,7 @@ interface MovieTvGridProps {
 const MovieTvItem = ({ item }: { item: BaseItemDto }) => {
     const { config } = useConfig();
     const [posterError, setPosterError] = useState(false);
-    const posterUrl = getPrimaryImageUrl(item.Id || '');
+    const posterUrl = getPrimaryImageUrl(item.Id || '', undefined, item.ImageTags?.Primary);
     const posterAspectRatio = '2/3';
 
     return (

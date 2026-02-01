@@ -52,7 +52,11 @@ const ItemDisplay = ({ item }: { item: BaseItemDto }) => {
                     <>
                         <img
                             key={item.Id}
-                            src={`${getPrimaryImageUrl(item.Id!)}?maxWidth=416&maxHeight=640&quality=85`}
+                            src={getPrimaryImageUrl(
+                                item.Id!,
+                                { width: 416, height: 640 },
+                                item.ImageTags?.Primary
+                            )}
                             alt={item.Name || t('library:no_title')}
                             className="w-full h-full object-cover rounded-md group-hover:opacity-75 transition-all group-hover:scale-105 z-10"
                             loading="lazy"

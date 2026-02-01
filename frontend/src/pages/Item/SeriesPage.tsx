@@ -69,7 +69,7 @@ const SeriesPage = ({ item, config }: SeriesPageProps) => {
             <div className="flex flex-col md:flex-row gap-6 max-w-7xl">
                 <div className="relative w-60 min-w-60 h-90 sm:w-72 sm:min-w-72 sm:h-108 hidden sm:block">
                     <img
-                        src={getPrimaryImageUrl(item.Id || '')}
+                        src={getPrimaryImageUrl(item.Id || '', undefined, item.ImageTags?.Primary)}
                         alt={item.Name + ' Primary'}
                         className="object-cover rounded-md w-full h-full"
                     />
