@@ -16,7 +16,7 @@ import FavoriteButton from '../../components/FavoriteButton';
 import WatchListButton from '../../components/WatchlistButton';
 import PlayStateButton from '../../components/PlayStateButton';
 import { getUserId } from '@/utils/localstorageCredentials';
-import MediaDeleteButton from '@/components/MediaDeleteButton';
+import ItemAdminButton from '@/components/ItemAdminButton';
 
 interface MoviePageProps {
     item: BaseItemDto;
@@ -74,12 +74,7 @@ const MoviePage = ({ item, config }: MoviePageProps) => {
                         />
                         <PlayStateButton itemId={item.Id || ''} userId={getUserId() || ''} />
                         <MediaInfoDialog streams={item.MediaStreams || []} />
-                        <MediaDeleteButton
-                            item={item}
-                            deleteButton={
-                                item.Type && config.itemPage?.deleteButton?.includes(item.Type)
-                            }
-                        />
+                        <ItemAdminButton item={item} />
                     </div>
                     <p>{item.Overview}</p>
                     <DescriptionItem

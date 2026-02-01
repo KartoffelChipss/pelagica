@@ -19,7 +19,7 @@ import { Link } from 'react-router';
 import JellyfinItemKindIcon from '@/components/JellyfinItemKindIcon';
 import FavoriteButton from '../../components/FavoriteButton';
 import { Skeleton } from '@/components/ui/skeleton';
-import MediaDeleteButton from '@/components/MediaDeleteButton';
+import ItemAdminButton from '@/components/ItemAdminButton';
 
 interface EpisodePageProps {
     item: BaseItemDto;
@@ -69,12 +69,7 @@ const SeasonPage = ({ item, config }: EpisodePageProps) => {
                                 item.Type && config.itemPage?.favoriteButton?.includes(item.Type)
                             }
                         />
-                        <MediaDeleteButton
-                            item={item}
-                            deleteButton={
-                                item.Type && config.itemPage?.deleteButton?.includes(item.Type)
-                            }
-                        />
+                        <ItemAdminButton item={item} />
                     </div>
                     <p>{item.Overview}</p>
                 </div>

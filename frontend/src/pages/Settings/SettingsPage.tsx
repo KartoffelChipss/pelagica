@@ -528,7 +528,6 @@ const SettingsPage = () => {
     const [episodeDisplay, setEpisodeDisplay] = useState<'grid' | 'row'>('row');
     const [showWatchlistButton, setShowWatchlistButton] = useState(false);
     const [favoriteButton, setFavoriteButton] = useState<string[]>([]);
-    const [deleteButton, setDeleteButton] = useState<string[]>([]);
     const [detailBadges, setDetailBadges] = useState<string[]>([]);
     const [homeScreenSections, setHomeScreenSections] = useState<HomeScreenSection[]>([]);
     const [saveSuccess, setSaveSuccess] = useState(false);
@@ -554,7 +553,6 @@ const SettingsPage = () => {
         setEpisodeDisplay(config?.itemPage?.episodeDisplay || 'row');
         setShowWatchlistButton(config?.itemPage?.showWatchlistButton || false);
         setFavoriteButton(config?.itemPage?.favoriteButton || []);
-        setDeleteButton(config?.itemPage?.deleteButton || []);
         setDetailBadges(config?.itemPage?.detailBadges || []);
         setHomeScreenSections(config?.homeScreenSections || []);
     }, [
@@ -568,7 +566,6 @@ const SettingsPage = () => {
         config?.itemPage?.episodeDisplay,
         config?.itemPage?.showWatchlistButton,
         config?.itemPage?.favoriteButton,
-        config?.itemPage?.deleteButton,
         config?.itemPage?.detailBadges,
         config?.homeScreenSections,
     ]);
@@ -595,8 +592,6 @@ const SettingsPage = () => {
                             favoriteButton.length > 0 ? (favoriteButton as BaseItemKind[]) : [],
                         detailBadges:
                             detailBadges.length > 0 ? (detailBadges as DetailBadge[]) : [],
-                        deleteButton:
-                            deleteButton.length > 0 ? (deleteButton as BaseItemKind[]) : [],
                     },
                 });
                 setSaveSuccess(true);
@@ -817,21 +812,6 @@ const SettingsPage = () => {
                         selected={favoriteButton}
                         onChange={setFavoriteButton}
                         description={t('favorite_button_types_description')}
-                    />
-                    <MultiSelectInput
-                        label={t('delete_button_types_label')}
-                        options={[
-                            { value: 'Movie', label: t('movie') },
-                            { value: 'Series', label: t('series') },
-                            { value: 'Season', label: t('season') },
-                            { value: 'Episode', label: t('episode') },
-                            { value: 'BoxSet', label: t('box_set') },
-                            { value: 'MusicAlbum', label: t('music_album') },
-                            { value: 'Playlist', label: t('playlist') },
-                        ]}
-                        selected={deleteButton}
-                        onChange={setDeleteButton}
-                        description={t('delete_button_types_description')}
                     />
                     <MultiSelectInput
                         label={t('detail_badges_label')}

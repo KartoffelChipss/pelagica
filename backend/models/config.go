@@ -50,7 +50,6 @@ type ItemPageSettings struct {
 	DetailBadges         []DetailBadge  `json:"detailBadges,omitempty"`
 	EpisodeDisplay       EpisodeDisplay `json:"episodeDisplay,omitempty"`
 	FavoriteButton       []BaseItemKind `json:"favoriteButton"`
-	DeleteButton         []BaseItemKind `json:"deleteButton"`
 	ShowWatchlistButton  *bool          `json:"showWatchlistButton,omitempty"`
 }
 

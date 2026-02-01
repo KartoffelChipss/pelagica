@@ -23,7 +23,7 @@ import MediaInfoDialog from '../../components/MediaInfoDialog';
 import FavoriteButton from '../../components/FavoriteButton';
 import { getUserId } from '@/utils/localstorageCredentials';
 import PlayStateButton from '../../components/PlayStateButton';
-import MediaDeleteButton from '@/components/MediaDeleteButton';
+import ItemAdminButton from '@/components/ItemAdminButton';
 
 interface EpisodePageProps {
     item: BaseItemDto;
@@ -121,12 +121,7 @@ const EpisodePage = ({ item, config }: EpisodePageProps) => {
                         />
                         <PlayStateButton itemId={item.Id || ''} userId={getUserId() || ''} />
                         <MediaInfoDialog streams={item.MediaStreams || []} />
-                        <MediaDeleteButton
-                            item={item}
-                            deleteButton={
-                                item.Type && config.itemPage?.deleteButton?.includes(item.Type)
-                            }
-                        />
+                        <ItemAdminButton item={item} />
                     </div>
                     <p>{item.Overview}</p>
                 </div>

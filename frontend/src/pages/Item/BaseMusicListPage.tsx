@@ -31,7 +31,7 @@ import { useState, useEffect, useMemo } from 'react';
 import { useQueryClient } from '@tanstack/react-query';
 import { usePlaylistPresence } from '@/hooks/api/playlist/usePlaylistPresence';
 import { CreatePlaylistDialog } from '@/components/CreatePlaylistDialog';
-import MediaDeleteButton from '@/components/MediaDeleteButton';
+import ItemAdminButton from '@/components/ItemAdminButton';
 
 const MAX_ARTISTS_DISPLAYED = 5;
 
@@ -285,12 +285,7 @@ const BaseMusicListPage = ({ item, config, listType }: BaseMusicListPageProps) =
                                 item.Type!
                             )}
                         />
-                        <MediaDeleteButton
-                            item={item}
-                            deleteButton={
-                                item.Type && config.itemPage?.deleteButton?.includes(item.Type)
-                            }
-                        />
+                        <ItemAdminButton item={item} />
                     </div>
                     {isLoadingAlbumTracks && (
                         <div className="flex flex-col gap-0">

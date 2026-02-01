@@ -9,7 +9,7 @@ import { useBoxSetItems } from '@/hooks/api/useBoxSetItems';
 import SectionScroller from '@/components/SectionScroller';
 import { useTranslation } from 'react-i18next';
 import ScrollableSectionPoster from '@/components/ScrollableSectionPoster';
-import MediaDeleteButton from '@/components/MediaDeleteButton';
+import ItemAdminButton from '@/components/ItemAdminButton';
 
 interface BoxSetPageProps {
     item: BaseItemDto;
@@ -43,12 +43,7 @@ const BoxSetPage = ({ item, config }: BoxSetPageProps) => {
                 <div className="flex flex-col gap-3">
                     <h2 className="text-4xl sm:text-5xl font-bold mt-2">{item.Name}</h2>
                     <DetailBadges item={item} appConfig={config} />
-                    <MediaDeleteButton
-                        item={item}
-                        deleteButton={
-                            item.Type && config.itemPage?.deleteButton?.includes(item.Type)
-                        }
-                    />
+                    <ItemAdminButton item={item} />
                     <p>{item.Overview}</p>
                 </div>
             </div>
