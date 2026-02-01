@@ -84,5 +84,17 @@
     "media_delete_confirm_title": "Confirm Deletion",
     "media_delete_confirm": "Are you sure you want to delete \"{{title}}\"?",
     "delete": "Delete",
-    "deleting": "Deleting..."
+    "deleting": "Deleting...",
+    "refreshMetadata": "Refresh Metadata",
+    "deleteItem": "Delete Item",
+    "refresh_metadata_title": "Refresh metadata",
+    "refresh_metadata_description": "Choose how to refresh metadata and images for this item.",
+    "refresh_type": "Refresh Type",
+    "scan_for_new": "Scan for new and updated files",
+    "search_for_missing": "Search for missing metadata",
+    "replace_all_metadata": "Replace all metadata",
+    "replace_existing_images": "Replace existing images",
+    "replace_existing_trickplay": "Replace existing trickplay images",
+    "refresh": "Refresh",
+    "refreshing": "Refreshing…"
 }
