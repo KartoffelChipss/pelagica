@@ -15,6 +15,10 @@ Pelagica is an alternative web frontend for [Jellyfin](https://jellyfin.org) bui
 - **Theming:** Light and dark mode support.
 - **Localization:** Supports multiple languages through [community contributions](https://gitlocalize.com/repo/10635).
 
+You can find a roadmap of planned features and improvements in the [GitHub Projects](https://github.com/users/KartoffelChipss/projects/7).
+
+If you want to suggest new features or report bugs, please use the [GitHub Issues](https://github.com/KartoffelChipss/pelagica/issues) section.
+
 ### Integrated Services
 
 - **Streamystats:** Get your streamystats recommendations directly on your home page.
