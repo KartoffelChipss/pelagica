@@ -4,7 +4,7 @@ import { usePageBackground } from '@/hooks/usePageBackground';
 import { Link } from 'react-router';
 import { ticksToReadableMusicTime, ticksToReadableTime } from '@/utils/timeConversion';
 import { Button } from '@/components/ui/button';
-import { EllipsisVertical, Info, ListMusic, Play } from 'lucide-react';
+import { EllipsisVertical, ImageOff, Info, ListMusic, Play } from 'lucide-react';
 import FavoriteButton from '@/components/FavoriteButton';
 import { Skeleton } from '@/components/ui/skeleton';
 import type { AppConfig } from '@/hooks/api/useConfig';
@@ -168,6 +168,7 @@ const BaseMusicListPage = ({ item, config, listType }: BaseMusicListPageProps) =
         isLoading: isLoadingAlbumTracks,
         error: albumTracksError,
     } = useAlbumTracks(item.Id);
+    const [failedCover, setFailedCover] = useState(false);
 
     useEffect(() => {
         setBackground(
@@ -177,6 +178,7 @@ const BaseMusicListPage = ({ item, config, listType }: BaseMusicListPageProps) =
                         src={getPrimaryImageUrl(item.Id || '', undefined, item.ImageTags?.Primary)}
                         alt={item.Name + ' Backdrop'}
                         className="w-full h-full object-cover blur-3xl scale-110 opacity-40"
+                        onError={() => setFailedCover(true)}
                     />
                 </div>
                 <div className="absolute inset-0 bg-linear-to-b from-background/80 via-background/50 to-background" />
@@ -236,11 +238,22 @@ const BaseMusicListPage = ({ item, config, listType }: BaseMusicListPageProps) =
                     className={`bg-background/30 backdrop-blur-md p-4 sm:p-8 rounded-md w-full flex flex-col gap-4`}
                 >
                     <div className="flex justify-start items-end-safe gap-4 w-full">
-                        <img
-                            src={getPrimaryImageUrl(item.Id!, undefined, item.ImageTags?.Primary)}
-                            alt={item.Name + ' Cover'}
-                            className="relative w-32 h-32 object-contain rounded-md"
-                        />
+                        {!failedCover ? (
+                            <img
+                                src={getPrimaryImageUrl(
+                                    item.Id!,
+                                    undefined,
+                                    item.ImageTags?.Primary
+                                )}
+                                alt={item.Name + ' Cover'}
+                                className="relative w-32 h-32 object-contain rounded-md"
+                                onError={() => setFailedCover(true)}
+                            />
+                        ) : (
+                            <div className="relative w-32 h-32 bg-muted flex items-center justify-center rounded-md">
+                                <ImageOff className="text-muted-foreground" size={32} />
+                            </div>
+                        )}
                         <div className="flex flex-col gap-0">
                             <span className="text-sm text-muted-foreground">{listType}</span>
                             <h1 className="text-3xl font-bold">{item.Name}</h1>

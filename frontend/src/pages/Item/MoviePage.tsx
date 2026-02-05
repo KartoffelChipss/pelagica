@@ -2,7 +2,7 @@ import type { BaseItemDto } from '@jellyfin/sdk/lib/generated-client/models';
 import BaseMediaPage from './BaseMediaPage';
 import DescriptionItem from './DescriptionItem';
 import { getPrimaryImageUrl } from '@/utils/jellyfinUrls';
-import { Play } from 'lucide-react';
+import { ImageOff, Play } from 'lucide-react';
 import PeopleRow from './PeopleRow';
 import { Button } from '@/components/ui/button';
 import { useTranslation } from 'react-i18next';
@@ -17,6 +17,7 @@ import WatchListButton from '../../components/WatchlistButton';
 import PlayStateButton from '../../components/PlayStateButton';
 import { getUserId } from '@/utils/localstorageCredentials';
 import ItemAdminButton from '@/components/ItemAdminButton';
+import { useState } from 'react';
 
 interface MoviePageProps {
     item: BaseItemDto;
@@ -25,6 +26,7 @@ interface MoviePageProps {
 
 const MoviePage = ({ item, config }: MoviePageProps) => {
     const { t } = useTranslation('item');
+    const [postersFailed, setPostersFailed] = useState(false);
 
     const writers =
         item.People?.filter((person) => person.Type === 'Writer').filter((person) => person.Name) ||
@@ -44,14 +46,25 @@ const MoviePage = ({ item, config }: MoviePageProps) => {
     return (
         <BaseMediaPage itemId={item.Id || ''} name={item.Name || ''}>
             <div className="flex flex-col md:flex-row gap-6 max-w-7xl">
-                <div className="relative w-60 min-w-60 h-90 sm:w-72 sm:min-w-72 sm:h-108 hidden sm:block">
-                    <img
-                        src={getPrimaryImageUrl(item.Id || '', undefined, item.ImageTags?.Primary)}
-                        alt={item.Name + ' Primary'}
-                        className="object-cover rounded-md w-full h-full"
-                    />
-                    <Skeleton className="absolute inset-0 w-full h-full rounded-md -z-1" />
-                </div>
+                {!postersFailed ? (
+                    <div className="relative w-60 min-w-60 h-90 sm:w-72 sm:min-w-72 sm:h-108 hidden sm:block">
+                        <img
+                            src={getPrimaryImageUrl(
+                                item.Id || '',
+                                undefined,
+                                item.ImageTags?.Primary
+                            )}
+                            alt={item.Name + ' Primary'}
+                            className="object-cover rounded-md w-full h-full"
+                            onError={() => setPostersFailed(true)}
+                        />
+                        <Skeleton className="absolute inset-0 w-full h-full rounded-md -z-1" />
+                    </div>
+                ) : (
+                    <div className="w-60 min-w-60 h-90 sm:w-72 sm:min-w-72 sm:h-108 rounded-md bg-muted flex items-center justify-center">
+                        <ImageOff className="text-muted-foreground" size={32} />
+                    </div>
+                )}
                 <div className="flex flex-col gap-3">
                     <h2 className="text-4xl sm:text-5xl font-bold mt-2">{item.Name}</h2>
                     <DetailBadges item={item} appConfig={config} />

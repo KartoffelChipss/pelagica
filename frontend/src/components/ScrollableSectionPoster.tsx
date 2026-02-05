@@ -4,6 +4,8 @@ import { Skeleton } from './ui/skeleton';
 import { getPrimaryImageUrl } from '@/utils/jellyfinUrls';
 import { useConfig } from '@/hooks/api/useConfig';
 import WatchedStateBadge from './WatchedStateBadge';
+import { useState } from 'react';
+import { ImageOff } from 'lucide-react';
 
 interface ScrollableSectionPosterProps {
     item?: BaseItemDto;
@@ -23,6 +25,7 @@ const ScrollableSectionPoster = ({
     className,
 }: ScrollableSectionPosterProps) => {
     const { config } = useConfig();
+    const [posterFailed, setPosterFailed] = useState(false);
 
     const isSquareType = item?.Type === 'Playlist' || item?.Type === 'MusicAlbum';
     const posterClasses = isSquareType
@@ -34,6 +37,26 @@ const ScrollableSectionPoster = ({
     const skeletonClasses = isSquareType ? 'h-36 lg:h-44 2xl:h-52' : 'h-54 lg:h-64 2xl:h-80';
 
     const primaryImageTag = item?.ImageTags?.Primary;
+
+    if (posterFailed) {
+        return (
+            <Link to={`/item/${itemId || item?.Id}`} key={itemId || item?.Id} className={className}>
+                <div
+                    className={`relative overflow-hidden rounded-md group ${posterClasses} bg-muted flex items-center justify-center`}
+                >
+                    <ImageOff className="text-muted-foreground" size={32} />
+                    <WatchedStateBadge
+                        item={item}
+                        show={config?.watchedStateBadgeHomeScreen || false}
+                    />
+                </div>
+                <p className="mt-2 text-sm line-clamp-1 text-ellipsis break-all max-w-36 lg:max-w-44 2xl:max-w-52">
+                    {itemName || item?.Name || ''}
+                </p>
+                {children}
+            </Link>
+        );
+    }
 
     return (
         <Link to={`/item/${itemId || item?.Id}`} key={itemId || item?.Id} className={className}>
@@ -52,6 +75,7 @@ const ScrollableSectionPoster = ({
                     alt={itemName || item?.Name || ''}
                     className={`${minPosterClasses} ${posterClasses} object-cover rounded-md group-hover:opacity-75 transition-all group-hover:scale-105 transform-gpu will-change-transform z-10`}
                     loading="lazy"
+                    onError={() => setPosterFailed(true)}
                 />
                 <Skeleton className={`absolute bottom-0 left-0 right-0 ${skeletonClasses} -z-1`} />
                 <WatchedStateBadge
