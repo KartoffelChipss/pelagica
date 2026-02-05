@@ -2,7 +2,7 @@ import { Button } from '@/components/ui/button';
 import { useSeasons } from '@/hooks/api/useSeasons';
 import { getPrimaryImageUrl } from '@/utils/jellyfinUrls';
 import type { BaseItemDto } from '@jellyfin/sdk/lib/generated-client/models';
-import { Play } from 'lucide-react';
+import { ImageOff, Play } from 'lucide-react';
 import { useState } from 'react';
 import { Link } from 'react-router';
 import {
@@ -37,6 +37,7 @@ const SeriesPage = ({ item, config }: SeriesPageProps) => {
     const { t } = useTranslation('item');
     const [selectedSeason, setSelectedSeason] = useState<string | null>(null);
     const { data: seasons, isLoading, error } = useSeasons(item.Id || '');
+    const [posterFailed, setPosterFailed] = useState(false);
 
     const effectiveSelectedSeason =
         selectedSeason ||
@@ -68,12 +69,25 @@ const SeriesPage = ({ item, config }: SeriesPageProps) => {
         <BaseMediaPage itemId={item.Id || ''} name={item.Name || ''}>
             <div className="flex flex-col md:flex-row gap-6 max-w-7xl">
                 <div className="relative w-60 min-w-60 h-90 sm:w-72 sm:min-w-72 sm:h-108 hidden sm:block">
-                    <img
-                        src={getPrimaryImageUrl(item.Id || '', undefined, item.ImageTags?.Primary)}
-                        alt={item.Name + ' Primary'}
-                        className="object-cover rounded-md w-full h-full"
-                    />
-                    <Skeleton className="absolute inset-0 w-full h-full rounded-md -z-1" />
+                    {!posterFailed ? (
+                        <>
+                            <img
+                                src={getPrimaryImageUrl(
+                                    item.Id || '',
+                                    undefined,
+                                    item.ImageTags?.Primary
+                                )}
+                                alt={item.Name + ' Primary'}
+                                className="object-cover rounded-md w-full h-full"
+                                onError={() => setPosterFailed(true)}
+                            />
+                            <Skeleton className="absolute inset-0 w-full h-full rounded-md -z-1" />
+                        </>
+                    ) : (
+                        <div className="flex items-center justify-center w-full h-full bg-muted rounded-md">
+                            <ImageOff className="w-12 h-12 text-muted-foreground" />
+                        </div>
+                    )}
                 </div>
                 <div className="flex flex-col gap-3">
                     <h2 className="text-4xl sm:text-5xl font-bold mt-2">{item.Name}</h2>
