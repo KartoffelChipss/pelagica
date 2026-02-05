@@ -21,6 +21,7 @@ const BaseMediaPage = ({
 }: BaseMediaPageProps) => {
     const { setBackground } = usePageBackground();
     const [failedBackdrop, setFailedBackdrop] = useState(false);
+    const [failedLogo, setFailedLogo] = useState(false);
 
     useEffect(() => {
         setBackground(
@@ -60,13 +61,14 @@ const BaseMediaPage = ({
             </div>
             {topPadding && (
                 <div className="h-[calc(40dvh-2rem)] flex items-center justify-center">
-                    {showLogo && (
+                    {showLogo && !failedLogo && (
                         <>
                             {logo || (
                                 <img
                                     src={getLogoUrl(itemId || '')}
                                     alt={name + ' Logo'}
                                     className="relative mx-auto px-4 h-32 object-contain"
+                                    onError={() => setFailedLogo(true)}
                                 />
                             )}
                         </>
