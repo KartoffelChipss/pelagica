@@ -6,11 +6,12 @@ import {
     DropdownMenuTrigger,
 } from './ui/dropdown-menu';
 import { Button } from './ui/button';
-import { EllipsisVertical, RotateCcw, Trash2 } from 'lucide-react';
+import { EllipsisVertical, Image, RotateCcw, Trash2 } from 'lucide-react';
 import MediaDeleteButton from './MediaDeleteButton';
 import RefreshItemMetadataButton from './RefreshItemMetadataButton';
 import { useTranslation } from 'react-i18next';
 import { useCurrentUser } from '@/hooks/api/useCurrentUser';
+import ManageImageButton from './ManageImageButton';
 
 const ItemAdminButton = ({ item }: { item: BaseItemDto }) => {
     const { t } = useTranslation('item');
@@ -26,6 +27,15 @@ const ItemAdminButton = ({ item }: { item: BaseItemDto }) => {
                 </Button>
             </DropdownMenuTrigger>
             <DropdownMenuContent align={'end'}>
+                <ManageImageButton
+                    item={item}
+                    trigger={
+                        <DropdownMenuItem onSelect={(e) => e.preventDefault()}>
+                            <Image />
+                            {t('manage_images')}
+                        </DropdownMenuItem>
+                    }
+                />
                 <RefreshItemMetadataButton
                     item={item}
                     trigger={

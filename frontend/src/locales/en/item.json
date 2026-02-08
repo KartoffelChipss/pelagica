@@ -96,5 +96,9 @@
     "replace_existing_images": "Replace existing images",
     "replace_existing_trickplay": "Replace existing trickplay images",
     "refresh": "Refresh",
-    "refreshing": "Refreshing…"
+    "refreshing": "Refreshing…",
+    "manage_images": "Manage Images",
+    "upload_new_image": "Upload New Image",
+    "find_images": "Find New Images",
+    "delete_image": "Delete Image"
 }
