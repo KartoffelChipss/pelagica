@@ -306,3 +306,35 @@ export function getUserProfileImageUrl(userId: string): string {
         return '';
     }
 }
+
+export function getItemImageUrl(
+    itemId: string,
+    imageType: string,
+    index: number,
+    size?: { width?: number; height?: number },
+    tag?: string
+) {
+    try {
+        const server = getServerUrl();
+        const token = getAccessToken();
+
+        if (!server || !token) return '';
+
+        const url = new URL(server);
+        url.pathname = `/Items/${itemId}/Images/${imageType}/${index}`;
+        url.searchParams.append('tag', 'v1');
+        url.searchParams.append('quality', '90');
+        url.searchParams.append('token', token);
+        if (tag) url.searchParams.set('tag', tag);
+        if (size?.width) {
+            url.searchParams.append('width', size.width.toString());
+        }
+        if (size?.height) {
+            url.searchParams.append('height', size.height.toString());
+        }
+
+        return url.toString();
+    } catch {
+        return '';
+    }
+}
