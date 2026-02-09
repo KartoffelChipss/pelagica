@@ -14,8 +14,8 @@ import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '.
 import { Switch } from './ui/switch';
 import { Label } from './ui/label';
 import { useTranslation } from 'react-i18next';
-import { Input } from './ui/input';
 import { useUploadItemImage } from '@/hooks/api/images/useUploadItemImage';
+import FileDropInput from './FileDropInput';
 
 type ManageImagesPage = 'main' | 'upload' | 'find';
 
@@ -307,17 +307,18 @@ const UploadImagePage = ({
 
     return (
         <div className="space-y-6">
-            <div className="flex items-center mb-2">
+            <div className="flex items-center mb-4">
                 <Button variant={'ghost'} size={'icon-sm'} onClick={() => switchToPage('main')}>
                     <ArrowLeft className="cursor-pointer" />
                 </Button>
                 <h2 className="text-lg font-semibold ml-2">{t('upload_image')}</h2>
             </div>
 
-            <Input
-                type="file"
+            <FileDropInput
+                value={selectedFile}
+                onChange={(file) => setSelectedFile(file)}
                 accept="image/*"
-                onChange={(e) => setSelectedFile(e.target.files ? e.target.files[0] : null)}
+                disabled={isUploading}
             />
 
             <div className="flex items-center gap-4">
