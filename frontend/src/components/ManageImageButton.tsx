@@ -14,8 +14,38 @@ import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '.
 import { Switch } from './ui/switch';
 import { Label } from './ui/label';
 import { useTranslation } from 'react-i18next';
+import { Input } from './ui/input';
+import { useUploadItemImage } from '@/hooks/api/images/useUploadItemImage';
 
 type ManageImagesPage = 'main' | 'upload' | 'find';
+
+const imageTypes: ImageType[] = [
+    'Primary',
+    'Backdrop',
+    'Logo',
+    'Thumb',
+    'Banner',
+    'Art',
+    'Disc',
+    'Box',
+    'Screenshot',
+];
+
+const imageTypeColumns: Record<ImageType, number> = {
+    Primary: 3,
+    Backdrop: 2,
+    Logo: 2,
+    Thumb: 2,
+    Banner: 2,
+    Art: 2,
+    Disc: 3,
+    Box: 2,
+    Screenshot: 2,
+    BoxRear: 0,
+    Menu: 0,
+    Chapter: 0,
+    Profile: 0,
+};
 
 const MainPage = ({
     item,
@@ -132,34 +162,6 @@ const FindImagePage = ({
     const { searchImages, isSearching, results } = useSearchRemoteImages();
     const { downloadImage } = useDownloadRemoteImage();
 
-    const imageTypes: ImageType[] = [
-        'Primary',
-        'Backdrop',
-        'Logo',
-        'Thumb',
-        'Banner',
-        'Art',
-        'Disc',
-        'Box',
-        'Screenshot',
-    ];
-
-    const imageTypeColumns: Record<ImageType, number> = {
-        Primary: 3,
-        Backdrop: 2,
-        Logo: 2,
-        Thumb: 2,
-        Banner: 2,
-        Art: 2,
-        Disc: 3,
-        Box: 2,
-        Screenshot: 2,
-        BoxRear: 0,
-        Menu: 0,
-        Chapter: 0,
-        Profile: 0,
-    };
-
     const handleSearch = () => {
         searchImages({
             itemId: item.Id!,
@@ -176,7 +178,7 @@ const FindImagePage = ({
 
     return (
         <div className="space-y-6">
-            <div className="flex items-center mb-2">
+            <div className="flex items-center mb-4">
                 <Button variant={'ghost'} size={'icon-sm'} onClick={() => switchToPage('main')}>
                     <ArrowLeft className="cursor-pointer" />
                 </Button>
@@ -299,6 +301,9 @@ const UploadImagePage = ({
     switchToPage: (page: ManageImagesPage) => void;
 }) => {
     const { t } = useTranslation('item');
+    const [selectedFile, setSelectedFile] = useState<File | null>(null);
+    const [selectedImageType, setSelectedImageType] = useState<ImageType>('Primary');
+    const { uploadImage, isUploading } = useUploadItemImage();
 
     return (
         <div className="space-y-6">
@@ -307,6 +312,48 @@ const UploadImagePage = ({
                     <ArrowLeft className="cursor-pointer" />
                 </Button>
                 <h2 className="text-lg font-semibold ml-2">{t('upload_image')}</h2>
+            </div>
+
+            <Input
+                type="file"
+                accept="image/*"
+                onChange={(e) => setSelectedFile(e.target.files ? e.target.files[0] : null)}
+            />
+
+            <div className="flex items-center gap-4">
+                <Select
+                    defaultValue="Primary"
+                    onValueChange={(value) => setSelectedImageType(value as ImageType)}
+                >
+                    <SelectTrigger className="grow">
+                        <SelectValue />
+                    </SelectTrigger>
+                    <SelectContent>
+                        {imageTypes.map((type) => (
+                            <SelectItem key={type} value={type}>
+                                {type}
+                            </SelectItem>
+                        ))}
+                    </SelectContent>
+                </Select>
+
+                <Button
+                    className="grow"
+                    onClick={() => {
+                        if (selectedFile) {
+                            uploadImage({
+                                itemId: item.Id!,
+                                imageType: selectedImageType,
+                                file: selectedFile,
+                                onSuccess: () => switchToPage('main'),
+                            });
+                        }
+                    }}
+                    disabled={!selectedFile || isUploading}
+                >
+                    {isUploading ? <Loader2 className="animate-spin" /> : <Upload />}
+                    {isUploading ? t('uploading') : t('upload')}
+                </Button>
             </div>
         </div>
     );
