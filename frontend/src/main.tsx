@@ -6,6 +6,7 @@ import HomePage from './pages/Home/HomePage.tsx';
 import LoginPage from './pages/Login/LoginPage.tsx';
 
 import './index.css';
+import './theme.css';
 import './i18n.ts';
 import LibraryPage from './pages/Library/LibraryPage.tsx';
 import { SearchProvider } from './context/SearchProvider.tsx';
