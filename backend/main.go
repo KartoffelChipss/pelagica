@@ -43,13 +43,10 @@ func main() {
 		case http.MethodGet:
 			handlers.GetTheme(w, r)
 
-		//case http.MethodPost:
-		//	handlers.AuthMiddleware(
-		//		http.HandlerFunc(handlers.UpdateTheme),
-		//	).ServeHTTP(w, r)
-
 		case http.MethodPost:
-			handlers.UpdateTheme(w, r)
+			handlers.AuthMiddleware(
+				http.HandlerFunc(handlers.UpdateTheme),
+			).ServeHTTP(w, r)
 
 		case http.MethodOptions:
 			w.Header().Set("Access-Control-Allow-Methods", "GET, POST, OPTIONS")
