@@ -668,7 +668,7 @@ const PlayerControls = ({
                     />
                     {/* current progress */}
                     <div
-                        className="absolute top-1 left-0 h-1 bg-blue-500 rounded pointer-events-none z-15"
+                        className="absolute top-1 left-0 h-1 bg-brand rounded pointer-events-none z-15"
                         style={{ width: `${progressPercentage}%` }}
                     />
                     {/* Hover preview */}
@@ -869,7 +869,7 @@ const PlayerControls = ({
                             >
                                 <PictureInPicture2
                                     size={20}
-                                    className={isPiP ? 'text-blue-500' : ''}
+                                    className={isPiP ? 'text-brand' : ''}
                                 />
                             </Button>
                         )}

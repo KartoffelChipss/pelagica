@@ -140,7 +140,7 @@ const MusicPlayerBar = () => {
                         <Button
                             variant="ghost"
                             size="icon"
-                            className={shuffle ? 'text-blue-500' : 'text-muted-foreground'}
+                            className={shuffle ? 'text-brand' : 'text-muted-foreground'}
                             onClick={toggleShuffle}
                         >
                             <Shuffle />
@@ -161,7 +161,7 @@ const MusicPlayerBar = () => {
                         <Button
                             variant="ghost"
                             size="icon"
-                            className={repeat ? 'text-blue-500' : 'text-muted-foreground'}
+                            className={repeat ? 'text-brand' : 'text-muted-foreground'}
                             onClick={() => setRepeat(!repeat)}
                         >
                             <Repeat2 />
@@ -216,7 +216,7 @@ const MusicPlayerBar = () => {
                         <Button
                             variant="ghost"
                             size="icon"
-                            className={`cursor-pointer ${shuffle ? 'text-blue-500' : 'text-muted-foreground'}`}
+                            className={`cursor-pointer ${shuffle ? 'text-brand' : 'text-muted-foreground'}`}
                             onClick={toggleShuffle}
                         >
                             <Shuffle />
@@ -243,7 +243,7 @@ const MusicPlayerBar = () => {
                         <Button
                             variant="ghost"
                             size="icon"
-                            className={`cursor-pointer ${repeat ? 'text-blue-500' : 'text-muted-foreground'}`}
+                            className={`cursor-pointer ${repeat ? 'text-brand' : 'text-muted-foreground'}`}
                             onClick={() => setRepeat(!repeat)}
                         >
                             <Repeat2 />
