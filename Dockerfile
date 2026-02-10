@@ -40,6 +40,7 @@ COPY --from=frontend-builder /app/dist /usr/share/nginx/html
 
 # backend
 COPY --from=backend-builder /backend/server /server
+COPY --from=backend-builder /backend/default.theme.json /default.theme.json
 
 # nginx config
 COPY nginx.conf /etc/nginx/conf.d/default.conf
@@ -51,6 +52,8 @@ RUN chmod 644 /config/config.json
 
 ENV PORT=4321
 ENV CONFIG_PATH=/config/config.json
+ENV THEME_PATH=/config/theme.json
+ENV DEFAULT_THEME_PATH=/default.theme.json
 
 EXPOSE 80
 
