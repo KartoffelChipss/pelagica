@@ -27,6 +27,8 @@ func main() {
 	app := fiber.New()
 	appconfig.Setup(app)
 
+	handlers.InitThemeStore()
+
 	var protected fiber.Handler
 	if isAuthEnabled() {
 		protected = handlers.AuthMiddleware
@@ -39,8 +41,11 @@ func main() {
 	api.Get("/config", handlers.GetConfig)
 	api.Post("/config", protected, handlers.UpdateConfig)
 
-	api.Get("/theme", handlers.GetTheme)
-	api.Post("/theme", protected, handlers.UpdateTheme)
+	api.Get("/themes", handlers.GetThemes)
+	api.Post("/themes", protected, handlers.CreateTheme)
+	api.Get("/themes/:id", handlers.GetTheme)
+	api.Put("/themes/:id", protected, handlers.UpdateTheme)
+	api.Delete("/themes/:id", protected, handlers.DeleteTheme)
 
 	log.Println("Server starting on " + getPort())
 	log.Fatal(app.Listen(getPort()))

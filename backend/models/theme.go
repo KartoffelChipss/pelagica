@@ -2,6 +2,13 @@ package models
 
 import "fmt"
 
+type ThemeSummary struct {
+	ID      string `json:"id"`
+	Name    string `json:"name"`
+	Version string `json:"version"`
+	Author  string `json:"author"`
+}
+
 type Theme struct {
 	Name        string   `json:"name"`
 	Author      string   `json:"author"`
