@@ -11,6 +11,7 @@ type AppConfig struct {
 	WatchedStateBadgeLibrary      *bool                `json:"watchedStateBadgeLibrary,omitempty"`
 	WatchedStateBadgeGenre        *bool                `json:"watchedStateBadgeGenre,omitempty"`
 	WatchedStateBadgeSearch       *bool                `json:"watchedStateBadgeSearch,omitempty"`
+	ServerThemeId				  string               `json:"serverThemeId,omitempty"`
 }
 
 type HomeScreenSection struct {
