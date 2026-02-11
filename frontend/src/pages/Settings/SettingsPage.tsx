@@ -37,6 +37,8 @@ import {
 } from '@/components/ui/dialog';
 import { MultiSelect, type Option } from '@/components/ui/multi-select';
 import type { BaseItemKind } from '@jellyfin/sdk/lib/generated-client/models';
+import { useThemes } from '@/hooks/api/themes/useThemes';
+import { useDeleteTheme } from '@/hooks/api/themes/useDeleteTheme';
 
 const StringInput = ({
     label,
@@ -532,6 +534,9 @@ const SettingsPage = () => {
     const [homeScreenSections, setHomeScreenSections] = useState<HomeScreenSection[]>([]);
     const [saveSuccess, setSaveSuccess] = useState(false);
     const [editingIndex, setEditingIndex] = useState<number | null>(null);
+    const [serverThemeId, setServerThemeId] = useState<string | null>(null);
+    const { data: themes, isLoading: themesLoading } = useThemes();
+    const { mutate: deleteTheme, isPending: isDeletingTheme } = useDeleteTheme();
 
     const moveSection = (index: number, direction: -1 | 1) => {
         const newIndex = index + direction;
@@ -555,6 +560,7 @@ const SettingsPage = () => {
         setFavoriteButton(config?.itemPage?.favoriteButton || []);
         setDetailBadges(config?.itemPage?.detailBadges || []);
         setHomeScreenSections(config?.homeScreenSections || []);
+        setServerThemeId(config?.serverThemeId || null);
     }, [
         config?.serverAddress,
         config?.streamystatsUrl,
@@ -568,6 +574,7 @@ const SettingsPage = () => {
         config?.itemPage?.favoriteButton,
         config?.itemPage?.detailBadges,
         config?.homeScreenSections,
+        config?.serverThemeId,
     ]);
 
     const handleUpdateConfig = async () => {
@@ -584,6 +591,7 @@ const SettingsPage = () => {
                     watchedStateBadgeGenre,
                     watchedStateBadgeSearch,
                     homeScreenSections,
+                    serverThemeId: serverThemeId || undefined,
                     itemPage: {
                         ...config.itemPage,
                         episodeDisplay,
@@ -601,6 +609,18 @@ const SettingsPage = () => {
             }
         }
     };
+
+    const themeSelectOptions = (themes || [])
+        .map((theme) => ({
+            value: theme.id,
+            label: `${theme.name} v${theme.version} (by ${theme.author})`,
+        }))
+        .concat([{ value: '__DEFAULT__', label: t('default_theme') }])
+        .sort((a, b) => {
+            if (a.value === '__DEFAULT__') return -1;
+            if (b.value === '__DEFAULT__') return 1;
+            return a.label.localeCompare(b.label);
+        });
 
     if (loading) {
         return (
@@ -625,6 +645,7 @@ const SettingsPage = () => {
                     <TabsTrigger value="general">{t('category_general')}</TabsTrigger>
                     <TabsTrigger value="homesections">{t('category_homesections')}</TabsTrigger>
                     <TabsTrigger value="itempage">{t('category_itempage')}</TabsTrigger>
+                    <TabsTrigger value="themes">{t('category_themes')}</TabsTrigger>
                 </TabsList>
                 <TabsContent value="general" className="max-w-200">
                     <h1 className="mb-2 mt-2 text-2xl font-bold leading-none tracking-tight">
@@ -823,6 +844,58 @@ const SettingsPage = () => {
                         onChange={setDetailBadges}
                         description={t('detail_badges_description')}
                     />
+                </TabsContent>
+                <TabsContent value="themes" className="max-w-200">
+                    <h1 className="mb-2 mt-2 text-2xl font-bold leading-none tracking-tight">
+                        {t('category_themes')}
+                    </h1>
+                    <p className="mb-4 text-sm text-muted-foreground">{t('themes_description')}</p>
+                    <SelectInput
+                        label={t('theme_selection_label')}
+                        options={themeSelectOptions}
+                        value={serverThemeId || ''}
+                        onChange={(value) => {
+                            if (value === '__DEFAULT__') {
+                                setServerThemeId(null);
+                                return;
+                            }
+                            setServerThemeId(value);
+                        }}
+                        placeholder={t('select_theme_default')}
+                    />
+                    {themesLoading ? (
+                        <SettingsSkeleton />
+                    ) : themes && themes.length > 0 ? (
+                        <div className="space-y-3 mt-6">
+                            {themes.map((theme) => (
+                                <div
+                                    key={theme.id}
+                                    className="flex items-center justify-between rounded-lg border p-4"
+                                >
+                                    <div className="flex flex-col">
+                                        <span className="font-semibold">{theme.name}</span>
+                                        <span className="text-xs text-muted-foreground">
+                                            v{theme.version} by {theme.author}
+                                        </span>
+                                    </div>
+                                    <div>
+                                        <Button
+                                            variant={'outline'}
+                                            size={'icon'}
+                                            onClick={() => {
+                                                deleteTheme(theme.id);
+                                            }}
+                                            disabled={isDeletingTheme}
+                                        >
+                                            <Trash2 />
+                                        </Button>
+                                    </div>
+                                </div>
+                            ))}
+                        </div>
+                    ) : (
+                        <p className="text-sm text-muted-foreground">{t('no_themes_available')}</p>
+                    )}
                 </TabsContent>
             </Tabs>
             <SectionEditor

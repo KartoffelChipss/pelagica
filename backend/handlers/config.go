@@ -69,7 +69,11 @@ func UpdateConfig(c fiber.Ctx) error {
 		}
 	}
 
-	data, _ := json.MarshalIndent(cfg, "", "    ")
+	data, err := json.MarshalIndent(cfg, "", "    ")
+	if err != nil {
+		log.Println("Error encoding config:", err)
+		return c.Status(fiber.StatusInternalServerError).JSON(models.APIError{Error: "Failed to encode config"})
+	}
 
 	if err := os.WriteFile(configPath(), data, 0644); err != nil {
 		log.Println("Error writing config file:", err)
