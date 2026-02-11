@@ -51,6 +51,7 @@ COPY default.config.json /config/config.json
 RUN chmod 644 /config/config.json
 
 ENV PORT=4321
+ENV ENABLE_AUTH=true
 ENV CONFIG_PATH=/config/config.json
 ENV THEME_PATH=/config/theme.json
 ENV DEFAULT_THEME_PATH=/default.theme.json
