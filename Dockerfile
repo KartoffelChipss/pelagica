@@ -12,14 +12,14 @@ RUN pnpm run build
 
 
 # Stage 2: Build backend
-FROM golang:1.24-alpine AS backend-builder
+FROM golang:1.25-alpine AS backend-builder
 
 WORKDIR /backend
 
 ARG TARGETOS
 ARG TARGETARCH
 
-COPY backend/go.mod ./
+COPY backend/go.mod backend/go.sum ./
 RUN go mod download
 
 COPY backend .

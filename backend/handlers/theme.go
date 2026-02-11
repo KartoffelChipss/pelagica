@@ -3,28 +3,29 @@ package handlers
 import (
 	"encoding/json"
 	"log"
-	"net/http"
 	"os"
+
+	"github.com/gofiber/fiber/v3"
 	"pelagica-backend/models"
 )
 
 func themePath() string {
-	configPath := os.Getenv("THEME_PATH")
-	if configPath == "" {
-		configPath = "theme.json"
+	path := os.Getenv("THEME_PATH")
+	if path == "" {
+		path = "theme.json"
 	}
-	return configPath
+	return path
 }
 
 func defaultThemePath() string {
-	defaultPath := os.Getenv("DEFAULT_THEME_PATH")
-	if defaultPath == "" {
-		defaultPath = "default.default.theme.json"
+	path := os.Getenv("DEFAULT_THEME_PATH")
+	if path == "" {
+		path = "default.default.theme.json"
 	}
-	return defaultPath
+	return path
 }
 
-func GetTheme(w http.ResponseWriter, r *http.Request) {
+func GetTheme(c fiber.Ctx) error {
 	path := themePath()
 
 	data, err := os.ReadFile(path)
@@ -35,51 +36,42 @@ func GetTheme(w http.ResponseWriter, r *http.Request) {
 			data, err = os.ReadFile(defaultPath)
 			if err != nil {
 				log.Println("Error reading default theme:", err)
-				http.Error(w, "Default theme not found", http.StatusInternalServerError)
-				return
+				return c.Status(fiber.StatusInternalServerError).JSON(models.APIError{Error: "Failed to read default theme"})
 			}
 		} else {
 			log.Println("Error reading theme file:", err)
-			http.Error(w, "Failed to read theme", http.StatusInternalServerError)
-			return
+			return c.Status(fiber.StatusInternalServerError).JSON(models.APIError{Error: "Failed to read theme"})
 		}
 	}
 
-	w.Header().Set("Content-Type", "application/json")
-	w.WriteHeader(http.StatusOK)
-	w.Write(data)
+	return c.Status(fiber.StatusOK).
+		Type("json").
+		Send(data)
 }
 
-func UpdateTheme(w http.ResponseWriter, r *http.Request) {
+func UpdateTheme(c fiber.Ctx) error {
 	var theme models.Theme
 
-	dec := json.NewDecoder(r.Body)
-	dec.DisallowUnknownFields()
-
-	if err := dec.Decode(&theme); err != nil {
+	if err := c.Bind().Body(&theme); err != nil {
 		log.Println("Error decoding theme:", err)
-		http.Error(w, "Invalid JSON: "+err.Error(), http.StatusBadRequest)
-		return
+		return c.Status(fiber.StatusBadRequest).JSON(models.APIError{Error: "Failed to decode theme"})
 	}
 
 	if err := theme.Validate(); err != nil {
 		log.Println("Theme validation error:", err)
-		http.Error(w, "Theme validation error: "+err.Error(), http.StatusBadRequest)
-		return
+		return c.Status(fiber.StatusBadRequest).JSON(models.APIError{Error: "Invalid theme: " + err.Error()})
 	}
 
 	data, err := json.MarshalIndent(theme, "", "  ")
 	if err != nil {
 		log.Println("Error encoding theme:", err)
-		http.Error(w, "Failed to encode theme", http.StatusInternalServerError)
-		return
+		return c.Status(fiber.StatusInternalServerError).JSON(models.APIError{Error: "Failed to encode theme"})
 	}
 
 	if err := os.WriteFile(themePath(), data, 0644); err != nil {
 		log.Println("Error writing theme file:", err)
-		http.Error(w, "Failed to save theme", http.StatusInternalServerError)
-		return
+		return c.Status(fiber.StatusInternalServerError).JSON(models.APIError{Error: "Failed to save theme"})
 	}
 
-	w.WriteHeader(http.StatusOK)
+	return c.SendStatus(fiber.StatusNoContent)
 }

@@ -2,67 +2,31 @@ package main
 
 import (
 	"log"
-	"net/http"
 	"os"
 	"pelagica-backend/handlers"
+
+	"github.com/gofiber/fiber/v3"
 )
 
 func getPort() string {
-	envPort := os.Getenv("PORT")
-	if envPort == "" {
-		return ":4321"
+	port := os.Getenv("PORT")
+	if port == "" {
+		port = "4321"
 	}
-	return ":" + envPort
+	return ":" + port
 }
 
 func main() {
-	mux := http.NewServeMux()
+	app := fiber.New()
 
-	configHandler := http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
-		switch r.Method {
-		case http.MethodGet:
-			handlers.GetConfig(w, r)
+	api := app.Group("/api")
 
-		case http.MethodPost:
-			handlers.AuthMiddleware(
-				http.HandlerFunc(handlers.UpdateConfig),
-			).ServeHTTP(w, r)
+	api.Get("/config", handlers.GetConfig)
+	api.Post("/config", handlers.AuthMiddleware, handlers.UpdateConfig)
 
-		case http.MethodOptions:
-			w.Header().Set("Access-Control-Allow-Methods", "GET, POST, OPTIONS")
-			w.Header().Set("Access-Control-Allow-Headers", "Content-Type, Authorization")
-			w.WriteHeader(http.StatusNoContent)
-
-		default:
-			http.Error(w, "Method not allowed", http.StatusMethodNotAllowed)
-		}
-	})
-
-	themeHandler := http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
-		switch r.Method {
-		case http.MethodGet:
-			handlers.GetTheme(w, r)
-
-		case http.MethodPost:
-			handlers.AuthMiddleware(
-				http.HandlerFunc(handlers.UpdateTheme),
-			).ServeHTTP(w, r)
-
-		case http.MethodOptions:
-			w.Header().Set("Access-Control-Allow-Methods", "GET, POST, OPTIONS")
-			w.Header().Set("Access-Control-Allow-Headers", "Content-Type, Authorization")
-			w.WriteHeader(http.StatusNoContent)
-
-		default:
-			http.Error(w, "Method not allowed", http.StatusMethodNotAllowed)
-		}
-	})
-
-	mux.Handle("/api/config", configHandler)
-	mux.Handle("/api/theme", themeHandler)
+	api.Get("/theme", handlers.GetTheme)
+	api.Post("/theme", handlers.AuthMiddleware, handlers.UpdateTheme)
 
 	log.Println("Server starting on " + getPort())
-
-	log.Fatal(http.ListenAndServe(getPort(), mux))
-
+	log.Fatal(app.Listen(getPort()))
 }
