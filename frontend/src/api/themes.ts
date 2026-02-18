@@ -5,6 +5,8 @@ export interface ThemeSummary {
     author: string;
 }
 
+export type ThemeMode = 'light' | 'dark';
+
 export interface Theme {
     name: string;
     author: string;
@@ -12,7 +14,7 @@ export interface Theme {
     version: string;
     colors: Colors;
     radius: string;
-    modes: ('light' | 'dark')[];
+    modes: ThemeMode[];
 }
 
 export interface Colors {
