@@ -36,7 +36,7 @@ export const fetchThemeById = async (id: string): Promise<Theme> => {
     return response.json();
 };
 
-export const createTheme = async (theme: Theme): Promise<{ id: string }> => {
+export const createTheme = async (theme: string): Promise<{ id: string }> => {
     const response = await fetch('/api/themes', {
         method: 'POST',
         headers: {

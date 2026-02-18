@@ -102,5 +102,6 @@
     "select_theme_placeholder": "Select a theme",
     "theme_selection_label": "Select Theme",
     "themes_description": "Choose a theme for the Pelagica. Themes change the overall appearance and style.",
-    "default_theme": "Default Theme"
+    "default_theme": "Default Theme",
+    "upload_new_theme": "Upload New Theme"
 }

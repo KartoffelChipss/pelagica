@@ -39,6 +39,8 @@ import { MultiSelect, type Option } from '@/components/ui/multi-select';
 import type { BaseItemKind } from '@jellyfin/sdk/lib/generated-client/models';
 import { useThemes } from '@/hooks/api/themes/useThemes';
 import { useDeleteTheme } from '@/hooks/api/themes/useDeleteTheme';
+import JsonFileUpload from '@/components/JsonFileUpload';
+import { useCreateTheme } from '@/hooks/api/themes/useCreateTheme';
 
 const StringInput = ({
     label,
@@ -537,6 +539,8 @@ const SettingsPage = () => {
     const [serverThemeId, setServerThemeId] = useState<string | null>(null);
     const { data: themes, isLoading: themesLoading } = useThemes();
     const { mutate: deleteTheme, isPending: isDeletingTheme } = useDeleteTheme();
+    const [showThemeUploadDialog, setShowThemeUploadDialog] = useState(false);
+    const { mutate: createTheme, isPending: isCreatingTheme } = useCreateTheme();
 
     const moveSection = (index: number, direction: -1 | 1) => {
         const newIndex = index + direction;
@@ -640,6 +644,42 @@ const SettingsPage = () => {
 
     return (
         <Page title={t('title')} requireAdmin requiresAuth>
+            <Dialog
+                open={showThemeUploadDialog}
+                onOpenChange={() => setShowThemeUploadDialog(false)}
+            >
+                <DialogContent>
+                    <DialogHeader>
+                        <DialogTitle>{t('upload_new_theme')}</DialogTitle>
+                    </DialogHeader>
+
+                    <JsonFileUpload
+                        onChange={(json) => {
+                            if (!json) return;
+
+                            try {
+                                const theme = JSON.parse(json);
+                                createTheme(theme, {
+                                    onSuccess: () => {
+                                        setShowThemeUploadDialog(false);
+                                    },
+                                    onError: (e) => {
+                                        console.error('Error creating theme:', e);
+                                        alert(
+                                            'Failed to upload theme. Please check the console for details.'
+                                        );
+                                    },
+                                });
+                            } catch (e) {
+                                console.error('Invalid JSON:', e);
+                                alert('Invalid JSON file. Please check the console for details.');
+                            }
+                        }}
+                        disabled={isCreatingTheme}
+                    />
+                </DialogContent>
+            </Dialog>
+
             <Tabs defaultValue={'general'}>
                 <TabsList>
                     <TabsTrigger value="general">{t('category_general')}</TabsTrigger>
@@ -850,6 +890,7 @@ const SettingsPage = () => {
                         {t('category_themes')}
                     </h1>
                     <p className="mb-4 text-sm text-muted-foreground">{t('themes_description')}</p>
+
                     <SelectInput
                         label={t('theme_selection_label')}
                         options={themeSelectOptions}
@@ -863,10 +904,20 @@ const SettingsPage = () => {
                         }}
                         placeholder={t('select_theme_default')}
                     />
+
+                    <Button
+                        onClick={() => setShowThemeUploadDialog(true)}
+                        variant="outline"
+                        className="mt-6"
+                    >
+                        <Plus />
+                        {t('upload_new_theme')}
+                    </Button>
+
                     {themesLoading ? (
                         <SettingsSkeleton />
                     ) : themes && themes.length > 0 ? (
-                        <div className="space-y-3 mt-6">
+                        <div className="space-y-3 mt-4">
                             {themes.map((theme) => (
                                 <div
                                     key={theme.id}
