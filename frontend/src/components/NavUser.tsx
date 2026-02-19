@@ -54,6 +54,23 @@ import { Label } from '@radix-ui/react-dropdown-menu';
 import { getUserProfileImageUrl } from '@/utils/jellyfinUrls';
 import { InputOTP, InputOTPGroup, InputOTPSlot } from './ui/input-otp';
 import { useAuthorizeQuickConnect } from '@/hooks/api/useQuickConnect';
+import {
+    clearLocalTheme,
+    getLocalTheme,
+    LOCAL_THEME_PELAGICA_DEFAULT,
+    LOCAL_THEME_SERVER_DEFAULT,
+    saveLocalTheme,
+} from '@/utils/localTheme';
+import {
+    Select,
+    SelectContent,
+    SelectGroup,
+    SelectItem,
+    SelectTrigger,
+    SelectValue,
+    SelectLabel,
+} from '@/components/ui/select';
+import { useThemes } from '@/hooks/api/themes/useThemes';
 
 const FlagIcon = ({ countryCode }: { countryCode: string }) => {
     const flagUrl = `https://flagcdn.com/${countryCode.toLowerCase()}.svg`;
@@ -263,6 +280,10 @@ export function NavUser() {
     const [authorizeQuickCConnectLoading, setAuthorizeQuickConnectLoading] = useState(false);
     const [quickConnectSuccess, setQuickConnectSuccess] = useState(false);
     const [quickConnectError, setQuickConnectError] = useState(false);
+    const [localTheme, setLocalTheme] = useState<string | null>(
+        getLocalTheme() ?? LOCAL_THEME_SERVER_DEFAULT
+    );
+    const { data: themes, isLoading: isLoadingThemes } = useThemes();
 
     const onAuthorizeQuickConnect = (code: string) => {
         setAuthorizeQuickConnectLoading(true);
@@ -465,6 +486,47 @@ export function NavUser() {
                                         open={subtitleLanguageOpen}
                                         onOpenChange={setSubtitleLanguageOpen}
                                     />
+                                </div>
+                                <div>
+                                    <Label className="mb-2 text-sm font-medium">
+                                        {t('theme_preference')}
+                                    </Label>
+                                    <Select
+                                        value={localTheme || undefined}
+                                        onValueChange={(value) => {
+                                            if (value === LOCAL_THEME_SERVER_DEFAULT) {
+                                                clearLocalTheme();
+                                            } else {
+                                                saveLocalTheme(value);
+                                            }
+
+                                            setLocalTheme(value);
+                                        }}
+                                    >
+                                        <SelectTrigger className="w-full">
+                                            <SelectValue placeholder={t('select_theme')} />
+                                        </SelectTrigger>
+                                        <SelectContent>
+                                            <SelectGroup>
+                                                <SelectItem value={LOCAL_THEME_SERVER_DEFAULT}>
+                                                    {t('server_default')}
+                                                </SelectItem>
+                                                <SelectItem value={LOCAL_THEME_PELAGICA_DEFAULT}>
+                                                    {t('pelagica_default')}
+                                                </SelectItem>
+                                            </SelectGroup>
+                                            {!isLoadingThemes && themes && (
+                                                <SelectGroup>
+                                                    <SelectLabel>Custom Themes</SelectLabel>
+                                                    {themes.map((theme) => (
+                                                        <SelectItem key={theme.id} value={theme.id}>
+                                                            {theme.name}
+                                                        </SelectItem>
+                                                    ))}
+                                                </SelectGroup>
+                                            )}
+                                        </SelectContent>
+                                    </Select>
                                 </div>
                             </DialogContent>
                         </Dialog>

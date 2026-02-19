@@ -2,27 +2,25 @@ package handlers
 
 import (
 	"log"
-	"net/http"
+	"pelagica-backend/models"
 
 	"pelagica-backend/jellyfin"
+
+	"github.com/gofiber/fiber/v3"
 )
 
-func AuthMiddleware(next http.Handler) http.Handler {
-    return http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
-        ok, err := jellyfin.AuthenticateByToken(r)
+func AuthMiddleware(c fiber.Ctx) error {
+	ok, err := jellyfin.AuthenticateByToken(c)
 
-        if err != nil {
-            log.Println("Authentication error:", err)
-            http.Error(w, "Forbidden: " + err.Error(), http.StatusForbidden)
-            return
-        }
+	if err != nil {
+		log.Println("Authentication error:", err)
+		return c.Status(fiber.StatusForbidden).JSON(models.APIError{Error: "Jellyfin Authentication failed"})
+	}
 
-        if !ok {
-            log.Println("Authentication failed: admin access required")
-            http.Error(w, "Forbidden: admin access required", http.StatusForbidden)
-            return
-        }
+	if !ok {
+		log.Println("Authentication failed: admin access required")
+		return c.Status(fiber.StatusForbidden).JSON(models.APIError{Error: "Admin access required"})
+	}
 
-        next.ServeHTTP(w, r)
-    })
+	return c.Next()
 }

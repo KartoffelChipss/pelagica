@@ -202,6 +202,8 @@ export interface AppConfig {
     itemPage?: ItemPageSettings;
     /** Sections to display on the home screen, in order */
     homeScreenSections?: HomeScreenSection[];
+    /** Id of the theme that is applied for all users by default */
+    serverThemeId?: string;
 }
 
 const DEFAULT_ITEM_PAGE_SETTINGS: ItemPageSettings = {

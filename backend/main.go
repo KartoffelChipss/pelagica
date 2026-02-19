@@ -2,46 +2,52 @@ package main
 
 import (
 	"log"
-	"net/http"
 	"os"
+	"pelagica-backend/appconfig"
 	"pelagica-backend/handlers"
+	"strings"
+
+	"github.com/gofiber/fiber/v3"
 )
 
 func getPort() string {
-	envPort :=  os.Getenv("PORT")
-	if envPort == "" {
-		return ":4321"
+	port := os.Getenv("PORT")
+	if port == "" {
+		port = "4321"
 	}
-	return ":" + envPort
+	return ":" + port
+}
+
+func isAuthEnabled() bool {
+	enableAuth := os.Getenv("ENABLE_AUTH")
+	return strings.ToLower(enableAuth) == "true"
 }
 
 func main() {
-	mux := http.NewServeMux()
+	app := fiber.New()
+	appconfig.Setup(app)
 
-	configHandler := http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
-		switch r.Method {
-			case http.MethodGet:
-				handlers.GetConfig(w, r)
+	handlers.InitThemeStore()
 
-			case http.MethodPost:
-				handlers.AuthMiddleware(
-					http.HandlerFunc(handlers.UpdateConfig),
-				).ServeHTTP(w, r)
+	var protected fiber.Handler
+	if isAuthEnabled() {
+		protected = handlers.AuthMiddleware
+	} else {
+		protected = func(c fiber.Ctx) error { return c.Next() }
+	}
 
-			case http.MethodOptions:
-				w.Header().Set("Access-Control-Allow-Methods", "GET, POST, OPTIONS")
-				w.Header().Set("Access-Control-Allow-Headers", "Content-Type, Authorization")
-				w.WriteHeader(http.StatusNoContent)
+	api := app.Group("/api")
 
-			default:
-				http.Error(w, "Method not allowed", http.StatusMethodNotAllowed)
-		}
-	})
+	api.Get("/config", handlers.GetConfig)
+	api.Post("/config", protected, handlers.UpdateConfig)
 
-	mux.Handle("/api/config", configHandler)
+	api.Get("/themes", handlers.GetThemes)
+	api.Post("/themes", protected, handlers.CreateTheme)
+	api.Get("/themes/:id", handlers.GetTheme)
+	api.Put("/themes/:id", protected, handlers.UpdateTheme)
+	api.Delete("/themes/:id", protected, handlers.DeleteTheme)
+	api.Post("/themes/:id/install", protected, handlers.InstallTheme)
 
 	log.Println("Server starting on " + getPort())
-
-	log.Fatal(http.ListenAndServe(getPort(), mux))
-
+	log.Fatal(app.Listen(getPort()))
 }

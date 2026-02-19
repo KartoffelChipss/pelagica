@@ -12,14 +12,14 @@ RUN pnpm run build
 
 
 # Stage 2: Build backend
-FROM golang:1.24-alpine AS backend-builder
+FROM golang:1.25-alpine AS backend-builder
 
 WORKDIR /backend
 
 ARG TARGETOS
 ARG TARGETARCH
 
-COPY backend/go.mod ./
+COPY backend/go.mod backend/go.sum ./
 RUN go mod download
 
 COPY backend .
@@ -40,6 +40,7 @@ COPY --from=frontend-builder /app/dist /usr/share/nginx/html
 
 # backend
 COPY --from=backend-builder /backend/server /server
+COPY --from=backend-builder /backend/default.theme.json /default.theme.json
 
 # nginx config
 COPY nginx.conf /etc/nginx/conf.d/default.conf
@@ -50,7 +51,11 @@ COPY default.config.json /config/config.json
 RUN chmod 644 /config/config.json
 
 ENV PORT=4321
+ENV ENABLE_AUTH=true
 ENV CONFIG_PATH=/config/config.json
+ENV THEMES_DIR=/config/themes
+ENV DEFAULT_THEME_PATH=/default.theme.json
+ENV THEMES_REPO_BASE_URL=https://themes.pelagica.app/
 
 EXPOSE 80
 

@@ -18,7 +18,7 @@ import { useState, useEffect, memo } from 'react';
 import { Label } from '@/components/ui/label';
 import { Input } from '@/components/ui/input';
 import { Button } from '@/components/ui/button';
-import { Check, Trash2, Plus, Edit, ArrowUp, ArrowDown } from 'lucide-react';
+import { Check, Trash2, Plus, Edit, ArrowUp, ArrowDown, Earth } from 'lucide-react';
 import { Skeleton } from '@/components/ui/skeleton';
 import { Switch } from '@/components/ui/switch';
 import {
@@ -37,6 +37,11 @@ import {
 } from '@/components/ui/dialog';
 import { MultiSelect, type Option } from '@/components/ui/multi-select';
 import type { BaseItemKind } from '@jellyfin/sdk/lib/generated-client/models';
+import { useThemes } from '@/hooks/api/themes/useThemes';
+import { useDeleteTheme } from '@/hooks/api/themes/useDeleteTheme';
+import JsonFileUpload from '@/components/JsonFileUpload';
+import { useCreateTheme } from '@/hooks/api/themes/useCreateTheme';
+import { Link, useSearchParams } from 'react-router';
 
 const StringInput = ({
     label,
@@ -532,6 +537,13 @@ const SettingsPage = () => {
     const [homeScreenSections, setHomeScreenSections] = useState<HomeScreenSection[]>([]);
     const [saveSuccess, setSaveSuccess] = useState(false);
     const [editingIndex, setEditingIndex] = useState<number | null>(null);
+    const [serverThemeId, setServerThemeId] = useState<string | null>(null);
+    const { data: themes, isLoading: themesLoading } = useThemes();
+    const { mutate: deleteTheme, isPending: isDeletingTheme } = useDeleteTheme();
+    const [showThemeUploadDialog, setShowThemeUploadDialog] = useState(false);
+    const { mutate: createTheme, isPending: isCreatingTheme } = useCreateTheme();
+    const [searchParams, setSearchParams] = useSearchParams();
+    const activeTab = searchParams.get('tab') || 'general';
 
     const moveSection = (index: number, direction: -1 | 1) => {
         const newIndex = index + direction;
@@ -555,6 +567,7 @@ const SettingsPage = () => {
         setFavoriteButton(config?.itemPage?.favoriteButton || []);
         setDetailBadges(config?.itemPage?.detailBadges || []);
         setHomeScreenSections(config?.homeScreenSections || []);
+        setServerThemeId(config?.serverThemeId || null);
     }, [
         config?.serverAddress,
         config?.streamystatsUrl,
@@ -568,6 +581,7 @@ const SettingsPage = () => {
         config?.itemPage?.favoriteButton,
         config?.itemPage?.detailBadges,
         config?.homeScreenSections,
+        config?.serverThemeId,
     ]);
 
     const handleUpdateConfig = async () => {
@@ -584,6 +598,7 @@ const SettingsPage = () => {
                     watchedStateBadgeGenre,
                     watchedStateBadgeSearch,
                     homeScreenSections,
+                    serverThemeId: serverThemeId || undefined,
                     itemPage: {
                         ...config.itemPage,
                         episodeDisplay,
@@ -601,6 +616,18 @@ const SettingsPage = () => {
             }
         }
     };
+
+    const themeSelectOptions = (themes || [])
+        .map((theme) => ({
+            value: theme.id,
+            label: `${theme.name} v${theme.version} (by ${theme.author})`,
+        }))
+        .concat([{ value: '__DEFAULT__', label: t('default_theme') }])
+        .sort((a, b) => {
+            if (a.value === '__DEFAULT__') return -1;
+            if (b.value === '__DEFAULT__') return 1;
+            return a.label.localeCompare(b.label);
+        });
 
     if (loading) {
         return (
@@ -620,11 +647,53 @@ const SettingsPage = () => {
 
     return (
         <Page title={t('title')} requireAdmin requiresAuth>
-            <Tabs defaultValue={'general'}>
+            <Dialog
+                open={showThemeUploadDialog}
+                onOpenChange={() => setShowThemeUploadDialog(false)}
+            >
+                <DialogContent>
+                    <DialogHeader>
+                        <DialogTitle>{t('upload_new_theme')}</DialogTitle>
+                    </DialogHeader>
+
+                    <JsonFileUpload
+                        onChange={(json) => {
+                            if (!json) return;
+
+                            try {
+                                const theme = JSON.parse(json);
+                                createTheme(theme, {
+                                    onSuccess: () => {
+                                        setShowThemeUploadDialog(false);
+                                    },
+                                    onError: (e) => {
+                                        console.error('Error creating theme:', e);
+                                        alert(
+                                            'Failed to upload theme. Please check the console for details.'
+                                        );
+                                    },
+                                });
+                            } catch (e) {
+                                console.error('Invalid JSON:', e);
+                                alert('Invalid JSON file. Please check the console for details.');
+                            }
+                        }}
+                        disabled={isCreatingTheme}
+                    />
+                </DialogContent>
+            </Dialog>
+
+            <Tabs
+                defaultValue={activeTab}
+                onValueChange={(val) => {
+                    setSearchParams({ tab: val });
+                }}
+            >
                 <TabsList>
                     <TabsTrigger value="general">{t('category_general')}</TabsTrigger>
                     <TabsTrigger value="homesections">{t('category_homesections')}</TabsTrigger>
                     <TabsTrigger value="itempage">{t('category_itempage')}</TabsTrigger>
+                    <TabsTrigger value="themes">{t('category_themes')}</TabsTrigger>
                 </TabsList>
                 <TabsContent value="general" className="max-w-200">
                     <h1 className="mb-2 mt-2 text-2xl font-bold leading-none tracking-tight">
@@ -823,6 +892,76 @@ const SettingsPage = () => {
                         onChange={setDetailBadges}
                         description={t('detail_badges_description')}
                     />
+                </TabsContent>
+                <TabsContent value="themes" className="max-w-200">
+                    <h1 className="mb-2 mt-2 text-2xl font-bold leading-none tracking-tight">
+                        {t('category_themes')}
+                    </h1>
+                    <p className="mb-4 text-sm text-muted-foreground">{t('themes_description')}</p>
+
+                    <SelectInput
+                        label={t('theme_selection_label')}
+                        options={themeSelectOptions}
+                        value={serverThemeId || ''}
+                        onChange={(value) => {
+                            if (value === '__DEFAULT__') {
+                                setServerThemeId(null);
+                                return;
+                            }
+                            setServerThemeId(value);
+                        }}
+                        placeholder={t('select_theme_default')}
+                    />
+
+                    <div className="flex items-center gap-3 mt-6">
+                        <Button onClick={() => setShowThemeUploadDialog(true)} variant="outline">
+                            <Plus />
+                            {t('upload_new_theme')}
+                        </Button>
+
+                        <Button variant="outline" asChild>
+                            <Link to="/browse-themes">
+                                <Earth />
+                                {t('browse_themes')}
+                            </Link>
+                        </Button>
+                    </div>
+
+                    {themesLoading ? (
+                        <SettingsSkeleton />
+                    ) : themes && themes.length > 0 ? (
+                        <div className="space-y-3 mt-4">
+                            {themes.map((theme) => (
+                                <div
+                                    key={theme.id}
+                                    className="flex items-center justify-between rounded-lg border p-4"
+                                >
+                                    <div className="flex flex-col">
+                                        <span className="font-semibold">{theme.name}</span>
+                                        <span className="text-xs text-muted-foreground">
+                                            v{theme.version} by {theme.author}
+                                        </span>
+                                    </div>
+                                    <div>
+                                        <Button
+                                            variant={'outline'}
+                                            size={'icon'}
+                                            onClick={() => {
+                                                deleteTheme(theme.id);
+                                            }}
+                                            disabled={isDeletingTheme}
+                                        >
+                                            <Trash2 />
+                                        </Button>
+                                    </div>
+                                </div>
+                            ))}
+                        </div>
+                    ) : (
+                        <p className="text-sm text-muted-foreground mt-4">
+                            {t('no_themes_installed')}
+                        </p>
+                    )}
                 </TabsContent>
             </Tabs>
             <SectionEditor

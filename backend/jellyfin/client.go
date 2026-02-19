@@ -5,18 +5,20 @@ import (
 	"errors"
 	"net/http"
 	"net/url"
+
+	"github.com/gofiber/fiber/v3"
 )
 
 type UserMeResponse struct {
-	Id       string `json:"Id"`
-	Name     string `json:"Name"`
-	Policy   struct {
+	Id     string `json:"Id"`
+	Name   string `json:"Name"`
+	Policy struct {
 		IsAdministrator bool `json:"IsAdministrator"`
 	} `json:"Policy"`
 }
 
-func AuthenticateByToken(r *http.Request) (bool, error) {
-	jellyfinURLRaw := r.URL.Query().Get("jellyfin_url")
+func AuthenticateByToken(c fiber.Ctx) (bool, error) {
+	jellyfinURLRaw := c.Query("jellyfin_url")
 	if jellyfinURLRaw == "" {
 		return false, errors.New("missing jellyfin_url query parameter")
 	}
@@ -26,14 +28,10 @@ func AuthenticateByToken(r *http.Request) (bool, error) {
 		return false, errors.New("invalid jellyfin_url")
 	}
 
-	endpoint, err := url.Parse("/Users/Me")
-	if err != nil {
-		return false, err
-	}
-
+	endpoint, _ := url.Parse("/Users/Me")
 	fullURL := baseURL.ResolveReference(endpoint)
 
-	token := r.Header.Get("Authorization")
+	token := c.Get("Authorization")
 	if token == "" {
 		return false, errors.New("missing Authorization header")
 	}

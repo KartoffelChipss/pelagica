@@ -19,6 +19,8 @@ import PersonPage from './pages/Person/PersonPage.tsx';
 import { MusicPlaybackProvider } from './context/MusicPlaybackProvider.tsx';
 import SettingsPage from './pages/Settings/SettingsPage.tsx';
 import SearchPage from './pages/Search/SearchPage.tsx';
+import PelagicaThemeLoader from './components/PelagicaThemeProvider.tsx';
+import ThemeBrowserPage from './pages/ThemeBroser/ThemeBrowserPage.tsx';
 
 const queryClient = new QueryClient();
 
@@ -30,6 +32,7 @@ createRoot(document.getElementById('root')!).render(
                     <BrowserRouter>
                         <KeyboardShortcuts />
                         <SearchCommand />
+                        <PelagicaThemeLoader />
                         <Routes>
                             <Route path="/" element={<HomePage />} />
                             <Route path="/library" element={<LibraryPage />} />
@@ -38,6 +41,7 @@ createRoot(document.getElementById('root')!).render(
                             <Route path="/login" element={<LoginPage />} />
                             <Route path="/play/:itemId" element={<PlayerPage />} />
                             <Route path="/settings" element={<SettingsPage />} />
+                            <Route path="/browse-themes" element={<ThemeBrowserPage />} />
                             <Route path="/search" element={<SearchPage />} />
                             <Route path="*" element={<NotFoundPage />} />
                         </Routes>

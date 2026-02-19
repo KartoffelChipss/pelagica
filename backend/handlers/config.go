@@ -3,87 +3,82 @@ package handlers
 import (
 	"encoding/json"
 	"log"
-	"net/http"
 	"os"
 	"path/filepath"
+
 	"pelagica-backend/models"
+
+	"github.com/gofiber/fiber/v3"
 )
 
 func configPath() string {
-    configPath := os.Getenv("CONFIG_PATH")
-    if configPath == "" {
-        configPath = "config.json"
-    }
-    return configPath
+	path := os.Getenv("CONFIG_PATH")
+	if path == "" {
+		path = "config.json"
+	}
+	return path
 }
 
-func GetConfig(w http.ResponseWriter, r *http.Request) {
-    path := configPath()
+func GetConfig(c fiber.Ctx) error {
+	path := configPath()
 
-    data, err := os.ReadFile(path)
-    if err != nil {
-        if os.IsNotExist(err) {
-            defaultConfig := []byte(`{}`)
+	data, err := os.ReadFile(path)
+	if err != nil {
+		if os.IsNotExist(err) {
+			defaultConfig := []byte(`{}`)
 
-            // ensure the directory exists
-            if err := os.MkdirAll(filepath.Dir(path), 0755); err != nil {
-                log.Println("Error creating config directory:", err)
-                http.Error(w, "Failed to create config directory", http.StatusInternalServerError)
-                return
-            }
+			if err := os.MkdirAll(filepath.Dir(path), 0755); err != nil {
+				log.Println("Error creating config directory:", err)
+				return c.Status(fiber.StatusInternalServerError).JSON(models.APIError{Error: "Failed to create config directory"})
+			}
 
-            if err := os.WriteFile(path, defaultConfig, 0644); err != nil {
-                log.Println("Error creating config file:", err)
-                http.Error(w, "Failed to create config", http.StatusInternalServerError)
-                return
-            }
+			if err := os.WriteFile(path, defaultConfig, 0644); err != nil {
+				log.Println("Error creating config file:", err)
+				return c.Status(fiber.StatusInternalServerError).JSON(models.APIError{Error: "Failed to save config"})
+			}
 
-            data = defaultConfig
-        } else {
-            log.Println("Error reading config file:", err)
-            http.Error(w, "Failed to read config", http.StatusInternalServerError)
-            return
-        }
-    }
+			data = defaultConfig
+		} else {
+			log.Println("Error reading config file:", err)
+			return c.Status(fiber.StatusInternalServerError).JSON(models.APIError{Error: "Failed to read config file"})
+		}
+	}
 
-    w.Header().Set("Content-Type", "application/json")
-    w.WriteHeader(http.StatusOK)
-    w.Write(data)
+	return c.Status(fiber.StatusOK).
+		Type("json").
+		Send(data)
 }
 
-func UpdateConfig(w http.ResponseWriter, r *http.Request) {
-    var cfg models.AppConfig
+func UpdateConfig(c fiber.Ctx) error {
+	var cfg models.AppConfig
 
-	dec := json.NewDecoder(r.Body)
-	dec.DisallowUnknownFields()
-
-    if err := dec.Decode(&cfg); err != nil {
+	if err := c.Bind().Body(&cfg); err != nil {
 		log.Println("Error decoding config:", err)
-        http.Error(w, "Invalid JSON: " + err.Error(), http.StatusBadRequest)
-        return
-    }
+		return c.Status(fiber.StatusBadRequest).JSON(models.APIError{Error: "Invalid config"})
+	}
 
-    // Initialize empty arrays to save them in json as [] instead just ignoring them
-    if cfg.ItemPage != nil {
-        if cfg.ItemPage.FavoriteButton == nil {
-            cfg.ItemPage.FavoriteButton = []models.BaseItemKind{}
-        }
-        if cfg.ItemPage.DeleteButton == nil {
-            cfg.ItemPage.DeleteButton = []models.BaseItemKind{}
-        }
-        if cfg.ItemPage.DetailBadges == nil {
-            cfg.ItemPage.DetailBadges = []models.DetailBadge{}
-        }
-    }
+	if cfg.ItemPage != nil {
+		if cfg.ItemPage.FavoriteButton == nil {
+			cfg.ItemPage.FavoriteButton = []models.BaseItemKind{}
+		}
+		if cfg.ItemPage.DeleteButton == nil {
+			cfg.ItemPage.DeleteButton = []models.BaseItemKind{}
+		}
+		if cfg.ItemPage.DetailBadges == nil {
+			cfg.ItemPage.DetailBadges = []models.DetailBadge{}
+		}
+	}
 
-    data, _ := json.MarshalIndent(cfg, "", "    ")
-    
-    // Write directly to config file because docker seems to have an issue with renaming files on mounted volumes
-    if err := os.WriteFile(configPath(), data, 0644); err != nil {
-        log.Println("Error writing config file:", err)
-        http.Error(w, "Failed to save config", http.StatusInternalServerError)
-        return
-    }
+	data, err := json.MarshalIndent(cfg, "", "    ")
+	if err != nil {
+		log.Println("Error encoding config:", err)
+		return c.Status(fiber.StatusInternalServerError).JSON(models.APIError{Error: "Failed to encode config"})
+	}
 
-    w.WriteHeader(http.StatusNoContent)
+	if err := os.WriteFile(configPath(), data, 0644); err != nil {
+		log.Println("Error writing config file:", err)
+		return c.Status(fiber.StatusInternalServerError).JSON(models.APIError{Error: "Failed to save config"})
+	}
+
+	return c.SendStatus(fiber.StatusNoContent)
 }

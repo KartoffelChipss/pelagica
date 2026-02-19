@@ -19,5 +19,9 @@
     "authorize_quick_connect": "Authorize Quick Connect",
     "enter_quick_connect_code": "Enter the 6-digit code displayed on the device you want to authorize.",
     "quick_connect_authorized": "Device authorized successfully!",
-    "quick_connect_authorization_failed": "Failed to authorize device. Please check the code and try again."
+    "quick_connect_authorization_failed": "Failed to authorize device. Please check the code and try again.",
+    "theme_preference": "Theme Preference",
+    "select_theme": "Select theme",
+    "server_default": "Server Default",
+    "pelagica_default": "Pelagica Default"
 }
