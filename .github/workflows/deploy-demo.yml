@@ -34,7 +34,7 @@ jobs:
         run: cp frontend/dist/index.html frontend/dist/404.html
 
       - name: Add CNAME file
-        run: echo "pelagica.jan.run" > frontend/dist/CNAME
+        run: echo "demo.pelagica.app" > frontend/dist/CNAME
 
       - name: Upload production-ready build files
         uses: actions/upload-artifact@v4
