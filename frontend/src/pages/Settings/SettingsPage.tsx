@@ -41,7 +41,7 @@ import { useThemes } from '@/hooks/api/themes/useThemes';
 import { useDeleteTheme } from '@/hooks/api/themes/useDeleteTheme';
 import JsonFileUpload from '@/components/JsonFileUpload';
 import { useCreateTheme } from '@/hooks/api/themes/useCreateTheme';
-import { Link } from 'react-router';
+import { Link, useSearchParams } from 'react-router';
 
 const StringInput = ({
     label,
@@ -542,6 +542,8 @@ const SettingsPage = () => {
     const { mutate: deleteTheme, isPending: isDeletingTheme } = useDeleteTheme();
     const [showThemeUploadDialog, setShowThemeUploadDialog] = useState(false);
     const { mutate: createTheme, isPending: isCreatingTheme } = useCreateTheme();
+    const [searchParams, setSearchParams] = useSearchParams();
+    const activeTab = searchParams.get('tab') || 'general';
 
     const moveSection = (index: number, direction: -1 | 1) => {
         const newIndex = index + direction;
@@ -681,7 +683,12 @@ const SettingsPage = () => {
                 </DialogContent>
             </Dialog>
 
-            <Tabs defaultValue={'general'}>
+            <Tabs
+                defaultValue={activeTab}
+                onValueChange={(val) => {
+                    setSearchParams({ tab: val });
+                }}
+            >
                 <TabsList>
                     <TabsTrigger value="general">{t('category_general')}</TabsTrigger>
                     <TabsTrigger value="homesections">{t('category_homesections')}</TabsTrigger>
