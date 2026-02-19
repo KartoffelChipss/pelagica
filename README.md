@@ -12,7 +12,7 @@ Pelagica is an alternative web frontend for [Jellyfin](https://jellyfin.org) bui
 - **Video Player:** Integrated video player for movies and TV shows.
 - **Music Player:** A music player that allows you to listen to your music albums or playlists while browsing your library.
 - **Responsive Design:** Works seamlessly on both desktop and mobile devices.
-- **Theming:** Light and dark mode support.
+- **Theming:** Light and dark mode support as well as custom themes
 - **Localization:** Supports multiple languages through [community contributions](https://gitlocalize.com/repo/10635).
 
 You can find a roadmap of planned features and improvements in the [GitHub Projects](https://github.com/users/KartoffelChipss/projects/7).
@@ -138,6 +138,18 @@ cd pelagica
 docker-compose up -d --build
 ```
 
+## Custom Themes
+
+You can find instructions on how to build and/or publish custom themes [here](https://github.com/KartoffelChipss/pelagica-themes#readme).
+
+## Community Discord
+
+Join the Pelagica community on Discord for support, discussions, and updates: https://discord.gg/yCe4unuVGQ
+
+## Localization
+
+Pelagica supports multiple languages and depends on community contributions for translations. If you'd like to help translate Pelagica into your language, you can contribute via [GitLocalize](https://gitlocalize.com/repo/10635).
+
 ## Development Setup
 
 ### Frontend
@@ -177,14 +189,6 @@ docker-compose up -d --build
     ```
 
 You can also use the `dev.sh` script to start both frontend and backend with hot reloading.
-
-## Community Discord
-
-Join the Pelagica community on Discord for support, discussions, and updates: https://discord.gg/yCe4unuVGQ
-
-## Localization
-
-Pelagica supports multiple languages and depends on community contributions for translations. If you'd like to help translate Pelagica into your language, you can contribute via [GitLocalize](https://gitlocalize.com/repo/10635).
 
 ## Contributing
 
