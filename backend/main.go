@@ -46,6 +46,7 @@ func main() {
 	api.Get("/themes/:id", handlers.GetTheme)
 	api.Put("/themes/:id", protected, handlers.UpdateTheme)
 	api.Delete("/themes/:id", protected, handlers.DeleteTheme)
+	api.Post("/themes/:id/install", protected, handlers.InstallTheme)
 
 	log.Println("Server starting on " + getPort())
 	log.Fatal(app.Listen(getPort()))

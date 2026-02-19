@@ -55,6 +55,7 @@ ENV ENABLE_AUTH=true
 ENV CONFIG_PATH=/config/config.json
 ENV THEMES_DIR=/config/themes
 ENV DEFAULT_THEME_PATH=/default.theme.json
+ENV THEMES_REPO_BASE_URL=https://themes.pelagica.app/
 
 EXPOSE 80
 
