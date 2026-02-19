@@ -16,8 +16,10 @@ import {
 import { useInstallTheme } from '@/hooks/api/themes/useInstallTheme';
 import { Spinner } from '@/components/ui/spinner';
 import { useState } from 'react';
+import { Trans, useTranslation } from 'react-i18next';
 
 const ThemeBrowserPage = () => {
+    const { t } = useTranslation('themebrowser');
     const { data: themesRepo, isLoading: isLoadingRepo, isError } = useThemesRepository();
     const { data: themes, isLoading: isLoadingThemes } = useThemes();
     const { mutate: installTheme } = useInstallTheme();
@@ -34,28 +36,30 @@ const ThemeBrowserPage = () => {
     };
 
     return (
-        <Page title="Theme Browser">
+        <Page title={t('theme_browser')}>
             <div className="flex items-center gap-3 mb-3 mt-2">
                 <Button variant="outline" size="icon-sm" asChild>
                     <Link to="/settings">
                         <ArrowLeft />
                     </Link>
                 </Button>
-                <h1 className="text-2xl font-bold">Themes</h1>
+                <h1 className="text-2xl font-bold">{t('themes')}</h1>
             </div>
             <p className="mb-4 text-muted-foreground text-sm border-l-border border-l-3 pl-2">
                 <Info className="inline mr-1.5 -mt-0.5 h-4 w-4" />
-                These themes are from the{' '}
-                <a
-                    href="https://github.com/KartoffelChipss/pelagica-themes"
-                    target="_blank"
-                    rel="noopener noreferrer"
-                    className="underline"
-                >
-                    Pelagica Themes
-                </a>{' '}
-                repository, where anyone can submit their own themes. Click the "Install" button to
-                download the theme to your server.
+                <Trans
+                    i18nKey="themebrowser:repository_info"
+                    components={{
+                        repoLink: (
+                            <a
+                                href="https://github.com/KartoffelChipss/pelagica-themes"
+                                target="_blank"
+                                rel="noopener noreferrer"
+                                className="underline"
+                            />
+                        ),
+                    }}
+                />
             </p>
             {(isLoadingRepo || isLoadingThemes) && <p>Loading themes...</p>}
             {isError && <p>Error loading themes.</p>}
@@ -103,17 +107,17 @@ const ThemeBrowserPage = () => {
                                         {themes.some((t) => t.id === theme.id) ? (
                                             <>
                                                 <CloudCheck />
-                                                Installed
+                                                {t('installed')}
                                             </>
                                         ) : installingId === theme.id ? (
                                             <>
                                                 <Spinner />
-                                                Installing...
+                                                {t('installing')}
                                             </>
                                         ) : (
                                             <>
                                                 <DownloadCloud />
-                                                Install
+                                                {t('install')}
                                             </>
                                         )}
                                     </Button>
