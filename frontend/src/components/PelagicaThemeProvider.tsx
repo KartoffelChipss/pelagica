@@ -1,6 +1,11 @@
 import { fetchThemeById } from '@/api/themes';
 import { useConfig } from '@/hooks/api/useConfig';
 import { applyTheme } from '@/utils/applyTheme';
+import {
+    getLocalTheme,
+    LOCAL_THEME_PELAGICA_DEFAULT,
+    LOCAL_THEME_SERVER_DEFAULT,
+} from '@/utils/localTheme';
 import { useEffect } from 'react';
 
 const PelagicaThemeLoader = () => {
@@ -10,9 +15,16 @@ const PelagicaThemeLoader = () => {
         let mounted = true;
 
         async function loadTheme() {
-            if (!config?.serverThemeId) return;
+            let effectiveThemeId: string | null | undefined =
+                getLocalTheme() || config?.serverThemeId;
 
-            const theme = await fetchThemeById(config.serverThemeId);
+            if (effectiveThemeId === LOCAL_THEME_SERVER_DEFAULT)
+                effectiveThemeId = config?.serverThemeId;
+            if (effectiveThemeId === LOCAL_THEME_PELAGICA_DEFAULT) effectiveThemeId = null;
+
+            if (!effectiveThemeId) return;
+
+            const theme = await fetchThemeById(effectiveThemeId);
             if (!mounted || !theme) return;
 
             applyTheme(theme);
