@@ -114,7 +114,8 @@ func (s *ThemeStore) Write(id string, theme models.Theme) (string, error) {
 		return "", err
 	}
 
-	s.themes[id] = theme
+	// Reload fresh from disk
+	s.loadAll()
 
 	return id, nil
 }

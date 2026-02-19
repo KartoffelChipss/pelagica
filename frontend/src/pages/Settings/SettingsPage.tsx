@@ -18,7 +18,7 @@ import { useState, useEffect, memo } from 'react';
 import { Label } from '@/components/ui/label';
 import { Input } from '@/components/ui/input';
 import { Button } from '@/components/ui/button';
-import { Check, Trash2, Plus, Edit, ArrowUp, ArrowDown } from 'lucide-react';
+import { Check, Trash2, Plus, Edit, ArrowUp, ArrowDown, Earth } from 'lucide-react';
 import { Skeleton } from '@/components/ui/skeleton';
 import { Switch } from '@/components/ui/switch';
 import {
@@ -41,6 +41,7 @@ import { useThemes } from '@/hooks/api/themes/useThemes';
 import { useDeleteTheme } from '@/hooks/api/themes/useDeleteTheme';
 import JsonFileUpload from '@/components/JsonFileUpload';
 import { useCreateTheme } from '@/hooks/api/themes/useCreateTheme';
+import { Link } from 'react-router';
 
 const StringInput = ({
     label,
@@ -905,14 +906,19 @@ const SettingsPage = () => {
                         placeholder={t('select_theme_default')}
                     />
 
-                    <Button
-                        onClick={() => setShowThemeUploadDialog(true)}
-                        variant="outline"
-                        className="mt-6"
-                    >
-                        <Plus />
-                        {t('upload_new_theme')}
-                    </Button>
+                    <div className="flex items-center gap-3 mt-6">
+                        <Button onClick={() => setShowThemeUploadDialog(true)} variant="outline">
+                            <Plus />
+                            {t('upload_new_theme')}
+                        </Button>
+
+                        <Button variant="outline" asChild>
+                            <Link to="/browse-themes">
+                                <Earth />
+                                {t('browse_themes')}
+                            </Link>
+                        </Button>
+                    </div>
 
                     {themesLoading ? (
                         <SettingsSkeleton />

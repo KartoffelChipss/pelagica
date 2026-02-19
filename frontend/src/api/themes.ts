@@ -73,3 +73,12 @@ export const updateTheme = async (id: string, theme: Theme): Promise<void> => {
         throw new Error(`Failed to update theme with id: ${id}`);
     }
 };
+
+export const installThemeFromRepository = async (themeId: string): Promise<void> => {
+    const response = await fetch(`/api/themes/${themeId}/install`, {
+        method: 'POST',
+    });
+    if (!response.ok) {
+        throw new Error(`Failed to install theme with id: ${themeId}`);
+    }
+};
