@@ -51,7 +51,7 @@ If you want to suggest new features or report bugs, please use the [GitHub Issue
 
 You can find a live demo of Pelagica at:
 
-https://pelagica.jan.run/
+https://demo.pelagica.app/
 
 You can use the `demo.jellyfin.org/stable` server with the `demo` user to test, or use your own Jellyfin server if it is publicly accessible. If you are experiencing issues with the Jellyfin demo server, this is because of cors restrictions on that server.
 
