@@ -17,6 +17,42 @@ import { useInstallTheme } from '@/hooks/api/themes/useInstallTheme';
 import { Spinner } from '@/components/ui/spinner';
 import { useState } from 'react';
 import { Trans, useTranslation } from 'react-i18next';
+import { Skeleton } from '@/components/ui/skeleton';
+import { memo } from 'react';
+
+const ThemeCardSkeleton = memo(() => {
+    return (
+        <Card className="p-0 gap-0 overflow-hidden">
+            <Skeleton className="w-full h-48 rounded-none" />
+
+            <div className="p-4 space-y-3">
+                <Skeleton className="h-5 w-2/3" />
+
+                <Skeleton className="h-4 w-1/3" />
+
+                <Skeleton className="h-4 w-full" />
+                <Skeleton className="h-4 w-4/5" />
+
+                <div className="flex gap-2 pt-2">
+                    <Skeleton className="h-9 w-24" />
+                    <Skeleton className="h-9 w-9" />
+                </div>
+            </div>
+        </Card>
+    );
+});
+ThemeCardSkeleton.displayName = 'ThemeCardSkeleton';
+
+const ThemeGridSkeleton = memo(({ count = 8 }: { count?: number }) => {
+    return (
+        <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 xl:grid-cols-4 2xl:grid-cols-5 gap-4">
+            {Array.from({ length: count }).map((_, i) => (
+                <ThemeCardSkeleton key={i} />
+            ))}
+        </div>
+    );
+});
+ThemeGridSkeleton.displayName = 'ThemeGridSkeleton';
 
 const ThemeBrowserPage = () => {
     const { t } = useTranslation('themebrowser');
@@ -61,7 +97,7 @@ const ThemeBrowserPage = () => {
                     }}
                 />
             </p>
-            {(isLoadingRepo || isLoadingThemes) && <p>Loading themes...</p>}
+            {(isLoadingRepo || isLoadingThemes) && <ThemeGridSkeleton count={7} />}
             {isError && <p>Error loading themes.</p>}
             {themesRepo && themes && (
                 <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 xl:grid-cols-4 2xl:grid-cols-5 gap-4">
