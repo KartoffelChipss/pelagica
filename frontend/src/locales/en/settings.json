@@ -104,5 +104,6 @@
     "themes_description": "Choose a theme for the Pelagica. Themes change the overall appearance and style.",
     "default_theme": "Default Theme",
     "upload_new_theme": "Upload New Theme",
-    "browse_themes": "Browse Themes"
+    "browse_themes": "Browse Themes",
+    "no_themes_installed": "No themes installed."
 }

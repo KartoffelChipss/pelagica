@@ -951,7 +951,9 @@ const SettingsPage = () => {
                             ))}
                         </div>
                     ) : (
-                        <p className="text-sm text-muted-foreground">{t('no_themes_available')}</p>
+                        <p className="text-sm text-muted-foreground mt-4">
+                            {t('no_themes_installed')}
+                        </p>
                     )}
                 </TabsContent>
             </Tabs>
