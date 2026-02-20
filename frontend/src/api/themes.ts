@@ -1,3 +1,5 @@
+import { getAccessToken, getServerUrl } from '@/utils/localstorageCredentials';
+
 export interface ThemeSummary {
     id: string;
     name: string;
@@ -39,13 +41,17 @@ export const fetchThemeById = async (id: string): Promise<Theme> => {
 };
 
 export const createTheme = async (theme: string): Promise<{ id: string }> => {
-    const response = await fetch('/api/themes', {
-        method: 'POST',
-        headers: {
-            'Content-Type': 'application/json',
-        },
-        body: JSON.stringify(theme),
-    });
+    const response = await fetch(
+        '/api/themes?jellyfin_url=' + encodeURIComponent(getServerUrl() || ''),
+        {
+            method: 'POST',
+            headers: {
+                'Content-Type': 'application/json',
+                Authorization: getAccessToken() || '',
+            },
+            body: JSON.stringify(theme),
+        }
+    );
     if (!response.ok) {
         throw new Error('Failed to create theme');
     }
@@ -53,31 +59,47 @@ export const createTheme = async (theme: string): Promise<{ id: string }> => {
 };
 
 export const deleteTheme = async (id: string): Promise<void> => {
-    const response = await fetch(`/api/themes/${id}`, {
-        method: 'DELETE',
-    });
+    const response = await fetch(
+        `/api/themes/${id}?jellyfin_url=` + encodeURIComponent(getServerUrl() || ''),
+        {
+            method: 'DELETE',
+            headers: {
+                Authorization: getAccessToken() || '',
+            },
+        }
+    );
     if (!response.ok) {
         throw new Error(`Failed to delete theme with id: ${id}`);
     }
 };
 
 export const updateTheme = async (id: string, theme: Theme): Promise<void> => {
-    const response = await fetch(`/api/themes/${id}`, {
-        method: 'PUT',
-        headers: {
-            'Content-Type': 'application/json',
-        },
-        body: JSON.stringify(theme),
-    });
+    const response = await fetch(
+        `/api/themes/${id}?jellyfin_url=` + encodeURIComponent(getServerUrl() || ''),
+        {
+            method: 'PUT',
+            headers: {
+                'Content-Type': 'application/json',
+                Authorization: getAccessToken() || '',
+            },
+            body: JSON.stringify(theme),
+        }
+    );
     if (!response.ok) {
         throw new Error(`Failed to update theme with id: ${id}`);
     }
 };
 
 export const installThemeFromRepository = async (themeId: string): Promise<void> => {
-    const response = await fetch(`/api/themes/${themeId}/install`, {
-        method: 'POST',
-    });
+    const response = await fetch(
+        `/api/themes/${themeId}/install?jellyfin_url=` + encodeURIComponent(getServerUrl() || ''),
+        {
+            method: 'POST',
+            headers: {
+                Authorization: getAccessToken() || '',
+            },
+        }
+    );
     if (!response.ok) {
         throw new Error(`Failed to install theme with id: ${themeId}`);
     }
