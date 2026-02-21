@@ -1,0 +1,15 @@
+{
+  "skipIntro": "Passer l'introduction",
+  "skipOutro": "Passer la fin",
+  "audioTracks": "Pistes audio",
+  "subtitles": "Sous-titres",
+  "off": "Aucun sous-titre",
+  "playNextItem": "Voir l'élément suivant",
+  "upNext": "Épisode suivant dans {{seconds}} secondes",
+  "startNow": "Démarrer maintenant",
+  "dismiss": "Rejeter",
+  "seasonEpisode": "S{{season}} E{{episode}}",
+  "previousItem": "Elément précèdent",
+  "nextItem": "Elément suivant",
+  "nowPlaying": "Lecture en cours"
+}
