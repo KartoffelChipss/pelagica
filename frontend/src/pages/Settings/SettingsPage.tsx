@@ -646,7 +646,7 @@ const SettingsPage = () => {
     }
 
     return (
-        <Page title={t('title')} requireAdmin requiresAuth>
+        <Page title={t('title')} className="flex-1 flex flex-col" requireAdmin requiresAuth>
             <Dialog
                 open={showThemeUploadDialog}
                 onOpenChange={() => setShowThemeUploadDialog(false)}
@@ -976,7 +976,7 @@ const SettingsPage = () => {
                 }}
                 onClose={() => setEditingIndex(null)}
             />
-            <Button className="mt-6" onClick={handleUpdateConfig} disabled={updating}>
+            <Button className="mt-6 w-fit" onClick={handleUpdateConfig} disabled={updating}>
                 {updating ? (
                     t('saving')
                 ) : saveSuccess ? (

@@ -111,7 +111,7 @@ const SearchPage = () => {
     }, [query, typeFilter, setSearchParams]);
 
     return (
-        <Page title="Search">
+        <Page title="Search" className="flex-1 flex flex-col">
             <ButtonGroup className="w-full mt-0.5">
                 <InputGroup className="grow">
                     <InputGroupAddon>
