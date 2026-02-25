@@ -100,10 +100,15 @@ const LibraryContent = ({
             (acc, item) => {
                 acc[item.Id!] = getPrimaryImageUrl(
                     item.Id!,
-                    {
-                        height: 640,
-                        width: 416,
-                    },
+                    item.Type === 'MusicAlbum'
+                        ? {
+                              height: 416,
+                              width: 416,
+                          }
+                        : {
+                              height: 640,
+                              width: 416,
+                          },
                     item.ImageTags?.Primary
                 );
                 return acc;
