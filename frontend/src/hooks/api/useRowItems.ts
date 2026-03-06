@@ -32,6 +32,7 @@ export function useRowItems(items?: SectionItemsConfig) {
                 isFavorite: items?.isFavorite ?? undefined,
                 enableUserData: true,
                 filters,
+                locationTypes: ['FileSystem'],
             });
             return response.data.Items;
         },

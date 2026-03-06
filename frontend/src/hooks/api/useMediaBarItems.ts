@@ -25,6 +25,7 @@ export function useMediaBarItems(items?: SectionItemsConfig) {
                 fields: ['Genres', 'Overview', 'ChildCount', 'RecursiveItemCount'],
                 genres: items?.genres,
                 tags: items?.tags,
+                locationTypes: ['FileSystem'],
             });
             return response.data.Items;
         },

@@ -21,6 +21,7 @@ export function useSeasons(seriesId: string | null | undefined) {
                 includeItemTypes: ['Season'],
                 sortBy: ['SortName'],
                 sortOrder: ['Ascending'],
+                locationTypes: ['FileSystem'],
             });
             return response.data.Items || [];
         },

@@ -17,6 +17,7 @@ export function useAlbumTracks(albumId: string | null | undefined) {
                 sortOrder: ['Ascending'],
                 fields: ['Overview', 'MediaSources', 'MediaStreams'],
                 enableUserData: true,
+                locationTypes: ['FileSystem'],
             });
             return response.data.Items || [];
         },

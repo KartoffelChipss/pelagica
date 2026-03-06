@@ -32,6 +32,7 @@ export function useSearchItems(searchTerm: string, options?: UseSearchItemsOptio
                     limit,
                     recursive: true,
                     fields: ['Overview', 'ParentId'],
+                    locationTypes: ['FileSystem'],
                 });
 
                 return response.data.Items ?? [];

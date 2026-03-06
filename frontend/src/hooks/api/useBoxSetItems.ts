@@ -14,6 +14,7 @@ export function useBoxSetItems(boxSetId: string | null | undefined) {
                 parentId: boxSetId!,
                 fields: ['Overview', 'MediaSources'],
                 enableUserData: true,
+                locationTypes: ['FileSystem'],
             });
             return response.data.Items || [];
         },

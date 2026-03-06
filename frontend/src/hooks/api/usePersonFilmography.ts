@@ -20,6 +20,7 @@ export function usePersonFilmography(personId: string | null | undefined, userId
                 sortOrder: ['Descending'],
                 enableImages: true,
                 enableUserData: true,
+                locationTypes: ['FileSystem'],
             });
 
             return response.data.Items || [];

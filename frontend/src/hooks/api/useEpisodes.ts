@@ -17,6 +17,7 @@ export function useEpisodes(seasonId: string | null | undefined) {
                 sortOrder: ['Ascending'],
                 fields: ['Overview', 'MediaSources'],
                 enableUserData: true,
+                locationTypes: ['FileSystem'],
             });
             return response.data.Items || [];
         },

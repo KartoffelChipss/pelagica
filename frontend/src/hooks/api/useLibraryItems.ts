@@ -40,6 +40,7 @@ export function useLibraryItems(
                 startIndex: options?.startIndex ?? 0,
                 recursive: options?.recursive ?? true,
                 includeItemTypes: options?.includeItemTypes,
+                locationTypes: ['FileSystem'],
             });
             return {
                 items: response.data.Items || [],
