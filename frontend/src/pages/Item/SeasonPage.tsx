@@ -21,6 +21,8 @@ import FavoriteButton from '../../components/FavoriteButton';
 import { Skeleton } from '@/components/ui/skeleton';
 import ItemAdminButton from '@/components/ItemAdminButton';
 import { ImageOff } from 'lucide-react';
+import { getUserId } from '../../utils/localstorageCredentials';
+import PlayStateButton from '../../components/PlayStateButton';
 
 interface EpisodePageProps {
     item: BaseItemDto;
@@ -84,6 +86,7 @@ const SeasonPage = ({ item, config }: EpisodePageProps) => {
                                 item.Type && config.itemPage?.favoriteButton?.includes(item.Type)
                             }
                         />
+                        <PlayStateButton itemId={item.Id || ''} userId={getUserId() || ''} />
                         <ItemAdminButton item={item} />
                     </div>
                     <p>{item.Overview}</p>
