@@ -18,6 +18,7 @@ import PlayStateButton from '../../components/PlayStateButton';
 import { getUserId } from '@/utils/localstorageCredentials';
 import ItemAdminButton from '@/components/ItemAdminButton';
 import { useState } from 'react';
+import { TrailerButton } from '../../components/TrailerButton';
 
 interface MoviePageProps {
     item: BaseItemDto;
@@ -75,6 +76,7 @@ const MoviePage = ({ item, config }: MoviePageProps) => {
                                 {isCurrentlyPlaying ? t('resume') : t('play')}
                             </Link>
                         </Button>
+                        <TrailerButton item={item} />
                         <FavoriteButton
                             item={item}
                             showFavoriteButton={

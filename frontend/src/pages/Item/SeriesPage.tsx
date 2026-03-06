@@ -27,6 +27,7 @@ import WatchListButton from '../../components/WatchlistButton';
 import PlayStateButton from '../../components/PlayStateButton';
 import { getUserId } from '@/utils/localstorageCredentials';
 import ItemAdminButton from '@/components/ItemAdminButton';
+import { TrailerButton } from '../../components/TrailerButton';
 
 interface SeriesPageProps {
     item: BaseItemDto;
@@ -114,6 +115,7 @@ const SeriesPage = ({ item, config }: SeriesPageProps) => {
                                 {t('loading')}
                             </Button>
                         )}
+                        <TrailerButton item={item} />
                         <FavoriteButton
                             item={item}
                             showFavoriteButton={
