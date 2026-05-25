@@ -12,10 +12,7 @@ export function useEditItemMetadata(onSuccess?: () => void) {
     const queryClient = useQueryClient();
 
     const { mutate: editItemMetadata, isPending: isSaving } = useMutation({
-        mutationFn: async ({
-            itemId,
-            baseItemDto,
-        }: EditItemMetadataInput) => {
+        mutationFn: async ({ itemId, baseItemDto }: EditItemMetadataInput) => {
             if (!itemId) throw new Error('Item ID is required');
 
             const api = getApi();

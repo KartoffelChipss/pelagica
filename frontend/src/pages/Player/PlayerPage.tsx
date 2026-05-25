@@ -190,7 +190,7 @@ const PlayerPage = () => {
                 if (currentTime <= PLAYBACK_PROGRESS_REPORT_MIN_PLAYTIME_SECONDS) return;
                 const positionTicks = Math.floor(currentTime * 10000000); // Convert to ticks
                 const isPaused = player.paused();
-                const volumeLevel = player.volume() * 100;
+                const volumeLevel = (player.volume() ?? 1) * 100;
                 const isMuted = player.muted();
 
                 lastPositionRef.current = positionTicks;
@@ -224,6 +224,7 @@ const PlayerPage = () => {
             // Here we need the last know position since the player might be already in the shadow realm
             stopPlayback({ itemId, positionTicks: lastPositionRef.current });
         };
+        // eslint-disable-next-line react-hooks/exhaustive-deps
     }, [itemId, player, reportProgress, startPlayback, startTicks, stopPlayback, clearPlayback]);
 
     useEffect(() => {
