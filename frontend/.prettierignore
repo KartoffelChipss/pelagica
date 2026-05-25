@@ -1,0 +1,13 @@
+node_modules
+dist
+build
+logs
+config
+library
+.vscode
+.idea
+.github
+pnpm-lock.yaml
+pnpm-workspace.yaml
+src/i18n/resources/**
+express.d.ts
