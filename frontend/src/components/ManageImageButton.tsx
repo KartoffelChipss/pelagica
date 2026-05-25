@@ -13,6 +13,7 @@ import { Card, CardContent } from './ui/card';
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from './ui/select';
 import { Switch } from './ui/switch';
 import { Label } from './ui/label';
+import { Skeleton } from './ui/skeleton';
 import { useTranslation } from 'react-i18next';
 import { useUploadItemImage } from '@/hooks/api/images/useUploadItemImage';
 import FileDropInput from './FileDropInput';
@@ -45,6 +46,120 @@ const imageTypeColumns: Record<ImageType, number> = {
     Menu: 0,
     Chapter: 0,
     Profile: 0,
+};
+
+const findImageSkeletonConfig: Record<
+    ImageType,
+    {
+        previewClassName: string;
+        titleWidthClassName: string;
+        subtitleWidthClassName: string;
+    }
+> = {
+    Primary: {
+        previewClassName: 'h-40 w-full rounded-none',
+        titleWidthClassName: 'w-24',
+        subtitleWidthClassName: 'w-20',
+    },
+    Backdrop: {
+        previewClassName: 'h-24 w-full rounded-none',
+        titleWidthClassName: 'w-28',
+        subtitleWidthClassName: 'w-16',
+    },
+    Logo: {
+        previewClassName: 'mx-auto h-16 w-32 rounded-none',
+        titleWidthClassName: 'w-20',
+        subtitleWidthClassName: 'w-16',
+    },
+    Thumb: {
+        previewClassName: 'mx-auto h-28 w-20 rounded-none',
+        titleWidthClassName: 'w-20',
+        subtitleWidthClassName: 'w-16',
+    },
+    Banner: {
+        previewClassName: 'h-20 w-full rounded-none',
+        titleWidthClassName: 'w-24',
+        subtitleWidthClassName: 'w-20',
+    },
+    Art: {
+        previewClassName: 'mx-auto h-32 w-24 rounded-none',
+        titleWidthClassName: 'w-24',
+        subtitleWidthClassName: 'w-20',
+    },
+    Disc: {
+        previewClassName: 'mx-auto h-28 w-28 rounded-full',
+        titleWidthClassName: 'w-24',
+        subtitleWidthClassName: 'w-20',
+    },
+    Box: {
+        previewClassName: 'mx-auto h-32 w-24 rounded-none',
+        titleWidthClassName: 'w-24',
+        subtitleWidthClassName: 'w-20',
+    },
+    Screenshot: {
+        previewClassName: 'h-24 w-full rounded-none',
+        titleWidthClassName: 'w-24',
+        subtitleWidthClassName: 'w-20',
+    },
+    BoxRear: {
+        previewClassName: 'h-40 w-full rounded-none',
+        titleWidthClassName: 'w-24',
+        subtitleWidthClassName: 'w-20',
+    },
+    Menu: {
+        previewClassName: 'h-40 w-full rounded-none',
+        titleWidthClassName: 'w-24',
+        subtitleWidthClassName: 'w-20',
+    },
+    Chapter: {
+        previewClassName: 'h-40 w-full rounded-none',
+        titleWidthClassName: 'w-24',
+        subtitleWidthClassName: 'w-20',
+    },
+    Profile: {
+        previewClassName: 'mx-auto h-24 w-24 rounded-full',
+        titleWidthClassName: 'w-20',
+        subtitleWidthClassName: 'w-16',
+    },
+};
+
+const FindImageResultsSkeleton = ({
+    imageType,
+    columnCount,
+}: {
+    imageType: ImageType;
+    columnCount: number;
+}) => {
+    const skeletonConfig = findImageSkeletonConfig[imageType] || findImageSkeletonConfig.Primary;
+
+    return (
+        <div className="space-y-2">
+            <div className="h-5 w-36 rounded bg-accent animate-pulse" />
+            <div
+                className={`grid grid-cols-${columnCount} gap-4 max-h-[40vh] overflow-y-auto no-scrollbar`}
+            >
+                {Array.from({ length: 6 }).map((_, index) => (
+                    <Card key={`find-image-skeleton-${index}`} className="p-0 overflow-hidden">
+                        <CardContent className="p-0 flex flex-col items-center h-full">
+                            <div className="bg-muted flex w-full flex-1 items-center justify-center p-4">
+                                <Skeleton
+                                    className={`${skeletonConfig.previewClassName} ${imageType === 'Logo' ? 'bg-secondary/70' : ''} ${imageType === 'Thumb' ? 'bg-secondary/70' : ''}`}
+                                />
+                            </div>
+                            <div className="bg-secondary w-full flex flex-col justify-center gap-2 p-2">
+                                <Skeleton
+                                    className={`h-4 ${skeletonConfig.titleWidthClassName} rounded`}
+                                />
+                                <Skeleton
+                                    className={`h-3 ${skeletonConfig.subtitleWidthClassName} rounded`}
+                                />
+                            </div>
+                        </CardContent>
+                    </Card>
+                ))}
+            </div>
+        </div>
+    );
 };
 
 const MainPage = ({
@@ -162,13 +277,13 @@ const FindImagePage = ({
     const { searchImages, isSearching, results } = useSearchRemoteImages();
     const { downloadImage } = useDownloadRemoteImage();
 
-    const handleSearch = () => {
+    const handleSearch = (imageType = selectedImageType, allLanguages = includeAllLanguages) => {
         searchImages({
             itemId: item.Id!,
-            imageType: selectedImageType,
-            includeAllLanguages,
+            imageType,
+            includeAllLanguages: allLanguages,
         });
-        setColumnCount(imageTypeColumns[selectedImageType] || 3);
+        setColumnCount(imageTypeColumns[imageType] || 3);
     };
 
     useEffect(() => {
@@ -185,7 +300,9 @@ const FindImagePage = ({
                 <h2 className="text-lg font-semibold ml-2">{t('find_images')}</h2>
             </div>
 
-            {results && results.length > 0 && (
+            {isSearching && !results ? (
+                <FindImageResultsSkeleton imageType={selectedImageType} columnCount={columnCount} />
+            ) : results && results.length > 0 ? (
                 <div className="space-y-2">
                     <h3 className="font-medium">
                         {t('results')} ({results.length})
@@ -239,7 +356,7 @@ const FindImagePage = ({
                         ))}
                     </div>
                 </div>
-            )}
+            ) : null}
 
             {results && results.length === 0 && !isSearching && (
                 <div className="flex items-center justify-center py-8 text-sm text-muted-foreground">
@@ -250,9 +367,13 @@ const FindImagePage = ({
             <div className="flex items-center gap-4">
                 <Select
                     value={selectedImageType}
-                    onValueChange={(value) => setSelectedImageType(value as ImageType)}
+                    onValueChange={(value) => {
+                        const nextImageType = value as ImageType;
+                        setSelectedImageType(nextImageType);
+                        handleSearch(nextImageType, includeAllLanguages);
+                    }}
                 >
-                    <SelectTrigger>
+                    <SelectTrigger className="grow">
                         <SelectValue />
                     </SelectTrigger>
                     <SelectContent>
@@ -268,26 +389,15 @@ const FindImagePage = ({
                     <Switch
                         id="all-languages"
                         checked={includeAllLanguages}
-                        onCheckedChange={setIncludeAllLanguages}
+                        onCheckedChange={(checked) => {
+                            setIncludeAllLanguages(checked);
+                            handleSearch(selectedImageType, checked);
+                        }}
                     />
                     <Label htmlFor="all-languages" className="cursor-pointer">
                         {t('include_all_languages')}
                     </Label>
                 </div>
-
-                <Button onClick={handleSearch} disabled={isSearching} className="grow">
-                    {isSearching ? (
-                        <>
-                            <Loader2 />
-                            {t('searching')}
-                        </>
-                    ) : (
-                        <>
-                            <Search />
-                            {t('search')}
-                        </>
-                    )}
-                </Button>
             </div>
         </div>
     );
