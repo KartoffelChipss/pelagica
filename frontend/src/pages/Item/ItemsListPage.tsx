@@ -137,11 +137,11 @@ const ItemsListPage = ({ item, useItems, renderItemOverlay }: ItemsListPageProps
         nextSortBy = sortBy,
         nextSortOrder = sortOrder
     ) => {
-        setSearchParams({
-            page: String(nextPage),
-            sortBy: nextSortBy,
-            sortOrder: nextSortOrder,
-        });
+        const next = new URLSearchParams(searchParams);
+        next.set('page', String(nextPage));
+        next.set('sortBy', nextSortBy);
+        next.set('sortOrder', nextSortOrder);
+        setSearchParams(next);
     };
 
     useEffect(() => {

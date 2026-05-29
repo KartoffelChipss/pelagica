@@ -92,3 +92,29 @@ export function getGenresIncludeItemTypes(category: BrowserMediaCategory): BaseI
             return ['Movie'];
     }
 }
+
+/** Query param on genre item URLs — scopes the detail grid to the active media tab. */
+export const GENRE_MEDIA_PARAM = 'media';
+
+export function parseGenreMediaCategory(
+    value: string | null
+): BrowserMediaCategory | null {
+    if (value === 'music' || value === 'series' || value === 'movie') return value;
+    return null;
+}
+
+/** Item types shown when opening a genre from the sidebar (or genre page with ?media=). */
+export function getGenreDetailIncludeTypes(category: BrowserMediaCategory): BaseItemKind[] {
+    return getGenresIncludeItemTypes(category);
+}
+
+export function buildGenreItemUrl(
+    itemId: string,
+    category: BrowserMediaCategory,
+    libraryId?: string | null
+): string {
+    const params = new URLSearchParams();
+    params.set(GENRE_MEDIA_PARAM, category);
+    if (libraryId) params.set('library', libraryId);
+    return `/item/${itemId}?${params.toString()}`;
+}

@@ -5,6 +5,7 @@ import type { BaseItemKind } from '@jellyfin/sdk/lib/generated-client/models';
 import type { LibraryItemsResponse } from '@/hooks/api/useLibraryItems';
 import { getRetryConfig } from '@/utils/authErrorHandler';
 import { SIDEBAR_LIBRARY_PAGE_SIZE } from '@/hooks/api/useInfiniteLibraryItems';
+import { enrichGenresWithItemCounts } from '@/utils/enrichGenresWithItemCounts';
 
 type UseInfiniteSidebarGenresOptions = {
     parentId?: string | null;
@@ -41,8 +42,12 @@ export function useInfiniteSidebarGenres({
                 startIndex: pageParam,
                 ...(term ? { searchTerm: term } : {}),
             });
+
+            const genres = response.data.Items || [];
+            const items = await enrichGenresWithItemCounts(genres, includeItemTypes, parentId);
+
             return {
-                items: response.data.Items || [],
+                items,
                 totalCount: response.data.TotalRecordCount || 0,
             };
         },

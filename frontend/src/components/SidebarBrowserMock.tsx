@@ -17,10 +17,12 @@ import {
     type BrowserMediaCategory,
 } from '@/utils/sidebarLibraryNavigation';
 import {
+    buildGenreItemUrl,
     getGenresIncludeItemTypes,
     getItemTypesForBrowseFilter,
     isGenresBrowseFilter,
 } from '@/utils/sidebarBrowseFilters';
+import type { BaseItemDto } from '@jellyfin/sdk/lib/generated-client/models';
 import { useSidebarBrowser } from '@/context/SidebarBrowserContext';
 import { SidebarBrowserResultsList } from '@/components/SidebarBrowserResultsList';
 import { SidebarBrowseFilterTabs } from '@/components/SidebarBrowseFilterTabs';
@@ -135,8 +137,13 @@ export function SidebarBrowserMock({ className }: SidebarBrowserMockProps) {
 
     const activeTab = activeCategory;
 
-    const handleSelectItem = (itemId: string) => {
-        navigate(`/item/${itemId}`);
+    const handleSelectItem = (item: BaseItemDto) => {
+        if (!item.Id) return;
+        if (showingGenres || item.Type === 'Genre') {
+            navigate(buildGenreItemUrl(item.Id, activeCategory, activeLibraryId));
+            return;
+        }
+        navigate(`/item/${item.Id}`);
     };
 
     const resultsLabel = showingGenres ? 'Genres' : 'Results';

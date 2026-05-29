@@ -16,7 +16,7 @@ type SidebarBrowserResultsListProps = {
     hasNextPage: boolean;
     fetchNextPage: () => void;
     activeItemPath: string;
-    onSelectItem: (itemId: string) => void;
+    onSelectItem: (item: BaseItemDto) => void;
     emptyMessage: string;
 };
 
@@ -100,7 +100,7 @@ export function SidebarBrowserResultsList({
                             <SidebarBrowserListItem
                                 item={item}
                                 isActive={activeItemPath === `/item/${item.Id}`}
-                                onSelect={(selected) => onSelectItem(selected.Id!)}
+                                onSelect={onSelectItem}
                             />
                         </div>
                     );

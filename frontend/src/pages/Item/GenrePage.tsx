@@ -1,5 +1,5 @@
 import type { BaseItemDto } from '@jellyfin/sdk/lib/generated-client/models';
-import { useGenreItems } from '@/hooks/api/genres/useGenreItems';
+import { useGenreItemsScoped } from '@/hooks/api/genres/useGenreItems';
 import { useConfig } from '@/hooks/api/useConfig';
 import WatchedStateBadge from '@/components/WatchedStateBadge';
 import ItemsListPage from './ItemsListPage';
@@ -14,7 +14,7 @@ const GenrePage = ({ item }: GenrePageProps) => {
     return (
         <ItemsListPage
             item={item}
-            useItems={useGenreItems}
+            useItems={useGenreItemsScoped}
             renderItemOverlay={(child) => (
                 <WatchedStateBadge item={child} show={config?.watchedStateBadgeGenre || false} />
             )}

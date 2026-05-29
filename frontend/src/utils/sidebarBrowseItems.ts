@@ -26,8 +26,12 @@ export function getItemSubtitle(item: BaseItemDto): string {
     if (item.Type === 'MusicAlbum' && item.AlbumArtist) {
         return item.AlbumArtist;
     }
-    if (item.Type === 'Genre' && item.ChildCount != null) {
-        return `${item.ChildCount} items`;
+    if (item.Type === 'Genre') {
+        if (item.ChildCount != null) {
+            if (item.ChildCount === 0) return 'No items';
+            return item.ChildCount === 1 ? '1 item' : `${item.ChildCount} items`;
+        }
+        return 'Genre';
     }
     if (item.Type === 'Playlist' && item.ChildCount != null) {
         return `${item.ChildCount} tracks`;

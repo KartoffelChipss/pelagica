@@ -41,6 +41,10 @@ function readStoredSearchQuery(): string {
     }
 }
 
+function toTabCategory(category: SidebarBrowseCategory): BrowserMediaCategory {
+    return category === 'all' ? 'movie' : category;
+}
+
 function readStoredBrowseFilter(category: BrowserMediaCategory): SidebarBrowseFilter {
     try {
         const stored = sessionStorage.getItem(FILTER_STORAGE_KEY);
@@ -68,11 +72,11 @@ export function SidebarBrowserProvider({ children }: { children: React.ReactNode
     const [category, setCategoryState] = React.useState<SidebarBrowseCategory>(readStoredCategory);
     const [searchQuery, setSearchQueryState] = React.useState(readStoredSearchQuery);
     const [browseFilter, setBrowseFilterState] = React.useState<SidebarBrowseFilter>(() =>
-        readStoredBrowseFilter(readStoredCategory())
+        readStoredBrowseFilter(toTabCategory(readStoredCategory()))
     );
 
     const setCategory = React.useCallback((next: SidebarBrowseCategory) => {
-        const tabCategory = next === 'all' ? 'movie' : next;
+        const tabCategory = toTabCategory(next);
         setCategoryState(next);
         setBrowseFilterState(getDefaultBrowseFilter(tabCategory));
         try {
