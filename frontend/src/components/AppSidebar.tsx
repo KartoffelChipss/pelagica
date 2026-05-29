@@ -83,7 +83,7 @@ const AppSidebar = () => {
     }, [isMobile, setOpen]);
 
     return (
-        <Sidebar variant="sidebar" collapsible="icon">
+        <Sidebar variant="floating" collapsible="icon">
             <SidebarHeader className="pb-1">
                 <SidebarMenu>
                     <SidebarMenuButton
