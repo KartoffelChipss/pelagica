@@ -132,7 +132,7 @@ const ItemPage = () => {
                         case 'MusicGenre':
                             return <GenrePage item={item} />;
                         case 'MusicArtist':
-                            return <MusicArtistPage item={item} />;
+                            return <MusicArtistPage item={item} config={config} />;
                         case 'Studio':
                             return <StudioPage item={item} />;
                         default:

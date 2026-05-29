@@ -117,6 +117,8 @@ export interface ItemsListPageProps {
     useItems: UseItemsHook;
     /** Poster aspect ratio class for grid items */
     itemAspectClass?: string;
+    /** Override the list heading (defaults to item name) */
+    listTitle?: string;
     /** Optional render prop to overlay something on each poster (e.g. WatchedStateBadge) */
     renderItemOverlay?: (item: BaseItemDto) => ReactNode;
 }
@@ -125,6 +127,7 @@ const ItemsListPage = ({
     item,
     useItems,
     itemAspectClass = 'aspect-2/3',
+    listTitle,
     renderItemOverlay,
 }: ItemsListPageProps) => {
     const { t } = useTranslation(['item', 'library']);
@@ -206,7 +209,7 @@ const ItemsListPage = ({
     return (
         <div ref={pageRef}>
             <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-3 mb-4">
-                <h1 className="text-3xl font-bold">{item.Name}</h1>
+                <h2 className="text-2xl font-bold">{listTitle ?? item.Name}</h2>
                 <ButtonGroup>
                     <Select onValueChange={handleSortChange} value={sortBy}>
                         <SelectTrigger size="sm">
@@ -257,7 +260,7 @@ const ItemsListPage = ({
                 <div className={`w-full gap-4 mt-2 grid ${gridCols}`}>
                     {Array.from({ length: pageSize }).map((_, i) => (
                         <div key={i} className="p-0 m-0">
-                            <div className="relative w-full aspect-2/3 overflow-hidden rounded-md">
+                            <div className={`relative w-full ${itemAspectClass} overflow-hidden rounded-md`}>
                                 <Skeleton className="w-full h-full" />
                             </div>
                             <Skeleton className="mt-2 h-4 w-3/4" />
