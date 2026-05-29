@@ -17,6 +17,8 @@ export type UseLibraryItemsOptions = {
     includeItemTypes?: BaseItemKind[];
     recursive?: boolean;
     searchTerm?: string;
+    genreIds?: string[];
+    userId?: string;
 };
 
 export interface LibraryItemsResponse {
@@ -38,13 +40,19 @@ export function useLibraryItems(
             options?.sortOrder,
             options?.searchTerm,
             options?.includeItemTypes,
+            options?.genreIds,
+            options?.userId,
         ],
         queryFn: async (): Promise<LibraryItemsResponse> => {
             const api = getApi();
             const itemsApi = getItemsApi(api);
             const searchTerm = options?.searchTerm?.trim();
+            const isPlaylistQuery = options?.includeItemTypes?.includes('Playlist');
+
             const response = await itemsApi.getItems({
-                parentId: libraryId!,
+                ...(isPlaylistQuery
+                    ? { userId: options?.userId ?? libraryId! }
+                    : { parentId: libraryId! }),
                 sortBy: options?.sortBy || ['SortName'],
                 sortOrder: options?.sortOrder ? [options.sortOrder] : ['Ascending'],
                 limit: options?.limit ?? 50,
@@ -53,13 +61,16 @@ export function useLibraryItems(
                 includeItemTypes: options?.includeItemTypes,
                 locationTypes: ['FileSystem'],
                 ...(searchTerm ? { searchTerm } : {}),
+                ...(options?.genreIds?.length ? { genreIds: options.genreIds } : {}),
             });
             return {
                 items: response.data.Items || [],
                 totalCount: response.data.TotalRecordCount || 0,
             };
         },
-        enabled: !!libraryId,
+        enabled: options?.includeItemTypes?.includes('Playlist')
+            ? !!options?.userId
+            : !!libraryId,
         ...getRetryConfig(),
     });
 }

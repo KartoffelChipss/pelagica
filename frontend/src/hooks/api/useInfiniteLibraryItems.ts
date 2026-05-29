@@ -19,14 +19,20 @@ export function useInfiniteLibraryItems(
             options?.sortOrder,
             options?.searchTerm,
             options?.includeItemTypes,
+            options?.genreIds,
+            options?.userId,
         ],
         initialPageParam: 0,
         queryFn: async ({ pageParam }): Promise<LibraryItemsResponse> => {
             const api = getApi();
             const itemsApi = getItemsApi(api);
             const searchTerm = options?.searchTerm?.trim();
+            const isPlaylistQuery = options?.includeItemTypes?.includes('Playlist');
+
             const response = await itemsApi.getItems({
-                parentId: libraryId!,
+                ...(isPlaylistQuery
+                    ? { userId: options?.userId ?? libraryId! }
+                    : { parentId: libraryId! }),
                 sortBy: options?.sortBy || ['SortName'],
                 sortOrder: options?.sortOrder ? [options.sortOrder] : ['Ascending'],
                 limit: SIDEBAR_LIBRARY_PAGE_SIZE,
@@ -35,6 +41,7 @@ export function useInfiniteLibraryItems(
                 includeItemTypes: options?.includeItemTypes,
                 locationTypes: ['FileSystem'],
                 ...(searchTerm ? { searchTerm } : {}),
+                ...(options?.genreIds?.length ? { genreIds: options.genreIds } : {}),
             });
             return {
                 items: response.data.Items || [],
@@ -46,7 +53,9 @@ export function useInfiniteLibraryItems(
             if (loadedCount >= lastPage.totalCount) return undefined;
             return loadedCount;
         },
-        enabled: !!libraryId,
+        enabled: options?.includeItemTypes?.includes('Playlist')
+            ? !!options?.userId
+            : !!libraryId,
         ...getRetryConfig(),
     });
 }

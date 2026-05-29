@@ -7,16 +7,23 @@ import { SidebarInput, useSidebar } from '@/components/ui/sidebar';
 import { Tabs, TabsList, TabsTrigger } from '@/components/ui/tabs';
 import { cn } from '@/lib/utils';
 import { useUserViews } from '@/hooks/api/useUserViews';
+import { useCurrentUser } from '@/hooks/api/useCurrentUser';
 import { useInfiniteLibraryItems } from '@/hooks/api/useInfiniteLibraryItems';
+import { useInfiniteSidebarGenres } from '@/hooks/api/useInfiniteSidebarGenres';
 import {
     buildLibrarySearchParams,
     collectionTypeToCategory,
     findLibraryIdForCategory,
     type BrowserMediaCategory,
 } from '@/utils/sidebarLibraryNavigation';
-import { getIncludeItemTypesForCategory } from '@/utils/sidebarBrowseItems';
+import {
+    getGenresIncludeItemTypes,
+    getItemTypesForBrowseFilter,
+    isGenresBrowseFilter,
+} from '@/utils/sidebarBrowseFilters';
 import { useSidebarBrowser } from '@/context/SidebarBrowserContext';
 import { SidebarBrowserResultsList } from '@/components/SidebarBrowserResultsList';
+import { SidebarBrowseFilterTabs } from '@/components/SidebarBrowseFilterTabs';
 
 const CATEGORY_TABS: {
     value: BrowserMediaCategory;
@@ -38,12 +45,17 @@ type SidebarBrowserMockProps = {
 
 export function SidebarBrowserMock({ className }: SidebarBrowserMockProps) {
     const { state, isMobile } = useSidebar();
-    const { category, setCategory, searchQuery, setSearchQuery } = useSidebarBrowser();
+    const { category, setCategory, searchQuery, setSearchQuery, browseFilter, setBrowseFilter } =
+        useSidebarBrowser();
     const { data: views } = useUserViews();
+    const { data: user } = useCurrentUser();
     const navigate = useNavigate();
     const location = useLocation();
     const [searchParams] = useSearchParams();
     const debouncedQuery = useDeferredValue(searchQuery.trim());
+
+    const activeCategory = toTabCategory(category);
+    const showingGenres = isGenresBrowseFilter(browseFilter);
 
     const libraryIdFromUrl = searchParams.get('library');
     const categoryFromUrl = useMemo((): BrowserMediaCategory => {
@@ -65,27 +77,39 @@ export function SidebarBrowserMock({ className }: SidebarBrowserMockProps) {
         ) {
             return libraryIdFromUrl;
         }
-        return findLibraryIdForCategory(views?.Items, category);
-    }, [libraryIdFromUrl, views?.Items, category]);
+        return findLibraryIdForCategory(views?.Items, activeCategory);
+    }, [libraryIdFromUrl, views?.Items, activeCategory]);
 
-    const includeItemTypes = getIncludeItemTypesForCategory(category);
-    const listQueryKey = `${activeLibraryId}-${category}-${debouncedQuery}`;
+    const includeItemTypes = getItemTypesForBrowseFilter(activeCategory, browseFilter);
+    const isPlaylistMode = browseFilter === 'playlists';
 
-    const {
-        data,
-        isLoading,
-        isFetchingNextPage,
-        hasNextPage,
-        fetchNextPage,
-    } = useInfiniteLibraryItems(activeLibraryId, {
-        sortBy: ['Name'],
-        sortOrder: 'Ascending',
-        includeItemTypes,
+    const listQueryKey = `${activeLibraryId}-${activeCategory}-${browseFilter}-${debouncedQuery}`;
+
+    const libraryQuery = useInfiniteLibraryItems(
+        isPlaylistMode ? null : activeLibraryId,
+        {
+            sortBy: ['Name'],
+            sortOrder: 'Ascending',
+            includeItemTypes: includeItemTypes ?? undefined,
+            searchTerm: debouncedQuery || undefined,
+            userId: isPlaylistMode ? user?.Id : undefined,
+        }
+    );
+
+    const genresQuery = useInfiniteSidebarGenres({
+        parentId: activeLibraryId,
+        includeItemTypes: getGenresIncludeItemTypes(activeCategory),
         searchTerm: debouncedQuery || undefined,
+        enabled: showingGenres && !!activeLibraryId,
     });
 
-    const items = useMemo(() => data?.pages.flatMap((page) => page.items) ?? [], [data?.pages]);
-    const totalCount = data?.pages[0]?.totalCount ?? 0;
+    const activeQuery = showingGenres ? genresQuery : libraryQuery;
+
+    const items = useMemo(
+        () => activeQuery.data?.pages.flatMap((page) => page.items) ?? [],
+        [activeQuery.data?.pages]
+    );
+    const totalCount = activeQuery.data?.pages[0]?.totalCount ?? 0;
 
     const goToLibraryForCategory = (
         nextCategory: BrowserMediaCategory,
@@ -100,21 +124,38 @@ export function SidebarBrowserMock({ className }: SidebarBrowserMockProps) {
         navigate(`/library?${buildLibrarySearchParams(libraryId).toString()}`);
     };
 
-    const activeTab = toTabCategory(category);
-
     const handleCategoryChange = (value: string) => {
         goToLibraryForCategory(value as BrowserMediaCategory, { clearSearch: true });
     };
 
     const handleActiveTabClick = (tabCategory: BrowserMediaCategory) => {
         if (activeTab !== tabCategory) return;
-        // Re-clicking the active tab returns to the library grid on the right.
         goToLibraryForCategory(tabCategory);
     };
+
+    const activeTab = activeCategory;
 
     const handleSelectItem = (itemId: string) => {
         navigate(`/item/${itemId}`);
     };
+
+    const resultsLabel = showingGenres ? 'Genres' : 'Results';
+    const searchPlaceholder = showingGenres ? 'Search genres…' : 'Search library…';
+    const emptyMessage = showingGenres
+        ? debouncedQuery
+            ? 'No genres match your search.'
+            : 'No genres found.'
+        : debouncedQuery
+          ? 'No matches for your search.'
+          : isPlaylistMode
+            ? 'No playlists found.'
+            : 'This library is empty.';
+
+    const listEnabled = showingGenres
+        ? !!activeLibraryId
+        : isPlaylistMode
+          ? !!user?.Id
+          : !!activeLibraryId;
 
     if (state === 'collapsed' && !isMobile) {
         return (
@@ -138,7 +179,7 @@ export function SidebarBrowserMock({ className }: SidebarBrowserMockProps) {
                 <SidebarInput
                     value={searchQuery}
                     onChange={(e) => setSearchQuery(e.target.value)}
-                    placeholder="Search library…"
+                    placeholder={searchPlaceholder}
                     className="bg-background pl-8"
                 />
             </div>
@@ -163,34 +204,38 @@ export function SidebarBrowserMock({ className }: SidebarBrowserMockProps) {
                 </TabsList>
             </Tabs>
 
+            <SidebarBrowseFilterTabs
+                category={activeCategory}
+                value={browseFilter}
+                onValueChange={setBrowseFilter}
+            />
+
             <div className="flex min-h-0 flex-1 flex-col gap-1">
                 <div className="text-muted-foreground flex shrink-0 items-center justify-between px-0.5 text-xs font-medium">
-                    <span>Results</span>
+                    <span>{resultsLabel}</span>
                     <span className="tabular-nums">
-                        {isLoading
+                        {activeQuery.isLoading
                             ? '…'
                             : `${items.length}${totalCount > items.length ? ` / ${totalCount}` : ''}`}
                     </span>
                 </div>
-                {!activeLibraryId ? (
+                {!listEnabled ? (
                     <p className="text-muted-foreground py-6 text-center text-sm">
-                        No library available for this category.
+                        {isPlaylistMode
+                            ? 'Sign in to browse playlists.'
+                            : 'No library available for this category.'}
                     </p>
                 ) : (
                     <SidebarBrowserResultsList
                         key={listQueryKey}
                         items={items}
-                        isLoading={isLoading}
-                        isFetchingNextPage={isFetchingNextPage}
-                        hasNextPage={hasNextPage ?? false}
-                        fetchNextPage={fetchNextPage}
+                        isLoading={activeQuery.isLoading}
+                        isFetchingNextPage={activeQuery.isFetchingNextPage}
+                        hasNextPage={activeQuery.hasNextPage ?? false}
+                        fetchNextPage={activeQuery.fetchNextPage}
                         activeItemPath={location.pathname}
                         onSelectItem={handleSelectItem}
-                        emptyMessage={
-                            debouncedQuery
-                                ? 'No matches for your search.'
-                                : 'This library is empty.'
-                        }
+                        emptyMessage={emptyMessage}
                     />
                 )}
             </div>

@@ -1,26 +1,16 @@
-import type { BaseItemDto, BaseItemKind } from '@jellyfin/sdk/lib/generated-client/models';
-import type { BrowserMediaCategory } from '@/utils/sidebarLibraryNavigation';
+import type { BaseItemDto } from '@jellyfin/sdk/lib/generated-client/models';
 import { getPrimaryImageUrl } from '@/utils/jellyfinUrls';
-
-const LIBRARY_ITEM_TYPES: BaseItemKind[] = ['Series', 'Movie', 'BoxSet', 'MusicAlbum'];
-
-const CATEGORY_ITEM_TYPES: Record<BrowserMediaCategory, BaseItemKind[]> = {
-    music: ['MusicAlbum'],
-    series: ['Series', 'BoxSet'],
-    movie: ['Movie'],
-};
-
-export function getIncludeItemTypesForCategory(
-    category: BrowserMediaCategory | 'all'
-): BaseItemKind[] {
-    if (category === 'all') return LIBRARY_ITEM_TYPES;
-    return CATEGORY_ITEM_TYPES[category];
-}
 
 export function getItemTypeLabel(type?: string | null): string {
     switch (type) {
         case 'MusicAlbum':
             return 'Album';
+        case 'MusicArtist':
+            return 'Artist';
+        case 'Playlist':
+            return 'Playlist';
+        case 'Genre':
+            return 'Genre';
         case 'Series':
             return 'Series';
         case 'Movie':
@@ -36,6 +26,12 @@ export function getItemSubtitle(item: BaseItemDto): string {
     if (item.Type === 'MusicAlbum' && item.AlbumArtist) {
         return item.AlbumArtist;
     }
+    if (item.Type === 'Genre' && item.ChildCount != null) {
+        return `${item.ChildCount} items`;
+    }
+    if (item.Type === 'Playlist' && item.ChildCount != null) {
+        return `${item.ChildCount} tracks`;
+    }
     if (item.PremiereDate) {
         return String(new Date(item.PremiereDate).getFullYear());
     }
@@ -46,7 +42,11 @@ export function getItemSubtitle(item: BaseItemDto): string {
 }
 
 export function getSidebarPosterUrl(item: BaseItemDto): string {
-    const isSquare = item.Type === 'MusicAlbum';
+    const isSquare =
+        item.Type === 'MusicAlbum' ||
+        item.Type === 'MusicArtist' ||
+        item.Type === 'Playlist' ||
+        item.Type === 'Genre';
     return getPrimaryImageUrl(
         item.Id!,
         isSquare ? { height: 112, width: 112 } : { height: 168, width: 112 },

@@ -2,11 +2,17 @@
 
 import * as React from 'react';
 import type { BrowserMediaCategory } from '@/utils/sidebarLibraryNavigation';
+import {
+    getDefaultBrowseFilter,
+    normalizeBrowseFilter,
+    type SidebarBrowseFilter,
+} from '@/utils/sidebarBrowseFilters';
 
 export type SidebarBrowseCategory = BrowserMediaCategory | 'all';
 
 const CATEGORY_STORAGE_KEY = 'pelagica_sidebar_browse_category';
 const SEARCH_STORAGE_KEY = 'pelagica_sidebar_browse_search';
+const FILTER_STORAGE_KEY = 'pelagica_sidebar_browse_filter';
 
 function parseStoredCategory(value: string): SidebarBrowseCategory | null {
     if (value === 'music' || value === 'series' || value === 'movie') return value;
@@ -35,11 +41,25 @@ function readStoredSearchQuery(): string {
     }
 }
 
+function readStoredBrowseFilter(category: BrowserMediaCategory): SidebarBrowseFilter {
+    try {
+        const stored = sessionStorage.getItem(FILTER_STORAGE_KEY);
+        if (stored) {
+            return normalizeBrowseFilter(category, stored);
+        }
+    } catch {
+        // ignore
+    }
+    return getDefaultBrowseFilter(category);
+}
+
 type SidebarBrowserContextValue = {
     category: SidebarBrowseCategory;
     setCategory: (category: SidebarBrowseCategory) => void;
     searchQuery: string;
     setSearchQuery: (query: string) => void;
+    browseFilter: SidebarBrowseFilter;
+    setBrowseFilter: (filter: SidebarBrowseFilter) => void;
 };
 
 const SidebarBrowserContext = React.createContext<SidebarBrowserContextValue | null>(null);
@@ -47,11 +67,17 @@ const SidebarBrowserContext = React.createContext<SidebarBrowserContextValue | n
 export function SidebarBrowserProvider({ children }: { children: React.ReactNode }) {
     const [category, setCategoryState] = React.useState<SidebarBrowseCategory>(readStoredCategory);
     const [searchQuery, setSearchQueryState] = React.useState(readStoredSearchQuery);
+    const [browseFilter, setBrowseFilterState] = React.useState<SidebarBrowseFilter>(() =>
+        readStoredBrowseFilter(readStoredCategory())
+    );
 
     const setCategory = React.useCallback((next: SidebarBrowseCategory) => {
+        const tabCategory = next === 'all' ? 'movie' : next;
         setCategoryState(next);
+        setBrowseFilterState(getDefaultBrowseFilter(tabCategory));
         try {
             sessionStorage.setItem(CATEGORY_STORAGE_KEY, next);
+            sessionStorage.setItem(FILTER_STORAGE_KEY, getDefaultBrowseFilter(tabCategory));
         } catch {
             // ignore
         }
@@ -66,9 +92,25 @@ export function SidebarBrowserProvider({ children }: { children: React.ReactNode
         }
     }, []);
 
+    const setBrowseFilter = React.useCallback((next: SidebarBrowseFilter) => {
+        setBrowseFilterState(next);
+        try {
+            sessionStorage.setItem(FILTER_STORAGE_KEY, next);
+        } catch {
+            // ignore
+        }
+    }, []);
+
     const value = React.useMemo(
-        () => ({ category, setCategory, searchQuery, setSearchQuery }),
-        [category, setCategory, searchQuery, setSearchQuery]
+        () => ({
+            category,
+            setCategory,
+            searchQuery,
+            setSearchQuery,
+            browseFilter,
+            setBrowseFilter,
+        }),
+        [category, setCategory, searchQuery, setSearchQuery, browseFilter, setBrowseFilter]
     );
 
     return (
