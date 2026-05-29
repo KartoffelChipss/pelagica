@@ -18,11 +18,10 @@ export function getSupportedLibraries(views?: BaseItemDto[] | null) {
 
 export function collectionTypeToCategory(
     collectionType?: CollectionType | null
-): BrowserMediaCategory | 'all' {
+): BrowserMediaCategory {
     if (collectionType === 'music') return 'music';
     if (collectionType === 'tvshows' || collectionType === 'boxsets') return 'series';
-    if (collectionType === 'movies') return 'movie';
-    return 'all';
+    return 'movie';
 }
 
 export function findLibraryIdForCategory(

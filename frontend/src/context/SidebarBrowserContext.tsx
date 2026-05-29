@@ -7,18 +7,23 @@ export type SidebarBrowseCategory = BrowserMediaCategory | 'all';
 
 const STORAGE_KEY = 'pelagica_sidebar_browse_category';
 
-function isSidebarBrowseCategory(value: string): value is SidebarBrowseCategory {
-    return value === 'all' || value === 'music' || value === 'series' || value === 'movie';
+function parseStoredCategory(value: string): SidebarBrowseCategory | null {
+    if (value === 'music' || value === 'series' || value === 'movie') return value;
+    if (value === 'all') return 'movie';
+    return null;
 }
 
 function readStoredCategory(): SidebarBrowseCategory {
     try {
         const stored = sessionStorage.getItem(STORAGE_KEY);
-        if (stored && isSidebarBrowseCategory(stored)) return stored;
+        if (stored) {
+            const parsed = parseStoredCategory(stored);
+            if (parsed) return parsed;
+        }
     } catch {
         // ignore
     }
-    return 'all';
+    return 'movie';
 }
 
 type SidebarBrowserContextValue = {

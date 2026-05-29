@@ -4,13 +4,7 @@ import { useDeferredValue, useEffect, useMemo, useState } from 'react';
 import { Film, Music2, Search, Tv } from 'lucide-react';
 import { useLocation, useNavigate, useSearchParams } from 'react-router';
 import { SidebarInput, useSidebar } from '@/components/ui/sidebar';
-import {
-    Select,
-    SelectContent,
-    SelectItem,
-    SelectTrigger,
-    SelectValue,
-} from '@/components/ui/select';
+import { Tabs, TabsList, TabsTrigger } from '@/components/ui/tabs';
 import { cn } from '@/lib/utils';
 import { useUserViews } from '@/hooks/api/useUserViews';
 import { useInfiniteLibraryItems } from '@/hooks/api/useInfiniteLibraryItems';
@@ -24,16 +18,19 @@ import { getIncludeItemTypesForCategory } from '@/utils/sidebarBrowseItems';
 import { useSidebarBrowser } from '@/context/SidebarBrowserContext';
 import { SidebarBrowserResultsList } from '@/components/SidebarBrowserResultsList';
 
-const CATEGORY_OPTIONS: {
-    value: BrowserMediaCategory | 'all';
+const CATEGORY_TABS: {
+    value: BrowserMediaCategory;
     label: string;
     icon: React.ReactNode;
 }[] = [
-    { value: 'all', label: 'All media', icon: <Search className="size-4" /> },
-    { value: 'music', label: 'Music', icon: <Music2 className="size-4" /> },
-    { value: 'series', label: 'Series', icon: <Tv className="size-4" /> },
-    { value: 'movie', label: 'Movies', icon: <Film className="size-4" /> },
+    { value: 'music', label: 'Music', icon: <Music2 className="size-3.5" /> },
+    { value: 'series', label: 'Series', icon: <Tv className="size-3.5" /> },
+    { value: 'movie', label: 'Movies', icon: <Film className="size-3.5" /> },
 ];
+
+function toTabCategory(category: BrowserMediaCategory | 'all'): BrowserMediaCategory {
+    return category === 'all' ? 'movie' : category;
+}
 
 type SidebarBrowserMockProps = {
     className?: string;
@@ -50,8 +47,8 @@ export function SidebarBrowserMock({ className }: SidebarBrowserMockProps) {
     const debouncedQuery = useDeferredValue(query.trim());
 
     const libraryIdFromUrl = searchParams.get('library');
-    const categoryFromUrl = useMemo(() => {
-        if (location.pathname !== '/library' || !libraryIdFromUrl) return 'all' as const;
+    const categoryFromUrl = useMemo((): BrowserMediaCategory => {
+        if (location.pathname !== '/library' || !libraryIdFromUrl) return 'movie';
         const library = views?.Items?.find((item) => item.Id === libraryIdFromUrl);
         return collectionTypeToCategory(library?.CollectionType);
     }, [location.pathname, libraryIdFromUrl, views?.Items]);
@@ -97,11 +94,14 @@ export function SidebarBrowserMock({ className }: SidebarBrowserMockProps) {
         navigate(`/library?${buildLibrarySearchParams(libraryId).toString()}`);
     };
 
-    const handleCategoryChange = (value: BrowserMediaCategory | 'all') => {
-        setCategory(value);
+    const handleCategoryChange = (value: string) => {
+        const nextCategory = value as BrowserMediaCategory;
+        setCategory(nextCategory);
         setQuery('');
-        navigateToLibraryForCategory(value);
+        navigateToLibraryForCategory(nextCategory);
     };
+
+    const activeTab = toTabCategory(category);
 
     const handleSelectItem = (itemId: string) => {
         navigate(`/item/${itemId}`);
@@ -134,21 +134,24 @@ export function SidebarBrowserMock({ className }: SidebarBrowserMockProps) {
                 />
             </div>
 
-            <Select value={category} onValueChange={handleCategoryChange}>
-                <SelectTrigger className="bg-background w-full shrink-0" size="sm">
-                    <SelectValue placeholder="Category" />
-                </SelectTrigger>
-                <SelectContent>
-                    {CATEGORY_OPTIONS.map((option) => (
-                        <SelectItem key={option.value} value={option.value}>
-                            <span className="flex items-center gap-2">
-                                {option.icon}
-                                {option.label}
-                            </span>
-                        </SelectItem>
+            <Tabs
+                value={activeTab}
+                onValueChange={handleCategoryChange}
+                className="shrink-0 gap-0"
+            >
+                <TabsList className="w-full">
+                    {CATEGORY_TABS.map((tab) => (
+                        <TabsTrigger
+                            key={tab.value}
+                            value={tab.value}
+                            className="flex-1 gap-1 px-1 text-xs sm:px-2"
+                        >
+                            {tab.icon}
+                            <span className="truncate">{tab.label}</span>
+                        </TabsTrigger>
                     ))}
-                </SelectContent>
-            </Select>
+                </TabsList>
+            </Tabs>
 
             <div className="flex min-h-0 flex-1 flex-col gap-1">
                 <div className="text-muted-foreground flex shrink-0 items-center justify-between px-0.5 text-xs font-medium">
