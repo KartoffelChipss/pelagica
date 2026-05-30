@@ -191,31 +191,33 @@ export function SidebarBrowser({ className }: SidebarBrowserProps) {
                 />
             </div>
 
-            <Tabs
-                value={activeTab}
-                onValueChange={handleCategoryChange}
-                className="shrink-0 gap-0"
-            >
-                <TabsList className="w-full">
-                    {CATEGORY_TABS.map((tab) => (
-                        <TabsTrigger
-                            key={tab.value}
-                            value={tab.value}
-                            className="flex-1 gap-1 px-1 text-xs sm:px-2"
-                            onClick={() => handleActiveTabClick(tab.value)}
-                        >
-                            {tab.icon}
-                            <span className="truncate">{tab.label}</span>
-                        </TabsTrigger>
-                    ))}
-                </TabsList>
-            </Tabs>
+            <div className="flex shrink-0 flex-col gap-1">
+                <Tabs
+                    value={activeTab}
+                    onValueChange={handleCategoryChange}
+                    className="shrink-0 gap-0"
+                >
+                    <TabsList className="h-10 w-full">
+                        {CATEGORY_TABS.map((tab) => (
+                            <TabsTrigger
+                                key={tab.value}
+                                value={tab.value}
+                                className="flex-1 gap-1.5 px-1 text-xs font-medium sm:px-2 sm:text-sm data-[state=active]:font-semibold"
+                                onClick={() => handleActiveTabClick(tab.value)}
+                            >
+                                {tab.icon}
+                                <span className="truncate">{tab.label}</span>
+                            </TabsTrigger>
+                        ))}
+                    </TabsList>
+                </Tabs>
 
-            <SidebarBrowseFilterTabs
-                category={activeCategory}
-                value={browseFilter}
-                onValueChange={setBrowseFilter}
-            />
+                <SidebarBrowseFilterTabs
+                    category={activeCategory}
+                    value={browseFilter}
+                    onValueChange={setBrowseFilter}
+                />
+            </div>
 
             <div className="flex min-h-0 flex-1 flex-col gap-1">
                 <div className="text-muted-foreground flex shrink-0 items-center justify-between px-0.5 text-xs font-medium">

@@ -2,7 +2,7 @@
 
 import { Disc3, Film, ListMusic, Mic2, Tags, Tv } from 'lucide-react';
 import type { LucideIcon } from 'lucide-react';
-import { Tabs, TabsList, TabsTrigger } from '@/components/ui/tabs';
+import { Tabs, TabsListUnderline, TabsTriggerUnderline } from '@/components/ui/tabs';
 import type { BrowserMediaCategory } from '@/utils/sidebarLibraryNavigation';
 import {
     getBrowseFiltersForCategory,
@@ -49,22 +49,22 @@ export function SidebarBrowseFilterTabs({
             onValueChange={(next) => onValueChange(normalizeBrowseFilter(category, next))}
             className="shrink-0 gap-0"
         >
-            <TabsList className={`grid h-auto w-full ${gridCols} gap-0.5 p-1`}>
+            <TabsListUnderline className={`grid ${gridCols}`}>
                 {filters.map((filter) => {
                     const Icon = getFilterIcon(category, filter.value);
 
                     return (
-                        <TabsTrigger
+                        <TabsTriggerUnderline
                             key={filter.value}
                             value={filter.value}
-                            className="flex min-w-0 flex-1 flex-col gap-0.5 px-0.5 py-1.5 text-[10px] leading-tight sm:flex-row sm:gap-1 sm:px-1 sm:text-[11px] [&_svg]:size-3.5"
+                            className="flex min-w-0 flex-col gap-0.5 sm:flex-row sm:gap-1"
                         >
                             <Icon className="shrink-0" />
                             <span className="truncate">{filter.label}</span>
-                        </TabsTrigger>
+                        </TabsTriggerUnderline>
                     );
                 })}
-            </TabsList>
+            </TabsListUnderline>
         </Tabs>
     );
 }
