@@ -256,6 +256,7 @@ const SectionEditor = ({
                                     { value: 'small', label: t('small') },
                                     { value: 'medium', label: t('medium') },
                                     { value: 'large', label: t('large') },
+                                    { value: 'xlarge', label: t('xlarge') },
                                 ]}
                                 value={(editedSection as any).size || 'medium'}
                                 onChange={(value) =>

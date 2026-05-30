@@ -23,7 +23,7 @@ import { Link } from 'react-router';
 interface MediaBarProps {
     className?: string;
     title?: string;
-    size?: 'small' | 'medium' | 'large';
+    size?: 'small' | 'medium' | 'large' | 'xlarge';
     itemsConfig?: SectionItemsConfig;
     showFavoriteButton?: boolean;
     showWatchlistButton?: boolean;
@@ -63,14 +63,18 @@ const MediaBar = ({
             ? 'min-h-60 sm:min-h-80'
             : size === 'large'
               ? 'min-h-80 sm:min-h-130 lg:min-h-180'
-              : 'min-h-100 sm:min-h-130';
+              : size === 'xlarge'
+                ? 'min-h-[82vh] sm:min-h-[82vh] lg:min-h-[82vh]'
+                : 'min-h-100 sm:min-h-130';
 
     const logoSize =
         size === 'small'
             ? 'max-h-15'
             : size === 'large'
               ? 'max-h-40 sm:max-h-60'
-              : 'max-h-30 sm:max-h-50';
+              : size === 'xlarge'
+                ? 'max-h-48 sm:max-h-72'
+                : 'max-h-30 sm:max-h-50';
 
     return (
         <div className={`${className} relative`}>

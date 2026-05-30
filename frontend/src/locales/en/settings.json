@@ -82,6 +82,7 @@
     "small": "Small",
     "medium": "Medium",
     "large": "Large",
+    "xlarge": "Extra Large",
     "show_favorite_button": "Show Favorite Button",
     "show_watchlist_button": "Show Watchlist Button",
     "title_line": "Title Line",

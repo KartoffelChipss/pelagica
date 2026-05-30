@@ -38,7 +38,7 @@ export interface SectionItemsConfig {
 export interface MediaBarSection extends BaseHomeScreenSection {
     type: 'mediaBar';
     /** Size of the media bar carousel */
-    size?: 'small' | 'medium' | 'large';
+    size?: 'small' | 'medium' | 'large' | 'xlarge';
     /** Configuration for which items to display in the carousel */
     items?: SectionItemsConfig;
     /** Whether to show the favorite button on the media bar items */
