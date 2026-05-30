@@ -7,6 +7,7 @@ import {
     CarouselItem,
     CarouselNext,
     CarouselPrevious,
+    type CarouselApi,
 } from '@/components/ui/carousel';
 import { Skeleton } from '@/components/ui/skeleton';
 import WatchListButton from '@/components/WatchlistButton';
@@ -15,7 +16,7 @@ import { useMediaBarItems } from '@/hooks/api/useMediaBarItems';
 import { getBackdropUrl, getLogoUrl } from '@/utils/jellyfinUrls';
 import { getEndsAt, ticksToReadableTime } from '@/utils/timeConversion';
 import { Play, Star } from 'lucide-react';
-import { useState } from 'react';
+import { useEffect, useState } from 'react';
 import { useTranslation } from 'react-i18next';
 import { Link } from 'react-router';
 
@@ -26,6 +27,7 @@ interface MediaBarProps {
     itemsConfig?: SectionItemsConfig;
     showFavoriteButton?: boolean;
     showWatchlistButton?: boolean;
+    fadeTop?: boolean;
 }
 
 const MediaBar = ({
@@ -35,10 +37,22 @@ const MediaBar = ({
     title,
     showFavoriteButton,
     showWatchlistButton,
+    fadeTop,
 }: MediaBarProps) => {
     const { t } = useTranslation('home');
     const { data: mediabarItems, isLoading, isError } = useMediaBarItems(itemsConfig);
     const [logoErrors, setLogoErrors] = useState<Set<string>>(new Set());
+    const [api, setApi] = useState<CarouselApi>();
+    const [activeIndex, setActiveIndex] = useState(0);
+
+    useEffect(() => {
+        if (!api) return;
+        const onSelect = () => setActiveIndex(api.selectedScrollSnap());
+        api.on('select', onSelect);
+        return () => {
+            api.off('select', onSelect);
+        };
+    }, [api]);
 
     const handleLogoError = (itemId: string) => {
         setLogoErrors((prev) => new Set([...prev, itemId]));
@@ -59,47 +73,64 @@ const MediaBar = ({
               : 'max-h-30 sm:max-h-50';
 
     return (
-        <div className={className}>
-            {title && <h2 className="text-2xl font-bold mb-3">{title}</h2>}
-            <Carousel
-                opts={{
-                    loop: true,
-                }}
+        <div className={`${className} relative`}>
+            {title && <h2 className="text-2xl font-bold mb-3 pl-12 pt-4">{title}</h2>}
+
+            <div
+                className="absolute inset-x-0 top-0 -z-10 pointer-events-none"
+                style={{ height: 'calc(100% + 10rem)' }}
             >
+                {mediabarItems?.map((item, i) => (
+                    <div
+                        key={item.Id}
+                        className="absolute inset-0 bg-cover bg-center transition-opacity duration-700"
+                        style={{
+                            backgroundImage: `url('${getBackdropUrl(item.Id!)}')`,
+                            opacity: i === activeIndex ? 1 : 0,
+                        }}
+                    />
+                ))}
+
+                {/* Side vignette */}
+                <div className="absolute inset-0 bg-linear-to-r from-black/70 via-black/70 to-transparent max-w-5xl" />
+
+                {/* Top fade */}
+                {fadeTop && (
+                    <div className="absolute inset-x-0 top-0 h-1/4 bg-linear-to-b from-background to-transparent" />
+                )}
+
+                {/* Bottom fade */}
+                <div className="absolute inset-x-0 bottom-0 h-2/3 bg-linear-to-b from-transparent to-background" />
+            </div>
+
+            <Carousel setApi={setApi} opts={{ loop: true }}>
                 <CarouselContent>
                     {isLoading && (
-                        <>
-                            <CarouselItem>
-                                <div
-                                    className={`bg-cover bg-center flex flex-col items-start justify-end gap-4 overflow-hidden relative min-h-130 ${outerSize}`}
-                                >
-                                    <div className="absolute inset-0 bg-linear-to-r from-black/70 via-black/70 to-transparent pointer-events-none max-w-5xl" />
-                                    <div className="flex flex-col items-start gap-4 max-w-2xl px-6 sm:px-8 py-6 rounded relative z-10 w-full">
-                                        <Skeleton className={`${logoSize} w-full`} />
-                                        <div className="flex flex-wrap gap-2 w-full">
-                                            <Skeleton className="h-6 w-20" />
-                                            <Skeleton className="h-6 w-24" />
-                                        </div>
-                                        <div className="flex flex-wrap gap-4 text-sm w-full">
-                                            <Skeleton className="h-4 w-12" />
-                                            <Skeleton className="h-4 w-32" />
-                                        </div>
-                                        <Skeleton className="h-10 w-32 rounded-md" />
+                        <CarouselItem>
+                            <div
+                                className={`flex flex-col items-start justify-end gap-4 relative ${outerSize}`}
+                            >
+                                <div className="flex flex-col items-start gap-4 max-w-2xl px-6 sm:px-8 py-6 rounded relative z-10 w-full">
+                                    <Skeleton className={`${logoSize} w-full`} />
+                                    <div className="flex flex-wrap gap-2 w-full">
+                                        <Skeleton className="h-6 w-20" />
+                                        <Skeleton className="h-6 w-24" />
                                     </div>
+                                    <div className="flex flex-wrap gap-4 text-sm w-full">
+                                        <Skeleton className="h-4 w-12" />
+                                        <Skeleton className="h-4 w-32" />
+                                    </div>
+                                    <Skeleton className="h-10 w-32 rounded-md" />
                                 </div>
-                            </CarouselItem>
-                        </>
+                            </div>
+                        </CarouselItem>
                     )}
                     {mediabarItems &&
                         mediabarItems.map((item) => (
                             <CarouselItem key={item.Id}>
                                 <div
-                                    className={`bg-cover bg-center flex flex-col items-start justify-end gap-4 overflow-hidden relative min-h-130 ${outerSize}`}
-                                    style={{
-                                        backgroundImage: `url('${getBackdropUrl(item.Id!)}?maxWidth=1920&quality=75')`,
-                                    }}
+                                    className={`flex flex-col items-start justify-end gap-4 relative ${outerSize}`}
                                 >
-                                    <div className="absolute inset-0 bg-linear-to-r from-black/70 via-black/70 to-transparent pointer-events-none max-w-5xl" />
                                     <div className="flex flex-col items-start gap-4 max-w-2xl px-6 sm:px-12 py-6 relative z-10">
                                         {getLogoUrl(item.Id!) && !logoErrors.has(item.Id!) ? (
                                             <img

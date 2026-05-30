@@ -119,6 +119,7 @@ const HomePage = () => {
                                     title={section.title}
                                     showFavoriteButton={section.showFavoriteButton}
                                     showWatchlistButton={section.showWatchlistButton}
+                                    fadeTop={index != 0}
                                 />
                             );
 
