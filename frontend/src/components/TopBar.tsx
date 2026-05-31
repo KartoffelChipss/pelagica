@@ -1,7 +1,6 @@
 import { useState, useRef, useEffect } from 'react';
 import { Link, useNavigate } from 'react-router';
 import {
-    Bookmark,
     ChartLine,
     Check,
     ChevronDown,
@@ -13,7 +12,6 @@ import {
     House,
     Laptop,
     Library,
-    LinkIcon,
     LogOut,
     Menu,
     Moon,
@@ -585,47 +583,17 @@ const TopBar = ({ overlay = false }: { overlay?: boolean }) => {
 
                 {/* Desktop nav */}
                 <nav className="hidden md:flex items-center gap-0.5">
-                    {/* <DropdownMenu>
-                        <DropdownMenuTrigger asChild>
-                            <Button variant="ghost" size="sm">
-                                <Library className="h-4 w-4" />
-                                {t('library')}
-                                {libraries.length > 0 && (
-                                    <ChevronDown className="h-3 w-3 ml-0.5 opacity-50" />
-                                )}
-                            </Button>
-                        </DropdownMenuTrigger>
-                        <DropdownMenuContent align="start">
-                            {libraries.length > 0 &&
-                                libraries.map((lib) => (
-                                    <DropdownMenuItem key={lib.Id} asChild>
-                                        <Link to={`/library?library=${lib.Id}`}>
-                                            <JellyfinLibraryIcon libraryType={lib.CollectionType} />
-                                            {lib.Name}
-                                        </Link>
-                                    </DropdownMenuItem>
-                                ))}
-                        </DropdownMenuContent>
-                    </DropdownMenu> */}
-
-                    {/* <Button asChild variant="ghost" size="sm">
-                        <Link to="/watchlist">
-                            <Bookmark className="h-4 w-4" />
-                            Watchlist
-                        </Link>
-                    </Button> */}
-
                     <Button asChild variant="ghost" size="sm">
                         <Link to="/">
                             <House className="h-4 w-4" />
-                            Home
+                            {t('home')}
                         </Link>
                     </Button>
 
                     <Button asChild variant="ghost" size="sm">
                         <Link to="/library">
                             <Library className="h-4 w-4" />
-                            Library
+                            {t('library')}
                         </Link>
                     </Button>
 
@@ -636,34 +604,7 @@ const TopBar = ({ overlay = false }: { overlay?: boolean }) => {
                         </Link>
                     </Button>
 
-                    {/* <DropdownMenu>
-                        <DropdownMenuTrigger asChild>
-                            <Button variant="ghost" size="sm">
-                                <LinkIcon className="h-4 w-4" />
-                                Links
-                                {validLinks.length > 0 && (
-                                    <ChevronDown className="h-3 w-3 ml-0.5 opacity-50" />
-                                )}
-                            </Button>
-                        </DropdownMenuTrigger>
-                        <DropdownMenuContent align="start">
-                            {validLinks.length > 0 &&
-                                validLinks.map((link) => (
-                                    <DropdownMenuItem key={link.url} asChild>
-                                        <Link
-                                            to={link.url}
-                                            target="_blank"
-                                            rel="noopener noreferrer"
-                                        >
-                                            <LinkIcon className="h-4 w-4" />
-                                            {link.text}
-                                        </Link>
-                                    </DropdownMenuItem>
-                                ))}
-                        </DropdownMenuContent>
-                    </DropdownMenu> */}
-
-                    {/* {config?.streamystatsUrl && config?.showStreamystatsButton && (
+                    {config?.streamystatsUrl && config?.showStreamystatsButton && (
                         <Button
                             variant="ghost"
                             size="sm"
@@ -672,7 +613,7 @@ const TopBar = ({ overlay = false }: { overlay?: boolean }) => {
                             <ChartLine className="h-4 w-4" />
                             Streamystats
                         </Button>
-                    )} */}
+                    )}
 
                     {validLinks.map((link, i) => (
                         <Button
