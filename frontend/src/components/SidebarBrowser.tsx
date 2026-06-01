@@ -24,7 +24,8 @@ import {
     isGenresBrowseFilter,
 } from '@/utils/sidebarBrowseFilters';
 import type { BaseItemDto } from '@jellyfin/sdk/lib/generated-client/models';
-import { useSidebarBrowser, readExpandedBeforeBrowse } from '@/context/SidebarBrowserContext';
+import { useSidebarBrowser } from '@/context/SidebarBrowserContext';
+import { readExpandedBeforeBrowse } from '@/utils/sidebarBrowserStorage';
 import { SidebarBrowserResultsList } from '@/components/SidebarBrowserResultsList';
 import { SidebarBrowseFilterTabs } from '@/components/SidebarBrowseFilterTabs';
 import { useTranslation } from 'react-i18next';

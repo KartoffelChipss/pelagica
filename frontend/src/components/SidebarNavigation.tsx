@@ -1,6 +1,6 @@
 'use client';
 
-import { Home, LayoutGrid, Library, Search } from 'lucide-react';
+import { Home, LayoutGrid, Search } from 'lucide-react';
 import { Link, useLocation, useSearchParams } from 'react-router';
 import { useTranslation } from 'react-i18next';
 import JellyfinLibraryIcon from '@/components/JellyfinLibraryIcon';
@@ -14,7 +14,8 @@ import {
     useSidebar,
 } from '@/components/ui/sidebar';
 import { useUserViews } from '@/hooks/api/useUserViews';
-import { useSidebarBrowser, saveExpandedBeforeBrowse } from '@/context/SidebarBrowserContext';
+import { useSidebarBrowser } from '@/context/SidebarBrowserContext';
+import { saveExpandedBeforeBrowse } from '@/utils/sidebarBrowserStorage';
 import {
     buildLibrarySearchParams,
     getSupportedLibraries,
@@ -28,10 +29,6 @@ export function SidebarNavigation() {
     const { isMobile, open, setOpen, setOpenMobile } = useSidebar();
     const { data: views } = useUserViews();
     const libraries = getSupportedLibraries(views?.Items);
-    const defaultLibraryId = libraries[0]?.Id;
-    const libraryHref = defaultLibraryId
-        ? `/library?${buildLibrarySearchParams(defaultLibraryId).toString()}`
-        : '/library';
     const activeLibraryId = searchParams.get('library');
 
     return (

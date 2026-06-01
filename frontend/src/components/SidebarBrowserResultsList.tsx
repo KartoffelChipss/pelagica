@@ -32,6 +32,8 @@ export function SidebarBrowserResultsList({
 }: SidebarBrowserResultsListProps) {
     const scrollRef = useRef<HTMLDivElement>(null);
 
+    // TanStack Virtual returns unstable function refs; safe to use here.
+    // eslint-disable-next-line react-hooks/incompatible-library
     const virtualizer = useVirtualizer({
         count: items.length,
         getScrollElement: () => scrollRef.current,

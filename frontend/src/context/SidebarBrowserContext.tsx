@@ -14,23 +14,6 @@ const CATEGORY_STORAGE_KEY = 'pelagica_sidebar_browse_category';
 const SEARCH_STORAGE_KEY = 'pelagica_sidebar_browse_search';
 const FILTER_STORAGE_KEY = 'pelagica_sidebar_browse_filter';
 const BROWSE_MODE_STORAGE_KEY = 'pelagica_sidebar_browse_mode';
-const EXPANDED_BEFORE_BROWSE_KEY = 'pelagica_sidebar_expanded_before_browse';
-
-export function readExpandedBeforeBrowse(): boolean {
-    try {
-        return sessionStorage.getItem(EXPANDED_BEFORE_BROWSE_KEY) === 'true';
-    } catch {
-        return false;
-    }
-}
-
-export function saveExpandedBeforeBrowse(expanded: boolean) {
-    try {
-        sessionStorage.setItem(EXPANDED_BEFORE_BROWSE_KEY, String(expanded));
-    } catch {
-        // ignore
-    }
-}
 
 function readStoredBrowseMode(): boolean {
     try {
@@ -171,6 +154,7 @@ export function SidebarBrowserProvider({ children }: { children: React.ReactNode
     );
 }
 
+// eslint-disable-next-line react-refresh/only-export-components
 export function useSidebarBrowser() {
     const context = React.useContext(SidebarBrowserContext);
     if (!context) {

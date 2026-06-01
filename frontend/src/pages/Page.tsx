@@ -75,16 +75,21 @@ const PageContent = ({
     const [showLoader, setShowLoader] = useState(true);
     const [sidebarOpen, setSidebarOpen] = useState<boolean | null>(() => getSidebarState());
     const [browseTransitionActive, setBrowseTransitionActive] = useState(browseMode);
+    const [prevBrowseMode, setPrevBrowseMode] = useState(browseMode);
+
+    if (browseMode !== prevBrowseMode) {
+        setPrevBrowseMode(browseMode);
+        if (browseMode) {
+            setBrowseTransitionActive(true);
+        }
+    }
 
     useEffect(() => {
         if (title) document.title = title;
     }, [title]);
 
     useEffect(() => {
-        if (browseMode) {
-            setBrowseTransitionActive(true);
-            return;
-        }
+        if (browseMode) return;
 
         const timeout = window.setTimeout(() => setBrowseTransitionActive(false), 500);
         return () => window.clearTimeout(timeout);
