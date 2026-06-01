@@ -16,10 +16,7 @@ type SidebarBrowseFilterTabsProps = {
     onValueChange: (filter: SidebarBrowseFilter) => void;
 };
 
-function getFilterIcon(
-    category: BrowserMediaCategory,
-    filter: SidebarBrowseFilter
-): LucideIcon {
+function getFilterIcon(category: BrowserMediaCategory, filter: SidebarBrowseFilter): LucideIcon {
     switch (filter) {
         case 'albums':
             return Disc3;

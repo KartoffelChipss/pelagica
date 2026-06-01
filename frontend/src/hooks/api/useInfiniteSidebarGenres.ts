@@ -21,13 +21,7 @@ export function useInfiniteSidebarGenres({
     enabled = true,
 }: UseInfiniteSidebarGenresOptions) {
     return useInfiniteQuery({
-        queryKey: [
-            'sidebarGenres',
-            'infinite',
-            parentId,
-            includeItemTypes,
-            searchTerm,
-        ],
+        queryKey: ['sidebarGenres', 'infinite', parentId, includeItemTypes, searchTerm],
         initialPageParam: 0,
         queryFn: async ({ pageParam }): Promise<LibraryItemsResponse> => {
             const api = getApi();

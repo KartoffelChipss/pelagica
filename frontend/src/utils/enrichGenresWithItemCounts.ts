@@ -8,7 +8,10 @@ export type SidebarGenreItem = BaseItemDto & {
     SidebarCoverImageTag?: string;
 };
 
-const enrichmentCache = new Map<string, { count: number; cover?: { itemId: string; imageTag?: string } }>();
+const enrichmentCache = new Map<
+    string,
+    { count: number; cover?: { itemId: string; imageTag?: string } }
+>();
 
 function cacheKey(genreId: string, includeItemTypes: BaseItemKind[], parentId?: string | null) {
     return `${genreId}:${parentId ?? 'global'}:${includeItemTypes.slice().sort().join(',')}`;

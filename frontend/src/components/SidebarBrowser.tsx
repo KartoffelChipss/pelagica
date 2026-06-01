@@ -51,8 +51,15 @@ type SidebarBrowserProps = {
 export function SidebarBrowser({ className }: SidebarBrowserProps) {
     const { t } = useTranslation('sidebar');
     const { state, isMobile, setOpen, setOpenMobile } = useSidebar();
-    const { category, setCategory, searchQuery, setSearchQuery, browseFilter, setBrowseFilter, setBrowseMode } =
-        useSidebarBrowser();
+    const {
+        category,
+        setCategory,
+        searchQuery,
+        setSearchQuery,
+        browseFilter,
+        setBrowseFilter,
+        setBrowseMode,
+    } = useSidebarBrowser();
     const { data: views } = useUserViews();
     const { data: user } = useCurrentUser();
     const navigate = useNavigate();
@@ -77,10 +84,7 @@ export function SidebarBrowser({ className }: SidebarBrowserProps) {
     }, [categoryFromUrl, location.pathname, setCategory]);
 
     const activeLibraryId = useMemo(() => {
-        if (
-            libraryIdFromUrl &&
-            views?.Items?.some((library) => library.Id === libraryIdFromUrl)
-        ) {
+        if (libraryIdFromUrl && views?.Items?.some((library) => library.Id === libraryIdFromUrl)) {
             return libraryIdFromUrl;
         }
         return findLibraryIdForCategory(views?.Items, activeCategory);
@@ -91,16 +95,13 @@ export function SidebarBrowser({ className }: SidebarBrowserProps) {
 
     const listQueryKey = `${activeLibraryId}-${activeCategory}-${browseFilter}-${debouncedQuery}`;
 
-    const libraryQuery = useInfiniteLibraryItems(
-        isPlaylistMode ? null : activeLibraryId,
-        {
-            sortBy: ['Name'],
-            sortOrder: 'Ascending',
-            includeItemTypes: includeItemTypes ?? undefined,
-            searchTerm: debouncedQuery || undefined,
-            userId: isPlaylistMode ? user?.Id : undefined,
-        }
-    );
+    const libraryQuery = useInfiniteLibraryItems(isPlaylistMode ? null : activeLibraryId, {
+        sortBy: ['Name'],
+        sortOrder: 'Ascending',
+        includeItemTypes: includeItemTypes ?? undefined,
+        searchTerm: debouncedQuery || undefined,
+        userId: isPlaylistMode ? user?.Id : undefined,
+    });
 
     const genresQuery = useInfiniteSidebarGenres({
         parentId: activeLibraryId,

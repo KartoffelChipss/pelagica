@@ -121,9 +121,7 @@ const AppSidebar = () => {
                 </SidebarMenu>
             </SidebarHeader>
             <SidebarContent
-                className={
-                    browseMode ? 'gap-0 overflow-hidden pb-1' : 'gap-2 overflow-auto pb-1'
-                }
+                className={browseMode ? 'gap-0 overflow-hidden pb-1' : 'gap-2 overflow-auto pb-1'}
             >
                 {browseMode ? (
                     <SidebarBrowser className="mx-1 min-h-0 flex-1 border-0 bg-transparent p-2" />

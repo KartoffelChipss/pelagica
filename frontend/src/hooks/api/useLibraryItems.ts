@@ -68,9 +68,7 @@ export function useLibraryItems(
                 totalCount: response.data.TotalRecordCount || 0,
             };
         },
-        enabled: options?.includeItemTypes?.includes('Playlist')
-            ? !!options?.userId
-            : !!libraryId,
+        enabled: options?.includeItemTypes?.includes('Playlist') ? !!options?.userId : !!libraryId,
         ...getRetryConfig(),
     });
 }

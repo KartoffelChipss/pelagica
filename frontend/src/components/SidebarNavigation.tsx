@@ -16,10 +16,7 @@ import {
 import { useUserViews } from '@/hooks/api/useUserViews';
 import { useSidebarBrowser } from '@/context/SidebarBrowserContext';
 import { saveExpandedBeforeBrowse } from '@/utils/sidebarBrowserStorage';
-import {
-    buildLibrarySearchParams,
-    getSupportedLibraries,
-} from '@/utils/sidebarLibraryNavigation';
+import { buildLibrarySearchParams, getSupportedLibraries } from '@/utils/sidebarLibraryNavigation';
 
 export function SidebarNavigation() {
     const { t } = useTranslation('sidebar');
@@ -81,7 +78,7 @@ export function SidebarNavigation() {
                     </SidebarMenu>
                 </SidebarGroupContent>
             </SidebarGroup>
-            <hr className='mx-2'></hr>
+            <hr className="mx-2"></hr>
 
             {libraries.length > 0 && (
                 <SidebarGroup>

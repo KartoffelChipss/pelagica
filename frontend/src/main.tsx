@@ -38,16 +38,16 @@ createRoot(document.getElementById('root')!).render(
                             <PelagicaThemeLoader />
                             <Toaster />
                             <Routes>
-                            <Route path="/" element={<HomePage />} />
-                            <Route path="/library" element={<LibraryPage />} />
-                            <Route path="/item/:itemId" element={<ItemPage />} />
-                            <Route path="/person/:itemId" element={<PersonPage />} />
-                            <Route path="/login" element={<LoginPage />} />
-                            <Route path="/play/:itemId" element={<PlayerPage />} />
-                            <Route path="/settings" element={<SettingsPage />} />
-                            <Route path="/browse-themes" element={<ThemeBrowserPage />} />
-                            <Route path="/search" element={<SearchPage />} />
-                            <Route path="*" element={<NotFoundPage />} />
+                                <Route path="/" element={<HomePage />} />
+                                <Route path="/library" element={<LibraryPage />} />
+                                <Route path="/item/:itemId" element={<ItemPage />} />
+                                <Route path="/person/:itemId" element={<PersonPage />} />
+                                <Route path="/login" element={<LoginPage />} />
+                                <Route path="/play/:itemId" element={<PlayerPage />} />
+                                <Route path="/settings" element={<SettingsPage />} />
+                                <Route path="/browse-themes" element={<ThemeBrowserPage />} />
+                                <Route path="/search" element={<SearchPage />} />
+                                <Route path="*" element={<NotFoundPage />} />
                             </Routes>
                         </SidebarBrowserProvider>
                     </BrowserRouter>

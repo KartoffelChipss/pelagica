@@ -73,9 +73,7 @@ export function SidebarBrowserResultsList({
     }
 
     if (items.length === 0) {
-        return (
-            <p className="text-muted-foreground py-6 text-center text-sm">{emptyMessage}</p>
-        );
+        return <p className="text-muted-foreground py-6 text-center text-sm">{emptyMessage}</p>;
     }
 
     return (
@@ -83,10 +81,7 @@ export function SidebarBrowserResultsList({
             ref={scrollRef}
             className="min-h-0 flex-1 overflow-y-auto pr-0.5 [&::-webkit-scrollbar]:w-1.5 [&::-webkit-scrollbar-thumb]:rounded-full [&::-webkit-scrollbar-thumb]:bg-sidebar-border"
         >
-            <div
-                className="relative w-full"
-                style={{ height: `${virtualizer.getTotalSize()}px` }}
-            >
+            <div className="relative w-full" style={{ height: `${virtualizer.getTotalSize()}px` }}>
                 {virtualRows.map((virtualRow) => {
                     const item = items[virtualRow.index];
                     if (!item?.Id) return null;
@@ -109,9 +104,7 @@ export function SidebarBrowserResultsList({
                 })}
             </div>
             {isFetchingNextPage && (
-                <div className="text-muted-foreground py-2 text-center text-xs">
-                    Loading more…
-                </div>
+                <div className="text-muted-foreground py-2 text-center text-xs">Loading more…</div>
             )}
         </div>
     );

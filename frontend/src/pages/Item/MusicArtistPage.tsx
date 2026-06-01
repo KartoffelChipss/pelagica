@@ -4,11 +4,7 @@ import { Mic2, Play } from 'lucide-react';
 import { Link } from 'react-router';
 import { useTranslation } from 'react-i18next';
 import type { AppConfig } from '@/hooks/api/useConfig';
-import {
-    useArtistAlbumCount,
-    useArtistItems,
-    useArtistTracks,
-} from '@/hooks/api/useArtistItems';
+import { useArtistAlbumCount, useArtistItems, useArtistTracks } from '@/hooks/api/useArtistItems';
 import { useImagePalette } from '@/hooks/useImagePalette';
 import { useMusicPlayback } from '@/hooks/useMusicPlayback';
 import { getPrimaryImageUrl } from '@/utils/jellyfinUrls';

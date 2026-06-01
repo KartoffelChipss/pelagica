@@ -4,11 +4,7 @@ import { useState } from 'react';
 import { ImageOff } from 'lucide-react';
 import type { BaseItemDto } from '@jellyfin/sdk/lib/generated-client/models';
 import { cn } from '@/lib/utils';
-import {
-    getItemSubtitle,
-    getItemTypeLabel,
-    getSidebarPosterUrl,
-} from '@/utils/sidebarBrowseItems';
+import { getItemSubtitle, getItemTypeLabel, getSidebarPosterUrl } from '@/utils/sidebarBrowseItems';
 
 type SidebarBrowserListItemProps = {
     item: BaseItemDto;
@@ -53,9 +49,7 @@ export function SidebarBrowserListItem({ item, isActive, onSelect }: SidebarBrow
                     )}
                 </div>
                 <div className="min-w-0 flex-1">
-                    <p className="truncate font-medium leading-tight">
-                        {item.Name ?? 'Untitled'}
-                    </p>
+                    <p className="truncate font-medium leading-tight">{item.Name ?? 'Untitled'}</p>
                     <p className="text-muted-foreground truncate text-xs">
                         {getItemTypeLabel(item.Type)} · {getItemSubtitle(item)}
                     </p>

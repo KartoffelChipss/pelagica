@@ -266,7 +266,9 @@ const ItemsListPage = ({
                 <div className={`w-full gap-4 mt-2 grid ${gridCols}`}>
                     {Array.from({ length: pageSize }).map((_, i) => (
                         <div key={i} className="p-0 m-0">
-                            <div className={`relative w-full ${itemAspectClass} overflow-hidden rounded-md`}>
+                            <div
+                                className={`relative w-full ${itemAspectClass} overflow-hidden rounded-md`}
+                            >
                                 <Skeleton className="w-full h-full" />
                             </div>
                             <Skeleton className="mt-2 h-4 w-3/4" />

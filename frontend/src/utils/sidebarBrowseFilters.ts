@@ -96,9 +96,7 @@ export function getGenresIncludeItemTypes(category: BrowserMediaCategory): BaseI
 /** Query param on genre item URLs — scopes the detail grid to the active media tab. */
 export const GENRE_MEDIA_PARAM = 'media';
 
-export function parseGenreMediaCategory(
-    value: string | null
-): BrowserMediaCategory | null {
+export function parseGenreMediaCategory(value: string | null): BrowserMediaCategory | null {
     if (value === 'music' || value === 'series' || value === 'movie') return value;
     return null;
 }

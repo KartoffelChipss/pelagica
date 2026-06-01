@@ -53,9 +53,7 @@ export function useInfiniteLibraryItems(
             if (loadedCount >= lastPage.totalCount) return undefined;
             return loadedCount;
         },
-        enabled: options?.includeItemTypes?.includes('Playlist')
-            ? !!options?.userId
-            : !!libraryId,
+        enabled: options?.includeItemTypes?.includes('Playlist') ? !!options?.userId : !!libraryId,
         ...getRetryConfig(),
     });
 }
