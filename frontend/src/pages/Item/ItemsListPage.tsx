@@ -63,17 +63,18 @@ export type UseItemsHook = (id: string, params: ItemsQueryParams) => ItemsQueryR
 
 interface ItemDisplayProps {
     item: BaseItemDto;
+    aspectClass: string;
     /** Optional overlay, e.g. a WatchedStateBadge */
     overlay?: ReactNode;
 }
 
-const ItemDisplay = ({ item, overlay }: ItemDisplayProps) => {
+const ItemDisplay = ({ item, aspectClass, overlay }: ItemDisplayProps) => {
     const { t } = useTranslation('item');
     const [posterError, setPosterError] = useState(false);
 
     return (
         <Link to={`/item/${item.Id}`} key={item.Id} className="p-0 m-0">
-            <div className="relative w-full aspect-2/3 overflow-hidden rounded-md group">
+            <div className={`relative w-full ${aspectClass} overflow-hidden rounded-md group`}>
                 {!posterError ? (
                     <>
                         <img
@@ -114,13 +115,24 @@ export interface ItemsListPageProps {
     item: BaseItemDto;
     /** The hook used to fetch children for this item */
     useItems: UseItemsHook;
+    /** Poster aspect ratio class for grid items */
+    itemAspectClass?: string;
+    /** Override the list heading (defaults to item name) */
+    listTitle?: string;
     /** Optional render prop to overlay something on each poster (e.g. WatchedStateBadge) */
     renderItemOverlay?: (item: BaseItemDto) => ReactNode;
 }
 
-const ItemsListPage = ({ item, useItems, renderItemOverlay }: ItemsListPageProps) => {
+const ItemsListPage = ({
+    item,
+    useItems,
+    itemAspectClass = 'aspect-2/3',
+    listTitle,
+    renderItemOverlay,
+}: ItemsListPageProps) => {
     const { t } = useTranslation(['item', 'library']);
     const pageRef = useRef<HTMLDivElement>(null);
+    const scrollAfterLoadRef = useRef(false);
     const [searchParams, setSearchParams] = useSearchParams();
     const pageParam = parseInt(searchParams.get('page') ?? '0', 10);
     const sortByParam = (searchParams.get('sortBy') as ItemSortBy) || DEFAULT_SORT_BY;
@@ -137,11 +149,11 @@ const ItemsListPage = ({ item, useItems, renderItemOverlay }: ItemsListPageProps
         nextSortBy = sortBy,
         nextSortOrder = sortOrder
     ) => {
-        setSearchParams({
-            page: String(nextPage),
-            sortBy: nextSortBy,
-            sortOrder: nextSortOrder,
-        });
+        const next = new URLSearchParams(searchParams);
+        next.set('page', String(nextPage));
+        next.set('sortBy', nextSortBy);
+        next.set('sortOrder', nextSortOrder);
+        setSearchParams(next);
     };
 
     useEffect(() => {
@@ -169,26 +181,31 @@ const ItemsListPage = ({ item, useItems, renderItemOverlay }: ItemsListPageProps
     });
 
     useEffect(() => {
+        if (!scrollAfterLoadRef.current) return;
         if (pageRef.current && !loadingItems && items?.items?.length) {
             pageRef.current.scrollIntoView({ block: 'start' });
+            scrollAfterLoadRef.current = false;
         }
     }, [items?.items, loadingItems]);
 
     const handlePageChange = (newPage: number) => {
         setPage(newPage);
         updateSearchParams(newPage);
+        scrollAfterLoadRef.current = true;
     };
 
     const handleSortChange = (newSortBy: ItemSortBy) => {
         setSortBy(newSortBy);
         setPage(0);
         updateSearchParams(0, newSortBy, sortOrder);
+        scrollAfterLoadRef.current = true;
     };
 
     const handleSortOrderChange = (newSortOrder: SortOrder) => {
         setSortOrder(newSortOrder);
         setPage(0);
         updateSearchParams(0, sortBy, newSortOrder);
+        scrollAfterLoadRef.current = true;
     };
 
     const totalPages = items?.totalCount ? Math.ceil(items.totalCount / pageSize) : 0;
@@ -198,7 +215,7 @@ const ItemsListPage = ({ item, useItems, renderItemOverlay }: ItemsListPageProps
     return (
         <div ref={pageRef}>
             <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-3 mb-4">
-                <h1 className="text-3xl font-bold">{item.Name}</h1>
+                <h2 className="text-2xl font-bold">{listTitle ?? item.Name}</h2>
                 <ButtonGroup>
                     <Select onValueChange={handleSortChange} value={sortBy}>
                         <SelectTrigger size="sm">
@@ -249,7 +266,9 @@ const ItemsListPage = ({ item, useItems, renderItemOverlay }: ItemsListPageProps
                 <div className={`w-full gap-4 mt-2 grid ${gridCols}`}>
                     {Array.from({ length: pageSize }).map((_, i) => (
                         <div key={i} className="p-0 m-0">
-                            <div className="relative w-full aspect-2/3 overflow-hidden rounded-md">
+                            <div
+                                className={`relative w-full ${itemAspectClass} overflow-hidden rounded-md`}
+                            >
                                 <Skeleton className="w-full h-full" />
                             </div>
                             <Skeleton className="mt-2 h-4 w-3/4" />
@@ -272,6 +291,7 @@ const ItemsListPage = ({ item, useItems, renderItemOverlay }: ItemsListPageProps
                             <ItemDisplay
                                 key={child.Id}
                                 item={child}
+                                aspectClass={itemAspectClass}
                                 overlay={renderItemOverlay?.(child)}
                             />
                         ))}

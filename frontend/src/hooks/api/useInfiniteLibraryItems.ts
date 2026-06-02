@@ -1,41 +1,20 @@
 import { getApi } from '@/api/getApi';
-import { useQuery } from '@tanstack/react-query';
+import { useInfiniteQuery } from '@tanstack/react-query';
 import { getItemsApi } from '@jellyfin/sdk/lib/utils/api/items-api';
-import type {
-    BaseItemDto,
-    BaseItemKind,
-    ItemSortBy,
-    SortOrder,
-} from '@jellyfin/sdk/lib/generated-client/models';
+import type { UseLibraryItemsOptions, LibraryItemsResponse } from '@/hooks/api/useLibraryItems';
 import { getRetryConfig } from '@/utils/authErrorHandler';
 
-export type UseLibraryItemsOptions = {
-    limit?: number;
-    startIndex?: number;
-    sortBy?: ItemSortBy[];
-    sortOrder?: SortOrder;
-    includeItemTypes?: BaseItemKind[];
-    recursive?: boolean;
-    searchTerm?: string;
-    genreIds?: string[];
-    userId?: string;
-};
+export const SIDEBAR_LIBRARY_PAGE_SIZE = 50;
 
-export interface LibraryItemsResponse {
-    items: Array<BaseItemDto>;
-    totalCount: number;
-}
-
-export function useLibraryItems(
+export function useInfiniteLibraryItems(
     libraryId?: string | null,
-    options?: UseLibraryItemsOptions
-): ReturnType<typeof useQuery<LibraryItemsResponse>> {
-    return useQuery<LibraryItemsResponse>({
+    options?: Omit<UseLibraryItemsOptions, 'startIndex' | 'limit'>
+) {
+    return useInfiniteQuery({
         queryKey: [
             'libraryItems',
+            'infinite',
             libraryId,
-            options?.startIndex,
-            options?.limit,
             options?.sortBy,
             options?.sortOrder,
             options?.searchTerm,
@@ -43,7 +22,8 @@ export function useLibraryItems(
             options?.genreIds,
             options?.userId,
         ],
-        queryFn: async (): Promise<LibraryItemsResponse> => {
+        initialPageParam: 0,
+        queryFn: async ({ pageParam }): Promise<LibraryItemsResponse> => {
             const api = getApi();
             const itemsApi = getItemsApi(api);
             const searchTerm = options?.searchTerm?.trim();
@@ -55,8 +35,8 @@ export function useLibraryItems(
                     : { parentId: libraryId! }),
                 sortBy: options?.sortBy || ['SortName'],
                 sortOrder: options?.sortOrder ? [options.sortOrder] : ['Ascending'],
-                limit: options?.limit ?? 50,
-                startIndex: options?.startIndex ?? 0,
+                limit: SIDEBAR_LIBRARY_PAGE_SIZE,
+                startIndex: pageParam,
                 recursive: options?.recursive ?? true,
                 includeItemTypes: options?.includeItemTypes,
                 locationTypes: ['FileSystem'],
@@ -67,6 +47,11 @@ export function useLibraryItems(
                 items: response.data.Items || [],
                 totalCount: response.data.TotalRecordCount || 0,
             };
+        },
+        getNextPageParam: (lastPage, allPages) => {
+            const loadedCount = allPages.reduce((sum, page) => sum + page.items.length, 0);
+            if (loadedCount >= lastPage.totalCount) return undefined;
+            return loadedCount;
         },
         enabled: options?.includeItemTypes?.includes('Playlist') ? !!options?.userId : !!libraryId,
         ...getRetryConfig(),

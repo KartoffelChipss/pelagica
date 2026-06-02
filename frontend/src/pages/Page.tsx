@@ -1,7 +1,14 @@
 import AppSidebar from '@/components/AppSidebar';
 import { Button } from '@/components/ui/button';
-import { SidebarProvider, SidebarTrigger } from '@/components/ui/sidebar';
-import { type PropsWithChildren, useEffect, useState } from 'react';
+import {
+    SIDEBAR_WIDTH,
+    SIDEBAR_WIDTH_BROWSE,
+    SIDEBAR_WIDTH_BROWSE_MOBILE,
+    SIDEBAR_WIDTH_MOBILE,
+    SidebarProvider,
+    SidebarTrigger,
+} from '@/components/ui/sidebar';
+import { type CSSProperties, type PropsWithChildren, useEffect, useState } from 'react';
 import { useNavigate } from 'react-router';
 import { useCurrentUser } from '@/hooks/api/useCurrentUser';
 import { Avatar, AvatarFallback, AvatarImage } from '@/components/ui/avatar';
@@ -16,6 +23,8 @@ import { logout } from '@/api/logout';
 import { getApi } from '@/api/getApi';
 import FullPageError from '@/components/FullPageError';
 import { getSidebarState, saveSidebarState } from '../utils/localstorageSidebar';
+import { useSidebarBrowser } from '@/context/SidebarBrowserContext';
+import { useIsMobile } from '@/hooks/use-mobile';
 
 interface PageProps {
     title?: string;
@@ -57,16 +66,34 @@ const PageContent = ({
     const navigate = useNavigate();
     const { isLoading, isError, data: user } = useCurrentUser();
     const { background } = usePageBackground();
+    const { browseMode } = useSidebarBrowser();
+    const isMobile = useIsMobile();
     const serverUrl = getServerUrl();
     const serverDomain = serverUrl ? serverUrlToDomain(serverUrl) : null;
     const { theme } = useTheme();
     const effectiveTheme = getEffectiveTheme(theme);
     const [showLoader, setShowLoader] = useState(true);
-    const [sidebarOpen, setSidebarOpen] = useState(getSidebarState);
+    const [sidebarOpen, setSidebarOpen] = useState<boolean | null>(() => getSidebarState());
+    const [browseTransitionActive, setBrowseTransitionActive] = useState(browseMode);
+    const [prevBrowseMode, setPrevBrowseMode] = useState(browseMode);
+
+    if (browseMode !== prevBrowseMode) {
+        setPrevBrowseMode(browseMode);
+        if (browseMode) {
+            setBrowseTransitionActive(true);
+        }
+    }
 
     useEffect(() => {
         if (title) document.title = title;
     }, [title]);
+
+    useEffect(() => {
+        if (browseMode) return;
+
+        const timeout = window.setTimeout(() => setBrowseTransitionActive(false), 500);
+        return () => window.clearTimeout(timeout);
+    }, [browseMode]);
 
     useEffect(() => {
         if (requiresAuth && !isLoggedIn()) {
@@ -130,9 +157,28 @@ const PageContent = ({
         );
     }
 
+    const sidebarWidth = browseMode
+        ? isMobile
+            ? SIDEBAR_WIDTH_BROWSE_MOBILE
+            : SIDEBAR_WIDTH_BROWSE
+        : isMobile
+          ? SIDEBAR_WIDTH_MOBILE
+          : SIDEBAR_WIDTH;
+
+    const useBrowseTransition = browseMode || browseTransitionActive;
+
     return (
         <SidebarProvider
             className={`relative min-h-dvh h-dvh ${containerClassName ?? ''}`}
+            style={
+                {
+                    '--sidebar-width': sidebarWidth,
+                    '--sidebar-width-duration': useBrowseTransition ? '480ms' : '250ms',
+                    '--sidebar-width-ease': useBrowseTransition
+                        ? 'cubic-bezier(0.34, 1.18, 0.64, 1)'
+                        : 'cubic-bezier(0.4, 0, 0.2, 1)',
+                } as CSSProperties
+            }
             open={sidebarOpen ?? false}
             onOpenChange={(open) => {
                 setSidebarOpen(open);
